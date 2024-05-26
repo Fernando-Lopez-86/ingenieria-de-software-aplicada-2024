@@ -1,11 +1,20 @@
+
+const config = require("./config");
 const express = require("express");
 const app = express();
 const path = require("path");
 
 require('dotenv').config();
 
+console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+console.log(`DB_HOST=${process.env.DB_HOST}`);
+console.log(`DB_USER=${process.env.DB_USER}`);
+console.log(`DB_PASS=${process.env.DB_PASS}`);
+console.log(`DB_NAME=${process.env.DB_NAME}`);
+console.log(`DB_PORT=${process.env.DB_PORT}`);
+
 const { Sequelize } = require('sequelize');
-const config = require('./database/config/config');
+// const config = require('./database/config/config');
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
@@ -20,13 +29,13 @@ app.use(mainRouter);
 
 // Initialize Sequelize
 const sequelize = new Sequelize(
-    config.DB_NAME, 
-    config.DB_USER, 
-    config.DB_PASS,
+    process.env.DB_NAME, 
+    process.env.DB_USER, 
+    process.env.DB_PASS,
     {
-        dialect: config.DB_DIALECT,
-        server: config.DB_HOST,
-        port: config.DB_PORT,
+        dialect: process.env.DB_DIALECT,
+        server: process.env.DB_HOST,
+        port: process.env.DB_PORT,
     }
 );
   
@@ -40,12 +49,12 @@ sequelize
     console.error('Unable to connect to the database:', err);
 });
 
-console.log(`NODE_ENV=${config.NODE_ENV}`);
-console.log(`DB_HOST=${config.DB_HOST}`);
-console.log(`DB_USER=${config.DB_USER}`);
-console.log(`DB_PASS=${config.DB_PASS}`);
-console.log(`DB_NAME=${config.DB_NAME}`);
-console.log(`DB_PORT=${config.DB_PORT}`);
+// console.log(`NODE_ENV=${process.env.NODE_ENV}`);
+// console.log(`DB_HOST=${process.env.DB_HOST}`);
+// console.log(`DB_USER=${process.env.DB_USER}`);
+// console.log(`DB_PASS=${process.env.DB_PASS}`);
+// console.log(`DB_NAME=${process.env.DB_NAME}`);
+// console.log(`DB_PORT=${process.env.DB_PORT}`);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

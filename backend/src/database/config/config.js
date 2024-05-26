@@ -1,13 +1,23 @@
 
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv').config();
+//require('dotenv').config()
 
 module.exports = {
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    DB_USER: process.env.DB_USER || 'sa',
-    DB_PASS: process.env.DB_PASS || 'Naranja90*',
-    DB_NAME: process.env.DB_NAME || 'GRAND_ESTATE',
-    DB_HOST: process.env.DB_HOST || 'localhost',
-    DB_PORT: process.env.DB_PORT || '14333',
-    DB_DIALECT: process.env.DB_DIALECT || "mssql",   
+    development: {
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
+        server: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dialect: process.env.DB_DIALECT, 
+    },
+    production: {
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
+        server: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dialect: process.env.DB_DIALECT, 
+    }
 };
 

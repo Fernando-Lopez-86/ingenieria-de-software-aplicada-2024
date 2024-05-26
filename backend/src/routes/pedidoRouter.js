@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 
-const orderController = require("../controllers/orderController");
+const orderController = require("../controllers/pedidoController");
 
 router.get('/', orderController.list);
 router.get('/listAdmin', orderController.listAdmin);
