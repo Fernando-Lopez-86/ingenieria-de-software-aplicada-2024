@@ -1,0 +1,41 @@
+<header>
+    <div class="header-line">
+        <div class="logo-container">
+            <a href="/">
+                <div class="imagen-logo-div">
+                    <img src="/images/logo.png" class="imagen-logo">
+                </div>
+            </a>
+        </div>
+
+        <div class="search-bar-div align-center">
+            <form class="barra-busqueda" action="/productos/search" method="POST">
+                <input type="text" name="search" placeholder="Buscar productos" class="input-busqueda">
+                <button type="submit" class="boton-buscar fas fa-search"></button>
+            </form>
+        </div>
+    
+        <div class="login">
+            <div><a href="/login"><i class="fa-solid fa-user icon"></i></a></div>
+            <div><a href="/register"><i class="fa-solid fa-id-card icon"></i></a></div>   
+        </div>
+    </div>
+    
+    <div class="burger">
+        <button class="burger-btn" onclick="toggleMenu()">☰</button>
+    </div>
+
+    <nav class="main-navbar">
+        <ul class="nav-bar-a" id="nav-link1">
+            <li></li><a href="#ofertas"><button class="Ofertas">Ofertas</button></a></li>
+            <li><a href="/productos/categoria/1" class="nav-link">Heladeras</a></li>
+            <li><a href="/productos/categoria/2" class="nav-link">Lavarropas</a></li>
+            <li><a href="/productos/categoria/3" class="nav-link">Cocinas</a></li>
+            <li><a href="/productos/categoria/4" class="nav-link">Microondas</a></li>
+            <li><a href="/productos/categoria/5" class="nav-link">Lavavajillas</a></li>
+            <li><a href="/productos/categoria/6" class="nav-link">Hornos</a></li>
+        </ul>
+    </nav>  
+    
+    <script src="/js/script.js"></script>
+</header>      

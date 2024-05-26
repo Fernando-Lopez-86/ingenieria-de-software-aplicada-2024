@@ -4,7 +4,7 @@ const router = Router();
 const mainController = require("../controllers/mainController");
 router.get("/", mainController.home);
 
-const orderRouter = require("./orderRouter");
+const orderRouter = require("./pedidoRouter");
 router.use("/pedidos", orderRouter);
 
 const userRouter = require("./userRouter");

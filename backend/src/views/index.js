@@ -1,5 +1,0 @@
-<html>
-    <body>
-        <div>HOLA MUNDO</div>
-    </body>
-</html> 
