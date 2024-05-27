@@ -7,29 +7,27 @@
         <!--HEADER-->
         <%- include("./partials/header") %>
 
-
         <main class="my-2 vw-90 mx-auto ">
             <div id="ofertas" class="titulo my-2 w-100">Ofertas</div>
-
-            <div class="titulo my-2 w-100">Productos</div>
+            <div class="titulo my-2 w-100">Pedidos</div>
             <section class="flex flex-wrap gap section mb-2">
-            <% let contadorProductos = 0; %>
-                <% for (let i = 0; i < productos.length && contadorProductos < 4; i++) { %>
-                    <% if (productos[i].descuento === null) { %>
+
+
+            <% let contadorPedidos = 0; %>
+                <% for (let i = 0; i < pedidos.length; i++) { %>
+
                         <article class="p-2 bt-1 border-grey border-radius bg-white product-shadow w-100 md-w-50 lg-w-25">
-                            <a href="/productos/detail/<%= productos[i].id %>">
                                 <div class="relative flex flex-wrap">
-                                    <img class="w-100 border-radius" src="/images/productos/<%= productos[i].imagen %>" alt="<%= productos[i].descripcion %>">
-                                    <p class="description"><%= productos[i].nombre %></p>
+                                    <p class="description"><%= pedidos[i].CLIENTE %></p>
                                     <div class="flex flex-center w-100">
-                                        <p class="precio">$<%= productos[i].precio %></p>
+                                        <p class="precio">$<%= pedidos[i].NROPED %></p>
                                     </div>
                                 </div>
-                            </a>
                         </article>
-                        <% contadorProductos++; %>
-                    <% } %>
+                        <% contadorPedidos++; %>
                 <% } %>
+
+
             </section>
         </main>
         

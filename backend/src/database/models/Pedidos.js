@@ -4,7 +4,10 @@ module.exports = (sequelize, DataTypes) => {
         {
             TIPO: DataTypes.STRING,	
             CLIENTE: DataTypes.STRING,
-            NROPED: DataTypes.STRING,	
+            NROPED:  {
+                type: DataTypes.STRING,
+                primaryKey: true
+            },	
             CODIGO: DataTypes.STRING,
             FECEMISION: DataTypes.DATE,		
             FECRECEP: DataTypes.DATE,		
