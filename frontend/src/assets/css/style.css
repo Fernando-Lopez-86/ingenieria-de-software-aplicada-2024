@@ -1,0 +1,31 @@
+span{
+    color: blueviolet;
+  }
+  
+  .sidebar-heading{
+  color: blueviolet;
+  }
+
+
+  .sidebar-brand {
+    margin-top: 20px; /* Ajusta el valor según sea necesario */
+    margin-bottom: 30px;
+}
+
+.sidebar-brand img {
+    height: 75px; /* Ajusta el valor según sea necesario */
+    
+}
+
+/* Agrega esta regla CSS para ajustar el ancho de la topbar */
+.topbar {
+  width: 100%; /* Puedes ajustar el valor según tus necesidades */
+}
+
+/* Asegúrate de que el botón de alternancia de la barra lateral (sidebarToggleTop) también se ve bien en la topbar más ancha */
+#sidebarToggleTop {
+  margin-right: 15px; /* Ajusta el margen según sea necesario */
+}
+
+
+
