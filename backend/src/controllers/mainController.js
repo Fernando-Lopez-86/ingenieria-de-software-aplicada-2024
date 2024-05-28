@@ -11,7 +11,7 @@ const pedidoService = require("../services/pedidoService");
  
 const mainController = {
     home: (req, res) => {
-        pedidoService.getAllProducts()
+        pedidoService.getAllPedidos()
         .then(pedidos => {
             res.render("index", {pedidos});
         })

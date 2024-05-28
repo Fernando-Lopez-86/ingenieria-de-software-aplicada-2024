@@ -76,7 +76,7 @@ module.exports = {
     // },
 
 
-    getAllProducts: () => {
+    getAllPedidos: () => {
        
         return Pedidos.findAll({ 
             where: {
