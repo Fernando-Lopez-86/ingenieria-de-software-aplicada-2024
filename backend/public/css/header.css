@@ -1,0 +1,414 @@
+.imagen-logo-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3px;
+}
+
+.imagen-logo{
+    transition: transform 0.3s;
+    width: 150px; 
+    height: auto;
+}
+
+.imagen-logo:hover{
+    transform: scale(1.06);
+}
+
+
+/* Estilos para la imagen */
+.w-100 img {
+    transition: transform 0.3s;
+}
+
+/* Estilos al pasar el mouse sobre la imagen */
+.w-100:hover img {
+    transform: scale(1.1); 
+}
+
+.top-header2 {
+    text-align: center;
+    font-size: 5px;
+    background-color: rgb(160, 190, 255);
+    padding: 1px;
+}
+.top-header {
+    background-color: rgb(160, 190, 255);
+    font-size: 5px;
+    padding: 1px;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.barra-busqueda {
+    border: 1px solid rgb(0, 0, 0);;
+    display: flex;
+    align-items: center;
+    background-color: rgb(160, 190, 255);
+    border-radius: 5px;
+    padding: 3px;
+    width: 50%;
+    height: 32px;
+    text-align: center;
+    margin-top: 10pxpx;
+    flex-grow: 2;
+}
+
+.search-bar-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+
+.input-busqueda {
+    border: none;
+    padding: 8px;
+    width: 100%;
+    height: 30px;
+    background-color: rgb(160, 190, 255);
+    outline: none;
+}
+
+.boton-buscar {
+    background-color: rgb(160, 190, 255);
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    width: 5%;
+    height: 30px;
+}
+
+.login {
+    display: flex;
+    margin-left: 15px;
+}
+
+.icon {
+    font-size: 25px;
+    padding: 3px;
+    margin-top: 40px;
+    margin-left: 90px;
+    margin-right: 90px;
+}
+
+/* Estilos para los iconos */
+.icon {
+   
+    font-size: 24px; 
+    transition: transform 0.3s, color 0.3s; 
+}
+
+/* Estilos al pasar el mouse sobre los iconos */
+.icon:hover {
+    transform: scale(1.1); 
+    color:rgb(94, 43, 142); 
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.login {
+    display: flex;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-bar-a {
+    display: none;
+}
+
+.nav-bar-a.show {
+    display: flex;
+    display: block;
+    font-size: 13px;
+    margin-bottom: 55px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0; 
+}
+
+#nav-link1{
+    margin-bottom: 20px;
+}
+
+.nav-bar-a li {
+    text-align: center;
+    display: block;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 5px;
+    transition: transform 0.2s ease; 
+}
+
+.nav-bar-a li:hover {
+    transform: scale(1.1);
+}
+
+.burger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.burger-btn {
+    background-color: rgb(89, 31, 142);
+    color: white;
+    height: 25px;
+    width: 50px;
+    border-radius: 5px;
+    border: none;
+    display: block;
+    font-size: 18px;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    transition: transform 0.3s;
+}
+
+.burger-btn:hover{
+    transform: scale(1.1);
+    background-color:rgb(44, 14, 72);
+}
+
+.burger-btn.active {
+    background-color: rgb(44, 14, 72);
+    color: white;
+}
+
+.Ofertas {
+    display: none;
+}
+
+
+/*media 474px*/
+@media (min-width: 474px) {
+
+    .top-header2 {
+        font-size: 6px;
+    }
+    .top-header {
+        font-size: 6px;
+    }
+    .imagen-logo{
+        width: 158px; 
+        height: auto;
+    }
+}
+
+
+
+
+/*media 612px*/
+@media (min-width: 612px){
+    .header-line{
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .search-bar-div{
+        width: 90%;
+        margin: 0;
+    }
+
+    .barra-busqueda {
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        background-color: rgb(160, 190, 255);
+        border-radius: 5px;
+        padding: 5px;
+        width: 100%;
+        height: 36px;
+        margin-top: 40px;
+        margin-left: 20px;
+        flex-grow: 2;
+    }
+
+    .top-header2 {
+        font-size: 6px;
+    }
+    .top-header {
+        font-size: 6px;
+    }
+    
+    .burger-btn {
+        display: none;
+    }
+
+    .Ofertas {
+       display: block;
+    }
+    
+    .main-navbar a {
+        text-decoration: none;
+        font-size: 17px;
+        padding: 3px 0;
+        display: inline-block;
+        color: #222222;
+    }
+    
+    .main-navbar button{
+        background-color: rgb(44, 14, 72);
+        color: white;
+        height: 15px;
+        width: 70px;
+        border-radius: 5px;
+        border: none;
+        font-size: 11px;
+        margin-left: 1px;
+    }
+    
+    .nav-bar-a{
+        margin-top: 30px;
+        list-style-type: none;
+        display: flex;
+        justify-content: space-between;
+        width: 85%;
+        font-weight: bold;
+    }
+    
+    .nav-bar-a a{
+        padding-left: 10px;
+        position: relative;
+        font-size: clamp(0.7rem, 1vw, 1.2rem);
+    }
+    
+    a[href="#ofertas"] button {
+        transition: transform 0.3s; 
+    }
+    
+    a[href="#ofertas"] button:hover {
+        transform: scale(1.1);
+        
+    }
+    .nav-link {
+        position: relative;
+        text-decoration: none;
+        color: #333; 
+        transition: color 0.3s; 
+    }
+    
+    .nav-link::before {
+        content: '';
+        position: absolute;
+        width: 90%;
+        height: 2px;
+        bottom: 0;
+        left: 9px;
+        background-color: rgb(160, 190, 255);  
+        visibility: hidden;
+        transform: scaleX(0);
+        transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+    
+    .nav-link:visited::before {
+        transform: scaleX(1);
+        visibility: visible;
+    }
+    
+    .nav-link:hover::before {
+        transform: scaleX(1);
+        visibility: visible;
+    }
+    
+    .nav-link:hover {
+        color: rgb(16, 37, 231); 
+    }
+    .nav-bar-a.show {
+        display: flex;
+    }
+
+    .imagen-logo{
+      
+        width: 175px; 
+        height: auto;
+    }
+    
+    .login {
+        margin-right: 40px; 
+        margin-left:  0px; 
+    }
+
+    .icon {
+        font-size: 25px;
+        padding: 3px;
+        margin-top: 40px;
+        margin-left: 20px;
+        margin-right: 0px;
+    }
+}
+
+
+/*media 907px*/
+@media (min-width: 907px) {
+    .top-header2 {
+        font-size: 7px;
+    }
+
+    .top-header {
+        font-size: 7px;
+    }
+
+    .main-navbar button{
+        background-color: rgb(44, 14, 72);
+        color: white;
+        height: 35px;
+        width: 100px;
+        border-radius: 5px;
+        border: none;
+        font-size: 15px;
+        margin-left: 20px;
+    }
+
+    .nav-bar-a a{
+        padding-left: 12px;
+        position: relative;
+        font-size: clamp(0.7rem, 1vw, 1.2rem);
+    }
+
+    .imagen-logo{
+      
+        width: 205px; 
+        height: auto;
+    }
+
+    .login {
+        margin-right: 80px; 
+        margin-left:  0px;  
+    }
+
+    .icon {
+        font-size: 25px;
+        padding: 3px;
+        margin-top: 40px;
+        margin-left: 50px;
+    }
+
+    .barra-busqueda {
+        border: 1px solid black;
+        display: flex;
+        align-items: center;
+        background-color: rgb(160, 190, 255);
+        border-radius: 5px;
+        padding: 5px;
+        width: 100%;
+        height: 36px;
+        margin-top: 40px;
+        margin-left: 30px;
+        flex-grow: 2;
+    }
+
+}
+
+
+

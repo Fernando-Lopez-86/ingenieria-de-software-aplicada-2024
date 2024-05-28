@@ -1,15 +1,30 @@
+const moment = require("moment");
+
 module.exports = (sequelize, DataTypes) => {
     const Model = sequelize.define(
         "Pedidos",
         {
-            TIPO: DataTypes.STRING,	
-            CLIENTE: DataTypes.STRING,
-            NROPED:  {
+            NROPED: {
                 type: DataTypes.STRING,
-                primaryKey: true
+                primaryKey: true,
+            },
+            CLIENTE: {
+                type: DataTypes.STRING,
+                primaryKey: true,
+            },
+            TIPO: {
+                type: DataTypes.STRING,
+                primaryKey: true,
             },	
             CODIGO: DataTypes.STRING,
-            FECEMISION: DataTypes.DATE,		
+            FECEMISION: {
+                type: DataTypes.DATEONLY,
+                allowNull: false,
+                get() { 
+                    return moment(this.getDataValue('FECEMISION')).format('DD/MM/YYYY');
+                },
+                field: 'FECEMISION',
+            },	
             FECRECEP: DataTypes.DATE,		
             CONDVENTA: DataTypes.STRING,	
             ACTUALIZA: DataTypes.FLOAT,	
@@ -69,17 +84,47 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    // Model.associate = (models) => {
-    //     Model.belongsTo(models.Marcas, {
-    //         as: 'marcas',
-    //         foreignKey: 'marca_id',
-    //     });
- 
-    //     Model.belongsTo(models.Categorias, {
-    //         as: 'categorias',
-    //         foreignKey: 'categoria_id',
-    //     });
-    // };
+    Model.associate = (models) => {
+        Model.belongsTo(models.PedidosItem, 
+            {
+                as: 'pedidositem',
+                foreignKey: {
+                    name: 'NROPED',
+                    allowNull: false
+                },
+            },
+        );
+           
+        Model.belongsTo(models.PedidosItem, 
+            {
+                as: 'pedidositem2',
+                foreignKey: {
+                    name: 'CLIENTE',
+                    allowNull: false
+                },
+            },
+        );
 
+        Model.belongsTo(models.PedidosItem, 
+            {
+                as: 'pedidositem3',
+                foreignKey: {
+                    name: 'TIPO',
+                    allowNull: false
+                },
+            },
+        );
+
+        Model.belongsTo(models.Clientes, 
+            {
+                as: 'clientes',
+                foreignKey: {
+                    name: 'CLIENTE',
+                    allowNull: false
+                },
+            },
+        );
+    };
+    
     return Model;
 }

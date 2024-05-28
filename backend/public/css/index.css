@@ -1,0 +1,229 @@
+.slideshow-container {
+    max-width: 100%;
+    position: relative;
+    margin: auto;
+}
+
+.mySlides {
+    display: none;
+}
+
+.titulo {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+    background-color: #717171;
+}
+
+.text {
+    color: #f2f2f2;
+    font-size: 15px;
+    padding: 8px 12px;
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    text-align: center;
+}
+
+.border-grey {
+    border-color: #d9d9d9;
+}
+
+.border-radius {
+    border-radius: 15px;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+
+
+.product-shadow:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid #881b96; 
+}
+
+
+.product-shadow:hover {
+    cursor: pointer;
+}
+
+.description {
+    text-align: center;
+    width: 100%;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.precio {
+    text-align: center;
+    font-size: 30px;
+    color: #36c;
+    margin-top: 10px;
+    margin-bottom: 1px;
+    margin-right: 10px;
+    font-weight: 700;
+} 
+
+.descuento {
+    text-align: center;
+    background: rgb(209, 160, 255);
+    color: black;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 30px;
+    padding: 5px 10px;
+    position: relative;
+    margin-left: 10px;
+}
+
+#titulo-index{
+    font-size: 22px;
+    margin-top: 45px;
+}
+
+#ofertas{
+    margin-top: 60px;
+}
+
+
+
+
+
+
+@keyframes fade {
+    from {opacity: .4} 
+    to {opacity: 1}
+}
+
+
+@media only screen and (max-width: 300px) {
+    .prev, .next,.text {font-size: 11px}
+}
+
+
+
+@media (min-width: 910px) {  
+    .product-shadow {
+      box-shadow: none;
+    }  
+    .product:hover .product-shadow {
+      display: block;
+    }
+    .description {
+        width: 100%;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .precio {
+        font-size: 30px;
+        color: #36c;
+        margin-top: 10px;
+        margin-bottom: 1px;
+        margin-right: 10px;
+        font-weight: 700;
+    } 
+    
+    .descuento {
+        background: rgb(209, 160, 255);
+        color: black;
+        font-weight: 600;
+        font-size: 14px;
+        border-radius: 30px;
+        padding: 5px 10px;
+        position: relative;
+        margin-left: 10px;
+    }
+
+    #titulo-index{
+        font-size: 27px;
+        margin-top: 47px;
+    }
+}
+
+
+
+
+@media (min-width: 1100px) {  
+    .product-shadow {
+      box-shadow: none;
+    } 
+
+    .product:hover .product-shadow {
+      display: block;
+    }
+
+    .description {
+        width: 100%;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .precio {
+        font-size: 30px;
+        color: #36c;
+        margin-top: 10px;
+        margin-bottom: 1px;
+        margin-right: 10px;
+        font-weight: 700;
+    } 
+    
+    .descuento {
+        background: rgb(209, 160, 255);
+        color: black;
+        font-weight: 600;
+        font-size: 14px;
+        border-radius: 30px;
+        padding: 5px 10px;
+        position: relative;
+        margin-left: 10px;
+    }
+}

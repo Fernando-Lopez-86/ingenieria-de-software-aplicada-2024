@@ -1,0 +1,447 @@
+*{
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+.article-container a {
+    text-decoration: none; 
+}
+
+/* DETALLE DE PRODUCTOS*/
+/* .description {
+    color: rgb(47, 0, 53);
+    width: 100%;
+}
+ */
+/* .precio {
+    font-size: 1.625rem;
+    color: rgb(0, 0, 0);
+    margin-top: 10px;
+    margin-bottom: 1px;
+    margin-right: 10px;
+} */
+
+/* .descuento {
+    color: #d300da;
+    font-size: 16px;
+} */
+
+.product-detail {
+    width: 95%;
+   
+    margin-bottom: 2px; 
+    font-size: 12px;
+} 
+
+#id-detail{
+margin-top: 1px;
+margin-right: 1px;
+font-size: 13px;
+
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.align-center {
+    align-items: center;
+}
+
+/* Estilos para el contenedor que incluye la imagen y las especificaciones */
+.product-container {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* Estilos para la imagen */
+.product-container img {
+    width: 75%;
+    border-radius: 10px;
+}
+
+/* Estilos para las especificaciones */
+.product-info {
+    width: 50%;
+    border-radius: 10px;
+    padding: 10px; 
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.w-25 {
+    width: 25%;
+}
+
+.w-75 {
+    width: 75%;
+}
+
+.agregar{
+    background-color: rgb(93, 53, 130); 
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 5px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    font-size: 12px;
+    margin-top: 10px;
+}
+.agregar:hover{
+    background-color: rgb(44, 14, 72);
+    transform: scale(1.05); ;
+}
+
+.oculto {
+    display: none;
+}
+
+.display-none {
+    display: none;
+}
+
+.font-m {
+    font-size: 12px;
+}
+.font-xl {
+    font-size: 18px;
+}
+.title {
+    font-size: 24px;
+}
+.w-25 {
+    width: 25%;
+}
+.w-50 {
+    width: 50%;
+}
+.w-75 {
+    width: 75%;
+}
+.vw-90 {
+    width: 90vw;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.w-1002 {
+    width: 100%;
+}
+
+.b-1 {
+    border-style: solid;
+}
+
+.bt-1 {
+    border: 1px solid black
+}
+
+.b-none {
+    border: none;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.round {
+    border-radius: 50%;
+}
+
+.radius-1 {
+    border-radius: 5px;
+}
+
+.p-1 {
+    padding: 8px;
+}
+
+.p-2 {
+    padding: 20px;
+}
+
+.py-1 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.ml-1 {
+    margin-left: 10px;
+}
+
+.mr-1 {
+    margin-right: 10px;
+}
+
+.my-1 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.my-2 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.mb-1 {
+    margin-bottom: 25px;
+}
+
+
+.mb-2 {
+    margin-bottom: 35px;
+}
+
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mr-1 {
+    margin-right: 8px;
+}
+
+.flex {
+    display: flex;
+}
+
+.inline-flex {
+    display: inline-flex;
+}
+
+.block {
+    display: block;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.gap {
+    gap: 10px;
+}
+
+.align-center {
+    margin: 0 auto;
+}
+
+.align-right {
+    align-self: right;
+}
+
+.relative {
+    position: relative;
+}
+
+.main {
+    padding: 1%;
+    width: 90%;
+    margin-left: 5%;
+    align-content: center;
+}
+
+.section {
+    justify-content: space-around;
+}
+
+.flex-center {
+    justify-content: center;
+}
+
+.section-cart {
+    height: 80%;
+}
+
+
+
+
+/*
+CARRITO DE COMPRAS
+*/
+
+.titulo-carrito{
+    margin-top: 20px;
+}
+
+.carrito-container {
+    max-width: 600px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+    border: 1px solid #252525;
+    border-radius: 30px;
+}
+
+.carrito-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-size: 12px;
+   
+}
+
+.carrito-table th, .carrito-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.finalizar-btn {
+    background-color: rgb(93, 53, 130); 
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.finalizar-btn:hover {
+    background-color: rgb(44, 14, 72);
+    transform: scale(1.05); ;
+    
+}
+
+
+/*media 420px*/
+@media (min-width: 420px) {
+
+    .md-w-50 {
+        width: 48%;
+    }
+    .carrito-container {
+        max-width: 600px;
+        margin: 30px auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 10px;
+        border: 1px solid #252525;
+        border-radius: 30px;
+        
+    }
+
+    .carrito-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 14px;
+       
+    }
+}
+
+
+
+/*media 769px*/
+@media (min-width: 769px) {
+  
+    .lg-w-25 {
+        width: 23%;
+    }
+
+    .product-detail {
+        width: 95%;
+       
+        margin-bottom: 10px; 
+        font-size: 14px;
+    } 
+
+    #id-detail{
+        margin-top: 1px;
+        margin-right: 1px;
+        font-size: 16px;
+    }
+
+    .agregar{
+        background-color: rgb(93, 53, 130); 
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+        font-size: 17px;
+        margin-top: 20px;
+    }
+
+    #main-detail{
+        margin-top: 50px;
+        margin-bottom: 70px;
+        
+    }
+
+    .carrito-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+    .carrito-container {
+        max-width: 650px;
+        margin: 60px auto;
+        margin-top: 80px;
+        margin-bottom: 80px;
+        padding: 10px;
+        border: 1px solid #252525;
+        border-radius: 30px;
+    }
+}
+
+
+
+
+/*media 1100px*/
+
+@media (min-width: 1100px) {
+   
+
+    #main-detail{
+
+        margin-top: 50px;
+        margin-bottom: 100px;
+        
+    }
+    .carrito-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        font-size: 16px;
+       
+    }
+}
+  
+
+
+
