@@ -1,0 +1,139 @@
+footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: center;
+    justify-content: space-around;
+    text-decoration: none;
+    background-color: rgb(160, 190, 255);
+    color: black;
+    font-size: 10px;
+} 
+ 
+ /*DESPLIEGUE DE GRUPO-9 Y ATENCION AL CLIENTE*/
+.toggle-item {
+    display: block;
+    margin-top: 5px;
+}
+
+.toggle-label {
+    cursor: pointer;
+    margin-top: 10px; 
+}
+
+.content {
+    display: none;
+}
+
+.toggle-input:checked + .toggle-label .content {
+    display: block;
+}
+
+.toggle-label:hover h3 {
+    color: white;
+    transform: scale(1.05);
+}
+
+.link-footer:hover { 
+    color: white;
+} 
+
+.img-medios-de-pago {
+    height: 100px; 
+}
+
+
+/*media 420px*/
+@media (min-width: 420px) {
+    
+    footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        text-align: center;
+        justify-content: space-around;
+        text-decoration: none;
+        background-color: rgb(160, 190, 255);
+        color: black;
+        font-size: 10px;
+    }
+
+    /* Estilo para los bloques del footer */
+    .block {
+        width: 100%;
+        max-width: 300px; 
+    }
+
+    /* Estilo para los títulos de sección */
+    h3 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #fff; 
+    }
+
+    /* Estilo para los enlaces del footer */
+    .link-footer {
+        color: black;
+        text-decoration: none;
+    }
+
+    /* Estilo para el copyright */
+    .text-center1  {
+        background-color: rgb(160, 190, 255);
+    }
+
+    .img-medios-de-pago {
+        height: 110px; 
+    }
+
+    .block {
+        width: 100%   
+    }
+}
+
+/*media 710px*/
+@media (min-width: 710px) {
+    
+    .footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        text-align: center;
+        justify-content: space-around;
+        text-decoration: none;
+        background-color: rgb(160, 190, 255);
+        color: black;
+        font-size: 10px;
+    }
+
+    .parrafo {
+        font-size: calc(0.9vw + 3px);  
+    }
+    
+    .titulo-footer {
+        font-size: calc(1.1vw + 3px);
+    } 
+    
+    .link-footer {
+        font-size: calc(0.9vw + 3px); 
+    }
+    
+    .parrafo1 {
+        font-size: calc(1.1vw + 3px); 
+    }
+    
+    .img-medios-de-pago {
+        margin-top: 20px;
+        max-width: calc(15vw + 50px); 
+        height: auto;
+    }
+    
+    .copy-footer {
+        font-size: calc(0.9vw + 2.5px); 
+        font-weight: 600;
+    }
+
+    .content {
+        display: block;
+    }
+}

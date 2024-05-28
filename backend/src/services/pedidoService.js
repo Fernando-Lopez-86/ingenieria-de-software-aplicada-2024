@@ -1,5 +1,6 @@
 const { Pedidos } = require("../database/models");
-const { Op } = require("sequelize");
+const { Op, Association } = require("sequelize");
+const models = require("../database/models");
 
 module.exports = {
   
@@ -59,10 +60,56 @@ module.exports = {
         return Productos.findByPk(id);
     },
 
+    // getAllProducts: () => {
+    //     // return Pedidos.findAll({ include: ['categorias', 'marcas'] });  // include: ["categoria", "marca"] hace referencia al alias de la asociaciones entre las claves foraneas de las tablas
+    //     return Pedidos.findAll({ 
+    //         include: ['pedidositem','clientes'],
+    //         where: {
+    //             TIPO: 'P',
+    //             CODIGO: '21',
+    //             FECEMISION: {
+    //                 [Op.gte]: new Date('2024-01-01'),   //gt = Greater than operacion de compracion nativa de sequelize
+    //             },
+    //         },
+    //         order: [["NROPED", "ASC"]],
+    //     });
+    // },
+
+
     getAllProducts: () => {
-        // return Pedidos.findAll({ include: ['categorias', 'marcas'] });  // include: ["categoria", "marca"] hace referencia al alias de la asociaciones entre las claves foraneas de las tablas
-        return Pedidos.findAll();
+       
+        return Pedidos.findAll({ 
+            where: {
+                TIPO: 'P',
+                CODIGO: '21',
+                FECEMISION: {
+                    [Op.gte]: new Date('2024-01-01'),   //gt = Greater than operacion de compracion nativa de sequelize
+                },
+            },
+
+            //include: ['pedidositem', 'clientes'],  //esta linea agrega los LEFT OUTER JOIN
+            include: [
+                {
+                    model: models.PedidosItem,
+                    as: 'pedidositem',
+                    where: { 
+                        TIPO: 'P' 
+                    },
+                    required: false, // Utilizamos LEFT OUTER JOIN
+                },
+                {
+                    model: models.Clientes,
+                    as: 'clientes',
+                    required: false, // LEFT OUTER JOIN
+                    foreignKey: 'CLIENTE', // Clave foránea correcta
+                }
+            ],
+            
+            order: [["NROPED", "ASC"]],
+            
+        });
     },
+
 
     getProductDetail: (id) => {
         return Productos.findByPk(id, { include: ['categorias', 'marcas'] });

@@ -8,27 +8,26 @@
         <%- include("./partials/header") %>
 
         <main class="my-2 vw-90 mx-auto ">
-            <div id="ofertas" class="titulo my-2 w-100">Ofertas</div>
             <div class="titulo my-2 w-100">Pedidos</div>
+            
             <section class="flex flex-wrap gap section mb-2">
-
-
-            <% let contadorPedidos = 0; %>
+                <% let contadorPedidos = 0; %>
+                <% let nroPedido = 0; %>
                 <% for (let i = 0; i < pedidos.length; i++) { %>
-
-                        <article class="p-2 bt-1 border-grey border-radius bg-white product-shadow w-100 md-w-50 lg-w-25">
-                                <div class="relative flex flex-wrap">
-                                    <p class="description"><%= pedidos[i].CLIENTE %></p>
-                                    <div class="flex flex-center w-100">
-                                        <p class="precio">$<%= pedidos[i].NROPED %></p>
-                                    </div>
-                                </div>
-                        </article>
-                        <% contadorPedidos++; %>
+                    <% if (nroPedido !== pedidos[i].NROPED) { %>
+                        <br>
+                    <% } %>
+                    <!-- <article class="p-2 bt-1 border-grey border-radius bg-white product-shadow w-100 md-w-50 lg-w-25"> -->
+                        
+                        <div class="w-100"><%=pedidos[i].NROPED%> <%= pedidos[i].FECEMISION%> <%= pedidos[i].CLIENTE%> <%= pedidos[i].clientes.RAZONSOC%> <%= pedidos[i].pedidositem.DESCART%> <%= pedidos[i].pedidositem.BULTPED%> <%= pedidos[i].pedidositem.PRECIO%></div>
+                    
+                        <!-- </article> -->
+                    <% contadorPedidos++; %>
+                    <% nroPedido = pedidos[i].NROPED; %>
+                       
                 <% } %>
-
-
             </section>
+
         </main>
         
         <!--FOOTER-->
