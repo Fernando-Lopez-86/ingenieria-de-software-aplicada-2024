@@ -76,7 +76,6 @@ module.exports = (sequelize, DataTypes) => {
                     name: 'CLIENTE',
                     allowNull: false
                 },
-                // targetKey: 'CLIENTE'
             },
         );
 

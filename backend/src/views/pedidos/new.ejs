@@ -1,5 +1,141 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <!--HEAD-->
+    <%- include("../partials/head") %>
+
     <body>
-        <div>NUEVO PEDIDO</div>
+        <!--HEADER-->
+        <%- include("../partials/header") %>
+
+        <h1>Crear Nuevo Pedido</h1>
+        <form action="/pedidos/create" method="post">
+          <div>
+            <label for="TIPO">TIPO:</label>
+            <input type="text" id="TIPO" name="TIPO" required>
+          </div>
+          <div>
+            <label for="CLIENTE">CLIENTE:</label>
+            <input type="text" id="CLIENTE" name="CLIENTE" required>
+          </div>
+          <div>
+            <label for="NROPED">NROPED:</label>
+            <input type="text" id="NROPED" name="NROPED" required>
+          </div>
+          <div>
+            <label for="NROREAL">NROREAL:</label>
+            <input type="text" id="NROREAL" name="NROREAL" required>
+          </div>
+          <div>
+            <label for="ESTADOSEG">ESTADOSEG:</label>
+            <input type="text" id="ESTADOSEG" name="ESTADOSEG" required>
+          </div>
+          <div>
+            <label for="CODIGO">CODIGO:</label>
+            <input type="text" id="CODIGO" name="CODIGO" required>
+          </div>
+          <div id="items">
+            <div>
+              <label for="ITEM">ITEM:</label>
+              <input type="text" name="items[0][ITEM]" required>
+            </div>
+          </div>
+          <button type="button" onclick="addItem()">Añadir otro artículo</button>
+          <button type="submit">Crear Pedido</button>
+        </form>
+        <script>
+          let itemIndex = 1;
+          function addItem() {
+            const newItem = document.createElement('div');
+            newItem.innerHTML = `
+              <label for="ITEM">ITEM:</label>
+              <input type="text" name="items[${itemIndex}][ITEM]" required>
+            `;
+            document.getElementById('items').appendChild(newItem);
+            itemIndex++;
+          }
+        </script>
+
+
+
+
+
+
+
+        <!-- <main>
+            <form class="container-form my-1 flex flex-wrap" action="/pedidos/create" method="POST">
+                <div class="w-100"><h2 class="text-center">CREAR PEDIDO</h2></div>
+                <div class="form-group my-1">
+                    <label for="TIPO">TIPO</label>
+                    <input 
+                        type="text" 
+                        name="TIPO" 
+                        class="form-control <%= locals.errors && errors.TIPO ? 'is-invalid' : null %>"
+                        value="<%= locals.oldData ? oldData.TIPO : null %>">
+                        
+                    <% if (locals.errors && errors.TIPO) { %>
+                        <div class="text-danger">
+                            <%= errors.TIPO.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+            
+                <div class="form-group my-1">
+                    <label for="CLIENTE">CLIENTE</label>
+                    <input 
+                        type="text" 
+                        name="CLIENTE" 
+                        class="form-control <%= locals.errors && errors.CLIENTE ? 'is-invalid' : null %>"
+                        value="<%= locals.oldData ? oldData.CLIENTE : null %>"
+                    >
+                    <% if (locals.errors && errors.CLIENTE) { %>
+                        <div class="text-danger">
+                            <%= errors.CLIENTE.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="form-group my-1">
+                    <label for="NROPED">NROPED</label>
+                    <input 
+                        type="text" 
+                        name="NROPED" 
+                        class="form-control <%= locals.errors && errors.NROPED ? 'is-invalid' : null %>"
+                        value="<%= locals.oldData ? oldData.NROPED : null %>"
+                    >
+                    <% if (locals.errors && errors.NROPED) { %>
+                        <div class="text-danger">
+                            <%= errors.NROPED.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">
+                    <label for="CODIGO">CODIGO</label>
+                    <input 
+                        type="text" 
+                        name="CODIGO" 
+                        class="form-control <%= locals.errors && errors.CODIGO ? 'is-invalid' : null %>"
+                        value="<%= locals.oldData ? oldData.CODIGO : null %>"
+                    >
+                    <% if (locals.errors && errors.CODIGO) { %>
+                        <div class="text-danger">
+                            <%= errors.CODIGO.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="flex flex-center w-100">
+                    <div class="p-1">
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>   
+                </div>
+            </form>
+        </main> -->
+       
+        <!--FOOTER-->
+        <%- include("../partials/footer") %>
+        
+        <!--SCRIPTS-->
+        <script src="/js/carrousel.js"></script>         
     </body>
 </html>

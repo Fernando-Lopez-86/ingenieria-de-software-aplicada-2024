@@ -16,19 +16,22 @@ const pedidoControllerAPI = {
         })
     },
 
-    // detail: (req, res) => {
-    //     pedidoService.getPedidoDetail(req.params.id)
-    //     .then(pedidos => {
-    //         let respuesta = {
-    //             meta: {
-    //                 status: 200,
-    //                 url: "/api/pedidos/:id",
-    //             },
-    //             data: pedidos,
-    //         };
-    //         res.json(respuesta);
-    //     })
-    // },
+    create: (req, res) => {
+        pedidoService.createPedido(req.body)
+        .then(pedidos => {
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    total: pedidos.length,
+                    url: "/api/pedidos",
+                },
+                data: pedidos,
+            };
+            res.json(respuesta);
+        })
+    },
+
+   
 };
 
 module.exports = pedidoControllerAPI;

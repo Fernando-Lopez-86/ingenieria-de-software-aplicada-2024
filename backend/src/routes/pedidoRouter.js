@@ -1,16 +1,16 @@
 const { Router } = require("express");
 const router = Router();
 
-const orderController = require("../controllers/pedidoController");
+const pedidoController = require("../controllers/pedidoController");
 
-router.get('/', orderController.list);
-router.get('/listAdmin', orderController.listAdmin);
+router.get('/', pedidoController.list);
+router.get('/listAdmin', pedidoController.listAdmin);
 
-router.get("/new", orderController.new);
-router.get("/create", orderController.create)
-router.get("/edit", orderController.edit);
-router.get("/update", orderController.update);
-router.get("/delete", orderController.delete);
-router.get("/destroy", orderController.destroy);
+router.get("/new", pedidoController.new);
+router.post("/create", pedidoController.create)
+router.get("/edit/:id", pedidoController.edit);
+router.post("/update/:id", pedidoController.update);
+router.get("/delete/:id", pedidoController.delete);
+router.post("/destroy/:id", pedidoController.destroy);
 
 module.exports = router;

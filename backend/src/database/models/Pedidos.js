@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             CODIGO: DataTypes.STRING,
             FECEMISION: {
                 type: DataTypes.DATEONLY,
-                allowNull: false,
+                allowNull: true,
                 get() { 
                     return moment(this.getDataValue('FECEMISION')).format('DD/MM/YYYY');
                 },
@@ -70,7 +70,10 @@ module.exports = (sequelize, DataTypes) => {
             PROENT: DataTypes.STRING,
             PAISENT: DataTypes.STRING,	
             DISENT: DataTypes.STRING,
-            NROREAL: DataTypes.STRING,	
+            NROREAL: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },	
             MOTIVO: DataTypes.STRING,	
             TELEFONOS: DataTypes.STRING,
             BULTOSEMP: DataTypes.INTEGER, 
