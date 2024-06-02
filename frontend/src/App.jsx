@@ -1,18 +1,18 @@
 import React from 'react';
-import { Routes, Route  } from "react-router-dom"
-import Home from './components/Home';
-import Pedidos from './components/Pedidos';
-// import Usuarios from './components/Usuarios';
-// import Categorias from './components/Categorias';
+import { BrowserRouter as Router } from 'react-router-dom';
+import SideBar from './components/SideBar';
+import ContentWrapper from './components/ContentWrapper';
 import './assets/css/app.css';
 
 function App() {
-  return (
-    <Routes>
-        <Route path="/" exact={true} element={ <Home /> } />
-        <Route path="pedidos" exact={true} element={ <Pedidos /> } />
-    </Routes>
-  );
+    return (
+        <Router>
+            <div id="wrapper">
+                <SideBar />
+                <ContentWrapper />
+            </div>
+        </Router>
+    );
 }
 
 export default App;
