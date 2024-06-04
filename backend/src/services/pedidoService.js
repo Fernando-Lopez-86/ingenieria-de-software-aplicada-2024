@@ -83,20 +83,28 @@ module.exports = {
         });
     },
 
-    editProduct: (id) => {
-        return Productos.findByPk(id);
+    editProduct: (NROPED) => {
+        return Pedidos.findByPk(NROPED);
     },
 
-    destroyProduct: (id) => {
-        return Productos.destroy({
+    destroyPedido: (NROPED) => {
+        return Pedidos.destroy({
             where: {
-                id: id
+                NROPED: NROPED
             }
         });
     },
 
-    deleteProduct: (id) => {
-        return Productos.findByPk(id);
+    destroyPedidosItem: (NROPED) => {
+        return PedidosItem.destroy({
+            where: {
+                NROPED: NROPED
+            }
+        });
+    },
+
+    deletePedido: (NROPED) => {
+        return Pedidos.findByPk(NROPED);
     },
 
     // getAllProducts: () => {
@@ -144,6 +152,23 @@ module.exports = {
                 }
             ],
             
+            order: [["NROPED", "ASC"]],
+            
+        });
+    },
+
+
+    getAllPedidosItems: (nroped) => {
+       
+        return PedidosItem.findAll({ 
+            where: {
+                NROPED: nroped,
+                TIPO: 'P',
+                // FECALTA: {
+                //     [Op.gte]: new Date('2024-01-01'),   //gt = Greater than operacion de compracion nativa de sequelize
+                // },
+            },
+
             order: [["NROPED", "ASC"]],
             
         });

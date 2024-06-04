@@ -19,7 +19,7 @@
                     <% } %>
                     <!-- <article class="p-2 bt-1 border-grey border-radius bg-white product-shadow w-100 md-w-50 lg-w-25"> -->
                         
-                        <div class="w-100"><%=pedidos[i].NROPED%> <%= pedidos[i].FECEMISION%> <%= pedidos[i].CLIENTE%> <%= pedidos[i].clientes.RAZONSOC%> <%= pedidos[i].pedidositem.DESCART%> <%= pedidos[i].pedidositem.BULTPED%> <%= pedidos[i].pedidositem.PRECIO%></div>
+                        <div class="w-100"><%=pedidos[i].NROPED%> <%= pedidos[i].FECEMISION%> <%= pedidos[i].CLIENTE%> <%= pedidos[i].clientes.RAZONSOC%> <%= pedidos[i].pedidositem.DESCART%> <%= pedidos[i].pedidositem.BULTPED%> <%= pedidos[i].pedidositem.PRECIO%></div><div class="bt-1 p-1"><a class="btn-primary-admin" href="/pedidos/edit/<%= pedidos[i].NROPED %>"> editar </a></div><div class="bt-1 p-1"><a class="btn-primary-admin" href="/pedidos/delete/<%= pedidos[i].NROPED %>"> eliminar </a></div>
                     
                         <!-- </article> -->
                     <% contadorPedidos++; %>

@@ -79,7 +79,7 @@ function PedidosNew(){
         <div className="pedidos-new">
         <h1>Crear Nuevo Pedido</h1>
         <form onSubmit={handleSubmit}>
-            <table className="table table-hover mt-5">
+            <table className="bt-1 text-center">
                 <tr>
                     <td><label>TIPO:</label></td>
                     <td><input type="text" value={TIPO} onChange={(e) => setTIPO(e.target.value)} required /></td>
@@ -122,10 +122,14 @@ function PedidosNew(){
                             ))}
                         </div>
                     </td>
+                </tr> 
+                <tr>
+                    <td className="text-center">
+                        <button type="button" onClick={addItem}>Añadir otro artículo</button>
+                        <button type="submit" disabled={loading}>Crear Pedido</button>
+                    </td>
                 </tr>
                 
-            <button type="button" onClick={addItem}>Añadir otro artículo</button>
-            <button type="submit" disabled={loading}>Crear Pedido</button>
             </table>
         </form>
         </div>
