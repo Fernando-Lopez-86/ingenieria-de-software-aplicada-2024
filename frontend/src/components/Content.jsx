@@ -7,13 +7,13 @@ import PedidosNew from './PedidosNew'
 // import CardCountProductos from './CardCountProductos'
 
 function Content(){
-
     return(
-        <Routes>
-            <Route path="/" exact={true} element={ <Pedidos /> } />
-            <Route path="/new" exact={true} element={ <PedidosNew /> } />
-        </Routes>
-
+        <div className="content">
+            <Routes>
+                <Route path="/" exact={true} element={ <Pedidos /> } />
+                <Route path="/new" exact={true} element={ <PedidosNew /> } />
+            </Routes>
+        </div>
     );
 }
 

@@ -1,5 +1,28 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <!--HEAD-->
+    <%- include("../partials/head") %>
+
     <body>
-        <div>ELIMINAR PEDIDO</div>
+        <!--HEADER-->
+        <%- include("../partials/header") %>
+
+        <h1 class="text-center">ELIMINAR PEDIDO</h1>
+
+        <main class="vw-90 mx-auto">
+            <section class="w-100 container-form">
+                <h2 class="title w-100 text-center">Estas seguro de querer eliminar el pedido: ?</h2>
+                <form action="/pedidos/destroy/<%= pedidos.NROPED %>" method="POST">
+                    <p class="text-center"><button class="btn-primary" type="submit">Borrar Pedido</button></p>
+                    <p class="text-center"><a class="botonVolver" href="/">Volver</a></p>
+                </form>    
+            </section>
+        </main>
+
+        <!--FOOTER-->
+        <%- include("../partials/footer") %>
+        
+        <!--SCRIPTS-->
+        <script src="/js/carrousel.js"></script>         
     </body>
 </html>

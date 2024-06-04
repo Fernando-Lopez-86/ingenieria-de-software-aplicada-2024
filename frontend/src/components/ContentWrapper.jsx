@@ -1,20 +1,22 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+//import { Outlet } from 'react-router-dom';
 import TopBar from './TopBar';
 import Footer from './Footer';
 import Content from './Content';
 
 function ContentWrapper(){
     return (
-        <div id="content-wrapper" className="d-flex flex-column">
-            <div id="content">
-                <TopBar />
-                <div className="container-fluid">
-                    <Content />
+        <React.Fragment>
+            <div id="content-wrapper" className="d-flex flex-column">
+                <div id="content">
+                    <TopBar />
+                    <div className="container-fluid">
+                        <Content />
+                    </div>
+                    <Footer />
                 </div>
-                <Footer />
             </div>
-        </div>
+        </React.Fragment>
 
         // <React.Fragment>
         //     {/*<!-- Content Wrapper -->*/}

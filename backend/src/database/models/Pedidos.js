@@ -88,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Model.associate = (models) => {
-        Model.belongsTo(models.PedidosItem, 
+        Model.hasMany(models.PedidosItem, 
             {
                 as: 'pedidositem',
                 foreignKey: {
@@ -98,7 +98,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         );
            
-        Model.belongsTo(models.PedidosItem, 
+        Model.hasMany(models.PedidosItem, 
             {
                 as: 'pedidositem2',
                 foreignKey: {
@@ -108,7 +108,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         );
 
-        Model.belongsTo(models.PedidosItem, 
+        Model.hasMany(models.PedidosItem, 
             {
                 as: 'pedidositem3',
                 foreignKey: {

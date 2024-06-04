@@ -1,0 +1,71 @@
+
+
+.pedidos table tbody {
+    display: block;
+    max-height: calc(4 * 60px); /* Muestra 6 filas con una altura de 60px cada una */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pedidos-items table tbody {
+    display: block;
+    max-height: calc(7 * 60px); /* Ajusta según sea necesario */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pedidos-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+    width: 100%;
+}
+
+.pedidos {
+    flex: 1; /* Ocupa el resto de la altura disponible */
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pedidos-items {
+    flex: 1; /* Ocupa el resto de la altura disponible */
+    overflow: auto; /* Agrega scroll si el contenido es más alto que el contenedor */
+    width: 100%;
+}
+
+.table-hover th, .table-hover td {
+    padding: 3px; /* Reducir el padding de las celdas */
+    box-sizing: border-box; /* Incluir padding en el ancho y alto de los elementos */
+    width: 100%;
+}
+
+.pedidos table th, .pedidos-items table th {
+    width: 100%; /* Asegurar que las cabeceras ocupen el ancho completo */
+}
+
+.pedidos table td, .pedidos-items table td {
+    width: 100%; /* Asegurar que las celdas ocupen el ancho completo */
+}
+
+.pedidos table, .pedidos-items table {
+    width: 100%;
+    table-layout: fixed; /* Fijar el layout de las tablas */
+}
+
+.pedidos table thead, .pedidos-items table thead,
+.pedidos table tbody tr, .pedidos-items table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed; /* Fijar layout para asegurar alineación */
+}
+
+
+
+
+

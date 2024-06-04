@@ -56,11 +56,19 @@ const pedidoController = {
     },
 
     delete: (req, res) => {
-        res.render("./pedidos/delete");
+        //console.log("NROPED: "+req.params.NROPED)
+        pedidoService.deletePedido(req.params.NROPED)
+        .then((pedidos) => {
+            res.render("./pedidos/delete", {pedidos});
+        });
     },
 
     destroy: (req, res) => {
-        res.render("./pedidos/new");
+        pedidoService.destroyPedido(req.params.NROPED)
+        .then(() => {
+            pedidoService.destroyPedidosItem(req.params.NROPED)
+            res.redirect("/");
+        });
     },
 
     list: (req, res) => {

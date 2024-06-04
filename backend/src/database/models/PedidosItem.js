@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Model.associate = (models) => {
-        Model.hasMany(models.Pedidos, 
+        Model.belongsTo(models.Pedidos, 
             {
                 as: 'pedidos',
                 foreignKey: {
@@ -69,7 +69,7 @@ module.exports = (sequelize, DataTypes) => {
             },  
         );
 
-        Model.hasMany(models.Pedidos, 
+        Model.belongsTo(models.Pedidos, 
             {
                 as: 'pedidos2',
                 foreignKey: {
@@ -79,7 +79,7 @@ module.exports = (sequelize, DataTypes) => {
             },
         );
 
-        Model.hasMany(models.Pedidos, 
+        Model.belongsTo(models.Pedidos, 
             {
                 as: 'pedidos3',
                 foreignKey: {

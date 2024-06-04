@@ -10,7 +10,7 @@ router.get("/new", pedidoController.new);
 router.post("/create", pedidoController.create)
 router.get("/edit/:id", pedidoController.edit);
 router.post("/update/:id", pedidoController.update);
-router.get("/delete/:id", pedidoController.delete);
-router.post("/destroy/:id", pedidoController.destroy);
+router.get("/delete/:NROPED", pedidoController.delete);
+router.post("/destroy/:NROPED", pedidoController.destroy);
 
 module.exports = router;
