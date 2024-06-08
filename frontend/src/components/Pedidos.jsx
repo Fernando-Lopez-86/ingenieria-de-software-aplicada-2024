@@ -136,17 +136,15 @@ function Pedidos() {
     return (
         <div className="pedidos-container">
             <div className="pedidos">
+                <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS</b></div>
                 <table className="table table-hover">
                     <thead>
-                        <tr>
-                            <td className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS</b></td>
-                        </tr>
                         <tr>
                             <th>Fecha</th>
                             <th>Nro Pedido</th>
                             <th>Nro Cliente</th>
                             <th>Cliente</th>
-                            <th>Acciones</th>
+                            <th className="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,9 +154,9 @@ function Pedidos() {
                                 <td>{pedido.NROPED}</td>
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>
-                                <td>
+                                <td className="p-1" align="center">
                                     <button
-                                        className="btn btn-sm btn-outline-danger"
+                                        className="btn btn-sm btn-outline-danger mr-1"
                                         onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}
                                     >
                                         Eliminar
@@ -177,10 +175,8 @@ function Pedidos() {
             </div>
             <div className="pedidos-items">
                 <table className="table table-hover">
+                    <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
                     <thead>
-                        <tr>
-                            <td className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></td>
-                        </tr>
                         <tr>
                             <th>Nro Pedido</th>
                             <th>Cliente</th>

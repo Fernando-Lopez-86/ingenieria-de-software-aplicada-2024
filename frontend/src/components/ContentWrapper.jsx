@@ -13,7 +13,7 @@ function ContentWrapper(){
                     <div className="container-fluid">
                         <Content />
                     </div>
-                    <Footer />
+                    {/* <Footer /> */}
                 </div>
             </div>
         </React.Fragment>

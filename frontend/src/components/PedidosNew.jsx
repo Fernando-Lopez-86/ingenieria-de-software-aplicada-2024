@@ -31,6 +31,11 @@ function PedidosNew(){
     const addItem = () => {
     setItems([...items, { ITEM: '' }]);
     };
+
+    const removeItem = (index) => {
+        const newItems = items.filter((item, i) => i !== index);
+        setItems(newItems);
+    };
     
     // Gestiona el envío del formulario, recopila todos los datos del formulario y los envía a la API utilizando axios.
     // La función handleSubmit se ejecuta al enviar el formulario.
@@ -75,65 +80,109 @@ function PedidosNew(){
     };
 
     // Cuando el formulario se envía, los datos se recogen del estado del componente (useState) y se envían a la API en formato JSON.
+    // return (
+    //     <div className="pedidos-new">
+    //     <h1>Crear Nuevo Pedido</h1>
+    //     <form onSubmit={handleSubmit}>
+    //         <table className="bt-1 text-center table-bordered">
+    //             <tr>
+    //                 <td><label>TIPO:</label></td>
+    //                 <td><input type="text" value={TIPO} onChange={(e) => setTIPO(e.target.value)} required /></td>
+    //             </tr>
+    //             <tr>
+    //                 <td><label>CLIENTE:</label></td>
+    //                 <td><input type="text" value={CLIENTE} onChange={(e) => setCLIENTE(e.target.value)} required /></td>
+    //             </tr>
+    //             <tr>
+    //                 <td><label>NROPED:</label></td>
+    //                 <td><input type="text" value={NROPED} onChange={(e) => setNROPED(e.target.value)} required /></td>
+    //             </tr>
+    //             <tr>
+    //                 <td><label>NROREAL:</label></td>
+    //                 <td><input type="text" value={NROREAL} onChange={(e) => setNROREAL(e.target.value)} required /></td>
+    //             </tr>
+    //             <tr>
+    //                 <td><label>ESTADOSEG:</label></td>
+    //                 <td><input type="text" value={ESTADOSEG} onChange={(e) => setESTADOSEG(e.target.value)} required /></td>
+    //             </tr>
+    //             <tr>
+    //                 <td><label>CODIGO:</label></td>
+    //                 <td><input type="text" value={CODIGO} onChange={(e) => setCODIGO(e.target.value)} required /></td>
+    //             </tr>
+                
+                
+    //             <div id="items">
+    //                 {items.map((item, index) => (
+    //                     <div key={index}>
+    //                         <tr>    
+    //                             <td><label>ITEM:</label></td>
+    //                             <td><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required/></td>
+    //                         </tr>    
+    //                     </div>
+    //                 ))}
+    //             </div>
+                
+            
+    //             <tr>
+    //                 <td className="text-center">
+    //                     <button type="button" onClick={addItem}>Añadir otro artículo</button>
+    //                     <button type="submit" disabled={loading}>Crear Pedido</button>
+    //                 </td>
+    //             </tr>
+                
+    //         </table>
+    //     </form>
+    //     </div>
+    // ); 
+
     return (
         <div className="pedidos-new">
-        <h1>Crear Nuevo Pedido</h1>
-        <form onSubmit={handleSubmit}>
-            <table className="bt-1 text-center">
-                <tr>
-                    <td><label>TIPO:</label></td>
-                    <td><input type="text" value={TIPO} onChange={(e) => setTIPO(e.target.value)} required /></td>
-                </tr>
-                <tr>
-                    <td><label>CLIENTE:</label></td>
-                    <td><input type="text" value={CLIENTE} onChange={(e) => setCLIENTE(e.target.value)} required /></td>
-                </tr>
-                <tr>
-                    <td><label>NROPED:</label></td>
-                    <td><input type="text" value={NROPED} onChange={(e) => setNROPED(e.target.value)} required /></td>
-                </tr>
-                <tr>
-                    <td><label>NROREAL:</label></td>
-                    <td><input type="text" value={NROREAL} onChange={(e) => setNROREAL(e.target.value)} required /></td>
-                </tr>
-                <tr>
-                    <td><label>ESTADOSEG:</label></td>
-                    <td><input type="text" value={ESTADOSEG} onChange={(e) => setESTADOSEG(e.target.value)} required /></td>
-                </tr>
-                <tr>
-                    <td><label>CODIGO:</label></td>
-                    <td><input type="text" value={CODIGO} onChange={(e) => setCODIGO(e.target.value)} required /></td>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <div id="items">
-                            {items.map((item, index) => (
-                                <div key={index}>
-                                    <label>ITEM:</label>
-                                    <input
-                                        type="text"
-                                        name="ITEM"
-                                        value={item.ITEM}
-                                        onChange={(e) => handleItemChange(index, e)}
-                                        required
-                                    />
-                                </div>
-                            ))}
+            <h1>Crear Nuevo Pedido</h1>
+            <form onSubmit={handleSubmit}>
+                <div className="form-table">
+                    <div className="form-row">
+                        <label>TIPO:</label>
+                        <input type="text" value={TIPO} onChange={(e) => setTIPO(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                        <label>CLIENTE:</label>
+                        <input type="text" value={CLIENTE} onChange={(e) => setCLIENTE(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                        <label>NROPED:</label>
+                        <input type="text" value={NROPED} onChange={(e) => setNROPED(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                        <label>NROREAL:</label>
+                        <input type="text" value={NROREAL} onChange={(e) => setNROREAL(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                        <label>ESTADOSEG:</label>
+                        <input type="text" value={ESTADOSEG} onChange={(e) => setESTADOSEG(e.target.value)} required />
+                    </div>
+                    <div className="form-row">
+                        <label>CODIGO:</label>
+                        <input type="text" value={CODIGO} onChange={(e) => setCODIGO(e.target.value)} required />
+                    </div>
+                    {items.map((item, index) => (
+                        <div className="form-row" key={index}>
+                            <label>ITEM:</label>
+                            <input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required />
+                            <button type="button" className="remove-item-button" onClick={() => removeItem(index)}>
+                                &times;
+                            </button>
                         </div>
-                    </td>
-                </tr> 
-                <tr>
-                    <td className="text-center">
-                        <button type="button" onClick={addItem}>Añadir otro artículo</button>
+                    ))}
+                    <div className="form-actions">
+                        <button type="button" onClick={addItem}>Agregar artículo</button>
                         <button type="submit" disabled={loading}>Crear Pedido</button>
-                    </td>
-                </tr>
-                
-            </table>
-        </form>
+                    </div>
+                </div>
+            </form>
         </div>
-    ); 
+    );
+
+
 }
 
 export default PedidosNew;

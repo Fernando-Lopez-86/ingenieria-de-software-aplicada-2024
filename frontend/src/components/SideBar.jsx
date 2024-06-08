@@ -6,8 +6,8 @@ import '../assets/css/style.css';
 function SideBar(){
     return(
         <React.Fragment>
-            <nav className="sidebar">
-                <ul className="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <nav className="">
+                <ul className="h-100 d-inline-block navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="accordionSidebar">
 
                     <a className="sidebar-brand d-flex align-items-center justify-content-center" href="/">
                         <div className="sidebar-brand-icon">
