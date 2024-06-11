@@ -47,12 +47,22 @@ const pedidoController = {
 
     },
 
-    edit: (req, res) => {
-        res.render("./pedidos/edit");
+    edit: async(req, res) => {
+        // const marcas = await brandService.getAllBrands();
+        // const categorias = await categoryService.getAllCategories();
+
+        pedidoService.editPedido(req.params.NROPED)
+        .then((pedidos) => {
+            res.render("./pedidos/edit", {pedidos});
+        });
     },
 
     update: (req, res) => {
-        res.render("./pedidos/update");
+        // console.log("NROPEDDD: "+req.params.NROPED)
+        pedidoService.updatePedido(req.body, req.params.NROPED)
+        .then(() => {
+            res.redirect("/");
+        });
     },
 
     delete: (req, res) => {

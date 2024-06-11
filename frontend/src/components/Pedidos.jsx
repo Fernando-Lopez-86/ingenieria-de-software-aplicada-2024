@@ -54,6 +54,7 @@
 
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Importa los estilos de react-confirm-alert
 
@@ -62,6 +63,7 @@ function Pedidos() {
     const [pedidos, setPedidos] = useState([]);
     const [pedidosItems, setPedidosItems] = useState([]);
     const [selectedNROPED, setSelectedNROPED] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch("http://localhost:3000/api/pedidos")
@@ -123,11 +125,18 @@ function Pedidos() {
         });
     };
 
-
     const handleModify = (nroPed) => {
-        // Lógica para modificar el pedido
-        console.log(`Modificar pedido: ${nroPed}`);
+        // Redirigir a la ruta de edición
+        navigate(`/edit/${nroPed}`);
     };
+
+   
+   
+    
+    // const handleModify = (nroPed) => {
+    //     // Lógica para modificar el pedido
+    //     console.log(`Modificar pedido: ${nroPed}`);
+    // };
 
     // const filteredItems = selectedNROPED
     //     ? pedidosItems.filter(item => item.NROPED === selectedNROPED)

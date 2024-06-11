@@ -5,23 +5,6 @@ const { Pedidos, PedidosItem, sequelize } = require("../database/models");
 
 module.exports = {
   
-    createProduct: (data, file) => {
-        return Productos.create({
-           sku: data.sku,
-           nombre: data.nombre,
-           descripcion: data.descripcion,
-           precio: data.precio,
-           descuento: data.descuento,
-           oferta: data.oferta,
-           ancho: data.ancho,
-           alto: data.alto,
-           profundidad: data.profundidad,
-           peso: data.peso,
-           imagen: file.filename,
-           marca_id: data.marca_id,
-           categoria_id: data.categoria_id
-        });
-    },
 
     createPedido: async (pedidoData, res) => {
 
@@ -61,30 +44,56 @@ module.exports = {
     }, 
 
 
-    updateProduct: (data, file, id) => {
-        return Productos.update({
-            sku: data.sku,
-            nombre: data.nombre,
-            descripcion: data.descripcion,
-            precio: data.precio,
-            descuento: data.descuento,
-            oferta: data.oferta,
-            ancho: data.ancho,
-            alto: data.alto,
-            profundidad: data.profundidad,
-            peso: data.peso,
-            imagen: file ? file.filename : data.imagen,
-            marca_id: data.marca_id,
-            categoria_id: data.categoria_id
-        }, {
-            where: {
-                id: id
+    updatePedido: async(updatedData, NROPED) => {
+        // console.log("NROPEDDD: "+NROPED)
+        // console.log("TIPODDD: "+data.tipo)
+        // return Pedidos.update({
+        //     TIPO: data.tipo,
+        //     CLIENTE: data.cliente,
+        //     NROPED: data.nroped,
+        //     NROREAL: data.nroreal,
+        //     ESTADOSEG: data.estadoseg,
+        //     CODIGO: data.codigo
+        // }, {
+        //     where: {
+        //         NROPED: NROPED,
+        //         CLIENTE: data.cliente,
+        //         CODIGO: data.codigo
+        //     }
+        // });
+
+        try {
+            console.log("NROPEDDDDDDDD: "+NROPED)
+            console.log("TIPODDDDDDDDD: "+updatedData.TIPO)
+            const pedido = await Pedidos.findOne({  
+                where: {
+                    NROPED: NROPED,
+                    CLIENTE: updatedData.CLIENTE,
+                    TIPO: updatedData.TIPO
+                } 
+            });
+            // console.log("NROPEDDDDDDDD: "+NROPED)
+            // console.log("TIPODDDDDDDDD: "+pedido.TIPO)
+            if (pedido) {
+                await pedido.update(updatedData);
+                return pedido;
             }
-        });
+            return null;
+        } catch (error) {
+            throw new Error('Error al actualizar el pedido');
+        }
+
     },
 
-    editProduct: (NROPED) => {
-        return Pedidos.findByPk(NROPED);
+    editPedido: async(NROPED) => {
+        // console.log("NROPED SERVICE: "+NROPED)
+        // return Pedidos.findByPk(NROPED);
+        try {
+            const pedido = await Pedidos.findOne({ where: { NROPED } });
+            return pedido;
+        } catch (error) {
+            throw new Error('Error al obtener el pedido');
+        }
     },
 
     destroyPedido: (NROPED) => {

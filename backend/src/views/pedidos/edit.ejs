@@ -1,5 +1,128 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+    <!--HEAD-->
+    <%- include("../partials/head") %>
+
     <body>
-        <div>EDITAR PEDIDO</div>
+        <!--HEADER-->
+        <%- include("../partials/header") %>
+
+        <main>
+            <form class="container-form my-1 flex flex-wrap" action="/pedidos/update/<%= pedidos.NROPED %>" method="POST">
+                <div class="w-100"><h2 class="text-center">EDITAR PEDIDO</h2></div>
+                <div class="form-group my-1">
+                    <label for="tipo">TIPO</label>
+                    <input 
+                        type="text"
+                        name="tipo" 
+                        id="tipo"  
+                        class="form-control <%= locals.errors && errors.tipo? 'is-invalid' : null %>" 
+                        value="<%= pedidos.TIPO %>"   
+                    >
+                    <% if (locals.errors && errors.tipo) { %>
+                        <div class="text-danger">
+                            <%= errors.tipo.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">
+                    <label for="cliente">CLIENTE</label>
+                    <input 
+                        type="text" 
+                        name="cliente" 
+                        id="cliente" 
+                        class="form-control <%= locals.errors && errors.cliente? 'is-invalid' : null %>" 
+                        value="<%= pedidos.CLIENTE %>" 
+                    >
+                    <% if (locals.errors && errors.cliente) { %>
+                        <div class="text-danger">
+                            <%= errors.cliente.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">
+                    <label for="nroped">NROPED</label>
+                    <input 
+                        type="text" 
+                        name="nroped" 
+                        id="nroped" 
+                        class="form-control <%= locals.errors && errors.nroped? 'is-invalid' : null %>" 
+                        value="<%= pedidos.NROPED %>" 
+                    >
+                    <% if (locals.errors && errors.nroped) { %>
+                        <div class="text-danger">
+                            <%= errors.nroped.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">
+                    <label for="nroreal">NROREAL</label>
+                    <input 
+                        type="text" 
+                        name="nroreal" 
+                        id="nroreal"
+                        class="form-control <%= locals.errors && errors.nroreal? 'is-invalid' : null %>" 
+                        value="<%= pedidos.NROREAL %>"
+                    >
+                    <% if (locals.errors && errors.nroreal) { %>
+                        <div class="text-danger">
+                            <%= errors.nroreal.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">
+                    <label for="estadoseg">ESTADOSEG</label>
+                    <input 
+                        type="text" 
+                        name="estadoseg" 
+                        id="estadoseg"  
+                        class="form-control <%= locals.errors && errors.estadoseg? 'is-invalid' : null %>"
+                        value="<%= pedidos.ESTADOSEG %>"
+                    >
+                    <% if (locals.errors && errors.estadoseg) { %>
+                        <div class="text-danger">
+                            <%= errors.estadoseg.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+                <div class="form-group my-1">   
+                    <label for="codigo">CODIGO</label>
+                    <input 
+                        type="text" 
+                        name="codigo" 
+                        id="codigo" 
+                        class="form-control <%= locals.errors && errors.codigo? 'is-invalid' : null %>" 
+                        value="<%= pedidos.CODIGO %>"
+                    >
+                    <% if (locals.errors && errors.codigo) { %>
+                        <div class="text-danger">
+                            <%= errors.codigo.msg %> 
+                        </div>
+                    <% } %>
+                </div>
+
+
+                <div class="flex flex-center w-100">
+                    <div class="p-1">
+                        <button class="btn-primary" onclick="window.location.href=`/`;">Volver</button>
+                    </div> 
+                    <div class="p-1">
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>   
+                </div>
+            </form>
+        </main>
+       
+        <!--FOOTER-->
+        <%- include("../partials/footer") %>
+        
+        <!--SCRIPTS-->
+        <script src="/js/carrousel.js"></script>   
+     
     </body>
 </html>
