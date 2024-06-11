@@ -38,4 +38,4 @@ COPY --from=build /app/frontend/build ./frontend/build
 EXPOSE 3000
 
 # Especificar el comando para correr el servidor
-CMD ["node", "backend/server.js"]
+CMD ["npm", "run", "dev", "--prefix", "backend"]
