@@ -2,9 +2,9 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 if (process.env.NODE_ENV == 'development') {
-    dotenv.config({ path: path.resolve(__dirname, '../development.env')});
+    dotenv.config({ path: path.resolve(__dirname, '../.env.development')});
 } else if (process.env.NODE_ENV == 'production') {
-    dotenv.config({ path: path.resolve(__dirname, '../production.env')});
+    dotenv.config({ path: path.resolve(__dirname, '../.env.production')});
 }
 
 module.exports = {

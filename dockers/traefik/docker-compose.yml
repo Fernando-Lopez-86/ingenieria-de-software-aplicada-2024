@@ -1,0 +1,34 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 80:80
+      - 443:443
+      - 1434:1434
+      - 8080:8080 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
+      - ./config/config.yml:/etc/traefik/config.yml:ro
+      - ./certs:/etc/certs:ro
+    networks:
+      - red
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik=true"
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entryPoints.web.address=:80
+      - --providers.file.filename=/dynamic/traefik_dynamic.yml
+
+networks:
+  red:
+    external: true
+

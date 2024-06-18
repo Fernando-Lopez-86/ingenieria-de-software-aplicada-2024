@@ -1,0 +1,45 @@
+  
+services: 
+
+  backend:
+    build:
+      context: ../../backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - ../../backend:/app
+    networks:
+      - red
+    environment:
+      - DATABASE_URL=mssql://sa:Naranja90*@database:1433/GRAND_ESTATE
+      - NODE_ENV=development
+      - DB_HOST=database
+      - DB_USER=sa
+      - DB_PASS=Naranja90*
+      - DB_NAME=GRAND_ESTATE
+      - DB_PORT=1433
+      - DB_DIALECT=mssql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`backend.mi-proyecto.local`)"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=3001"
+  
+  frontend:
+    build:
+      context: ../../frontend
+    container_name: frontend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../../frontend:/app
+    networks:
+      - red
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.mi-proyecto.local`)"
+      - "traefik.http.services.frontend-service.loadbalancer.server.port=80"
+
+networks:
+  red:
+    external: true

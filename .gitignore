@@ -3,6 +3,10 @@
 # dependencies
 /node_modules
 node_modules
+/dockers/mssql/data/
+dockers/mssql/data/
+/data
+data
 /.pnp
 .pnp.js
 
