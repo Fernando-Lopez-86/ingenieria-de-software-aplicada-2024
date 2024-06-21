@@ -9,11 +9,14 @@ COPY . .
 
 RUN npm run build
 
+#FROM nginx:alpine
 
-FROM nginx:alpine
+#COPY --from=build /app/build /usr/share/nginx/html
+#COPY --from=build /app/build ./frontend/build
 
-COPY --from=build /app/build /usr/share/nginx/html
+RUN npm install -g serve
 
-EXPOSE 80
+EXPOSE 3001
 
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["npm", "start"]
+CMD ["serve", "-s", "build", "-l", "3001"]

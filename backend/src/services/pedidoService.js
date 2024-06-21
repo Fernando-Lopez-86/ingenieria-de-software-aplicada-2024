@@ -132,38 +132,39 @@ module.exports = {
     // },
 
 
-    getAllPedidos: () => {
-       
-        return Pedidos.findAll({ 
-            where: {
-                TIPO: 'P',
-                CODIGO: '21',
-                FECEMISION: {
-                    [Op.gte]: new Date('2024-01-01'),   //gt = Greater than operacion de compracion nativa de sequelize
-                },
-            },
-
-            //include: ['pedidositem', 'clientes'],  //esta linea agrega los LEFT OUTER JOIN
-            include: [
-                {
-                    model: models.PedidosItem,
-                    as: 'pedidositem',
-                    where: { 
-                        TIPO: 'P' 
+    getAllPedidos: async () => {
+        try {
+            const pedidos = await Pedidos.findAll({
+                where: {
+                    TIPO: 'P',
+                    CODIGO: '21',
+                    FECEMISION: {
+                        [Op.gte]: new Date('2024-01-01'), // gte = Greater than or equal
                     },
-                    required: false, // Utilizamos LEFT OUTER JOIN
                 },
-                {
-                    model: models.Clientes,
-                    as: 'clientes',
-                    required: false, // LEFT OUTER JOIN
-                    foreignKey: 'CLIENTE', // Clave foránea correcta
-                }
-            ],
-            
-            order: [["NROPED", "ASC"]],
-            
-        });
+                include: [
+                    {
+                        model: models.PedidosItem,
+                        as: 'pedidositem',
+                        where: {
+                            TIPO: 'P'
+                        },
+                        required: false, // Utilizamos LEFT OUTER JOIN
+                    },
+                    {
+                        model: models.Clientes,
+                        as: 'clientes',
+                        required: false, // LEFT OUTER JOIN
+                        foreignKey: 'CLIENTE', // Clave foránea correcta
+                    }
+                ],
+                order: [["NROPED", "ASC"]],
+            });
+            return pedidos;
+        } catch (error) {
+            console.error("Error al obtener los pedidos:", error);
+            throw error; // Propaga el error para manejo posterior si es necesario
+        }
     },
 
 

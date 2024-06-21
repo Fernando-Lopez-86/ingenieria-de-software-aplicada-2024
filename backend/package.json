@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-    "prod": "export NODE_ENV=production&& nodemon -e js src/app.js",
-    "dev": "export NODE_ENV=development&& nodemon -e js src/app.js"
+    "prod": "set NODE_ENV=production&& nodemon -e js src/app.js",
+    "dev": "set NODE_ENV=development&& nodemon -e js src/app.js"
   },
   "keywords": [],
   "author": "",

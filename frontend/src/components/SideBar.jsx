@@ -16,16 +16,16 @@ function SideBar(){
                     </a>
 
                     <hr className="sidebar-divider my-0"/>
-                    <hr className="sidebar-divider"/>
+                    {/* <hr className="sidebar-divider"/> */}
 
-                    <div className="sidebar-heading">Menu</div>
+                    {/* <div className="sidebar-heading" style={{fontSize: '1.1rem'}}>Menu</div> */}
 
                     <li className="nav-item container-fluid p-1 ml-4">
-                        <Link className="text-white fw-bold" to={{pathname: "/"}}>Pedidos</Link>
+                        <Link className="text-white fw-bold" to={{pathname: "/"}} style={{fontSize: '1.3rem'}}>Pedidos</Link>
                     </li>
 
                     <li className="nav-item container-fluid p-1 ml-4">
-                        <Link className="text-white fw-bold" to={{pathname: "/new"}}>Nuevo</Link>
+                        <Link className="text-white fw-bold" to={{pathname: "/new"}} style={{fontSize: '1.3rem'}}>Nuevo</Link>
                     </li>
 
                     <hr className="sidebar-divider d-none d-md-block"/>

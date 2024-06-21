@@ -4,6 +4,8 @@ FROM node:18 AS production
 # Establecer el directorio de trabajo para la aplicación
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y iputils-ping
+
 # COPY package*.json ./
 # RUN npm install
 
