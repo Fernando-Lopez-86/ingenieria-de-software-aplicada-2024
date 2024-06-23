@@ -1,7 +1,7 @@
 
 const { Op, Association } = require("sequelize");
 const models = require("../database/models");
-const { Pedidos, PedidosItem, sequelize } = require("../database/models");
+const { Pedidos, PedidosItem, Numeracion, sequelize } = require("../database/models");
 
 module.exports = {
   
@@ -11,36 +11,86 @@ module.exports = {
         const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, items } = pedidoData;
         
         const transaction = await sequelize.transaction();
-            try {
-                const pedidos = await Pedidos.create({
-                    TIPO,
+
+
+
+        // Consulta al modelo Numeraciones para obtener el valor de FUNCION
+        const numeracion = await Numeracion.findOne({
+            where: { CLAVE: 'SI091PD0001X' },
+            attributes: ['FUNCION'],
+            transaction
+        });
+
+        if (!numeracion) {
+            throw new Error('Numeracion no encontrada');
+        }
+
+        // Asigna el valor de FUNCION a una variable y suma uno a la parte numérica
+        let funcion2 = numeracion.FUNCION;
+        let funcion3 = numeracion.FUNCION.slice(-8);
+        let funcion = funcion2.slice(0, 8);
+
+        // Extraer la parte numérica del string
+        const regex = /(\D*)(\d+)(\D*)/;
+        const match = funcion.match(regex);
+
+        if (!match) {
+            throw new Error('Formato de FUNCION no válido');
+        }
+
+        const prefix = match[1]; // Parte no numérica al inicio
+        const number = parseInt(match[2], 10); // Parte numérica
+        const suffix = match[3]; // Parte no numérica al final
+
+        // Incrementar la parte numérica y reconstruir el string
+        const newNumber = number + 1;
+        const newNumberStr = newNumber.toString().padStart(match[2].length, '0'); // Mantener el mismo número de dígitos
+        const newFuncion = `0001${prefix}${newNumberStr}`.slice(0, 12); // Tomar solo los primeros 8 caracteres
+
+        // Actualizar el valor de FUNCION en la base de datos
+        await Numeracion.update({ 
+            FUNCION: `${newFuncion}${funcion3}`.slice(4) 
+        }, { where: { 
+            CLAVE: 'SI091PD0001X' 
+        }, 
+        transaction });
+
+        //console.log('numero final:'+newFuncion)
+
+
+        try {
+            const pedidos = await Pedidos.create({
+                TIPO: 'P',
+                CLIENTE,
+                NROPED: newFuncion,
+                NROREAL: newFuncion,
+                ESTADOSEG: 'I',
+                CODIGO: '21'
+            }, { transaction } );   //
+
+            if (!items || !Array.isArray(items)) {
+                throw new Error('items must be an array');
+            }
+
+            const pedidositem = await Promise.all(items.map(item => 
+                PedidosItem.create({
+                    TIPO: 'P',
                     CLIENTE,
-                    NROPED,
-                    NROREAL,
-                    ESTADOSEG,
-                    CODIGO
-                }, { transaction } );   //
+                    NROPED: newFuncion,
+                    ARTICULO: item.ARTICULO,
+                    CANTPED: item.CANTPED,
+                    PRECIO: item.PRECIO,
+                    ITEM: item.ITEM
+                }, { transaction })  
+            ));
 
-                if (!items || !Array.isArray(items)) {
-                    throw new Error('items must be an array');
-                }
+            await transaction.commit();
 
-                const pedidositem = await Promise.all(items.map(item => 
-                    PedidosItem.create({
-                        TIPO,
-                        CLIENTE,
-                        NROPED,
-                        ITEM: item.ITEM
-                    }, { transaction })  
-                ));
-
-                await transaction.commit();
-
-                return { pedidos, pedidositem };
-            } catch (error) {
+            return { pedidos, pedidositem };
+        } catch (error) {
                 await transaction.rollback();
                 throw new Error('Error al crear el pedido');
-            }
+        }
     }, 
 
 

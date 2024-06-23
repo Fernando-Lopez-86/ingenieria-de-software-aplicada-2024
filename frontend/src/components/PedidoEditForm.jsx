@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 // Componente para el formulario emergente de agregar ítem
 // function AddItemPopup({ isOpen, onClose, onAddItem }) {
@@ -153,11 +153,6 @@ function PedidoEditForm() {
         setPedidoItems(pedidoItems.filter(item => item.ITEM !== itemId));
     };
 
-    // const handleModifyItem = (itemId) => {
-    //     // Implementar la lógica de modificación del ítem
-    //     console.log(`Modificar ítem: ${itemId}`);
-    // };
-
     const handleAddItem = () => {
         // Agregar el nuevo ítem de manera local en el estado de pedidoItems
         const newItemWithNROPED = { ...newItem, NROPED: formData.NROPED, ITEM: (pedidoItems.length > 0 ? Math.max(...pedidoItems.map(item => parseInt(item.ITEM))) : 0) + 1, };
@@ -284,12 +279,6 @@ function PedidoEditForm() {
                                         >
                                             <FontAwesomeIcon icon={faTrash} />
                                         </button>
-                                        {/* <button
-                                            className="btn btn-sm btn-outline-primary"
-                                            onClick={() => handleModifyItem(item.ITEM)}
-                                        >
-                                            <FontAwesomeIcon icon={faEdit} />
-                                        </button> */}
                                     </td>
                                 </tr>
                             ))}
@@ -298,7 +287,6 @@ function PedidoEditForm() {
                 </div>
             </div>
             </div>
-            {/* Popup para agregar nuevo ítem */}
             {/* Popup para agregar nuevo ítem */}
             {isPopupOpen && (
                 <div className="form-card popup w-25">
