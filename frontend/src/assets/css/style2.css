@@ -217,7 +217,7 @@ button:focus {
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .form-group label {
@@ -228,7 +228,7 @@ button:focus {
 
 .form-group input {
     width: 100%;
-    padding: 8px;
+    padding: 4px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -274,5 +274,56 @@ button:focus {
     box-sizing: border-box; /* Asegurarse de que el padding se incluya en el ancho total */
 }
 
+.table th.column, .table td.column {
+    text-align: left; /* Alinea el texto a la izquierda */
+    padding: 10px; /* Ajusta el padding para consistencia */
+    vertical-align: middle; /* Alinea verticalmente al centro */
+}
 
+.table th.column {
+    font-weight: bold; /* Hace las cabeceras más destacadas */
+}
+
+.table td.column input, .table td.column select, .table td.column button {
+    width: 100%; /* Asegura que los inputs y selects ocupen el ancho completo de la celda */
+    box-sizing: border-box; /* Incluye el padding y border en el ancho total */
+}
+
+.table-responsive {
+    overflow-x: auto; /* Permite desplazamiento horizontal en pantallas pequeñas */
+}
+
+.table td.text-center {
+    text-align: center; /* Alinea el contenido al centro */
+}
+
+.remove-button {
+    width: auto; /* Permite que el botón tenga un tamaño adecuado */
+    padding: 0.25rem 0.5rem; /* Ajusta el padding del botón */
+    margin: 0 auto; /* Centra el botón horizontalmente */
+    display: inline-block; /* Ajusta la alineación del botón */
+}
+
+.column-small {
+    width: 80px; /* Ajusta el ancho de la columna 'Eliminar' */
+    min-width: 80px; /* Establece un ancho mínimo para la columna */
+    max-width: 80px; /* Establece un ancho máximo para la columna */
+}
+
+.column-medium {
+    width: 150px; /* Ajusta el ancho de las columnas 'Cantidad' y 'Precio' */
+    min-width: 150px; /* Establece un ancho mínimo para las columnas */
+    max-width: 150px; /* Establece un ancho máximo para las columnas */
+}
+
+/* Estilo general para el contenedor de react-select */
+.css-2b097c-container {
+    position: relative;
+    z-index: 1000; /* Ajusta el z-index según tus necesidades */
+}
+
+/* Estilo para el menú desplegable de react-select */
+.css-26l3qy-menu {
+    z-index: 1000; /* Ajusta el z-index según tus necesidades */
+}
 

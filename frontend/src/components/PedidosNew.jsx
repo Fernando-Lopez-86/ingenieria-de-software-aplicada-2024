@@ -1,9 +1,15 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format, parse } from 'date-fns';
 
 // Para crear un formulario en React que use hooks para manejar el estado y enviar una solicitud a un servidor usando Axios, 
 // UseState para gestionar los campos del formulario y el envío de datos a través de Axios.
@@ -15,9 +21,13 @@ function PedidosNew(){
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
     // const [TIPO, setTIPO] = useState('');
     const [CLIENTE, setCLIENTE] = useState('');
-    const [NROPED, setNROPED] = useState('');
-    // const [NROREAL, setNROREAL] = useState('');
-    // const [ESTADOSEG, setESTADOSEG] = useState('');
+    const [DIREENT, setDIREENT] = useState('');
+    const [LOCENT, setLOCENT] = useState('');
+    const [PROENT, setPROENT] = useState('');
+    const [CONDVENTA, setCONDVENTA] = useState('');
+    const [TELEFONOS, setTELEFONOS] = useState('');
+    const [FECTRANS, setFECTRANS] = useState('');
+    const [COMENTARIO, setCOMENTARIO] = useState('');
     // const [CODIGO, setCODIGO] = useState('');
     const [items, setItems] = useState([{
         ITEM: '001',
@@ -25,9 +35,81 @@ function PedidosNew(){
         ARTICULO: '',
         CANTPED: '',
         PRECIO: '',
+        DESCUENTO: '',
     }]);
 
     const [error, setError] = useState(null);
+    const [articulos, setArticulos] = useState([]);
+    const [clientes, setClientes] = useState([]);
+    const [formasDePago, setFormasDePago] = useState([]);
+    const [provincias, setProvincias] = useState([]);
+
+    const options = articulos.map(articulo => ({
+        // value: articulo.NUMERO,
+        value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP },
+        label: articulo.DESCRIP
+    }));
+
+    const optionsClientes = clientes.map(cliente => ({
+        value: cliente.NUMERO,
+        label: cliente.RAZONSOC
+    }));
+
+    const optionsFormasDePago = formasDePago.map(forma => ({
+        value: forma.value,
+        label: forma.label
+    }));
+
+    const optionsProvincias = provincias.map(provincia => ({
+        value: provincia.value,
+        label: provincia.label
+    }));
+
+    useEffect(() => {
+        fetch("http://localhost:3000/api/articulos")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Articulos:", data.data);
+                setArticulos(data.data);
+            })
+            .catch(error => console.error('Error fetching articulos:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/api/clientes")
+            .then(response => response.json())
+            .then(data => {
+                console.log("Clientes:", data.data);
+                setClientes(data.data);
+            })
+            .catch(error => console.error('Error fetching clientes:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/api/tablas/formas-pago")
+            .then(response => response.json())
+            .then(data => setFormasDePago(data.data))
+            .catch(error => console.error('Error fetching formas de pago:', error));
+    }, []);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/api/tablas/provincias")
+            .then(response => response.json())
+            .then(data => setProvincias(data.data))
+            .catch(error => console.error('Error fetching formas de pago:', error));
+    }, []);
+
+    // useEffect(() => {
+    //     fetch("http://localhost:3000/api/articulos")
+    //         .then(response => response.json())
+    //         .then(data => setArticulos(data.data));
+    // }, []);
+
+    // useEffect(() => {
+    //     fetch("http://localhost:3000/api/clientes")
+    //         .then(response => response.json())
+    //         .then(data => setClientes(data.data));
+    // }, []);
 
     // Actualiza el estado de un artículo específico en la lista cuando su valor cambia.
     const handleItemChange = (index, event) => {
@@ -35,7 +117,39 @@ function PedidosNew(){
         newItems[index][event.target.name] = event.target.value;
         setItems(newItems);
     };
-    
+
+    // const handleClientChange = (selectedOption) => {
+    //     setCLIENTE(selectedOption.value);
+    // };
+
+    const handleClientChange = (selectedOption) => {
+        setCLIENTE(selectedOption ? selectedOption.value : null);
+    };
+
+    const handleFormaDePagoChange = (selectedOption) => {
+        setCONDVENTA(selectedOption ? selectedOption.value : null);
+    };
+
+    const handleProvinciasChange = (selectedOption) => {
+        setPROENT(selectedOption ? selectedOption.value : null);
+    };
+
+    // const handleArticuloChange = (index, selectedOption) => {
+    //     const newItems = [...items];
+    //     newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
+    //     setItems(newItems);
+    // };
+    const handleArticuloChange = (index, selectedOption) => {
+        const newItems = [...items];
+        newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
+        newItems[index].DESCART = selectedOption ? selectedOption.DESCRIP : null;
+        setItems(newItems);
+    };
+
+    const handleDateChange = (date) => {
+        setFECTRANS(date);
+    };
+
     // Agrega un nuevo objeto de artículo vacío a la lista.
     // items es un array de objetos, donde cada objeto representa un artículo en el pedido.
     const addItem = () => {
@@ -45,12 +159,30 @@ function PedidosNew(){
             ARTICULO: '',
             CANTPED: '',
             PRECIO: '',
+            DESCUENTO: '',
         }]);
     };
 
     const removeItem = (index) => {
         const newItems = items.filter((item, i) => i !== index);
         setItems(newItems);
+    };
+
+    const generatePDF = (data) => {
+        const doc = new jsPDF();
+        doc.text("Pedido", 20, 10);
+        doc.text(`Cliente: ${data.CLIENTE}`, 20, 20);
+        doc.text(`Entrega: ${data.ENTREGA}`, 20, 30);
+        doc.text(`Localidad Entrega: ${data.LOCENT}`, 20, 40);
+        doc.text(`Provincia Entrega: ${data.PROENT}`, 20, 50);
+
+        doc.autoTable({
+            startY: 60,
+            head: [['Item', 'Artículo', 'Cantidad', 'Precio']],
+            body: data.items.map(item => [item.ITEM, item.ARTICULO, item.CANTPED, item.PRECIO])
+        });
+
+        doc.save('pedido.pdf');
     };
     
     // Gestiona el envío del formulario, recopila todos los datos del formulario y los envía a la API utilizando axios.
@@ -64,35 +196,83 @@ function PedidosNew(){
         event.preventDefault();
         setError(null);
 
+        const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
+        // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
+        
+        const pedidoData = {
+            CLIENTE,
+            DIREENT,
+            LOCENT,
+            PROENT,
+            CONDVENTA,
+            TELEFONOS,
+            FECTRANS: formattedDate,
+            COMENTARIO,
+            items: items.map(item => ({
+                ...item,
+                ARTICULO: item.ARTICULO,
+                DESCART: item.DESCART
+            }))
+        };
+
         try {
-            const response = await axios.post('http://localhost:3000/api/pedidos', {
-                // TIPO,
-                CLIENTE,
-                NROPED,
-                // NROREAL,
-                // ESTADOSEG,
-                // CODIGO,
-                items
-            });
+            // const response = await axios.post('http://localhost:3000/api/pedidos', {
+            //const response = await axios.post('http://localhost:3000/api/pedidos', pedidoData);
+            //     // TIPO,
+            //     CLIENTE,
+            //     ENTREGA,
+            //     LOCENT,
+            //     PROENT,
+            //     items
+            // });
 
-            console.log("response.data"+response.data);
+            fetch('http://localhost:3000/api/pedidos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pedidoData),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Error al actualizar el pedido');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    console.log('Pedido cargado correctamente');
+                    navigate('/');  // Redirigir después de la actualización exitosa
+                })
+                .catch(error => {
+                    setError(error.message);
+                });
 
-            // Limpia los campos
-            // setTIPO('');
+
             setCLIENTE('');
-            setNROPED('');
-            // setNROREAL('');
-            // setESTADOSEG('');
-            // setCODIGO('');
-            // setItems([{ ITEM: '' }]);
+            setDIREENT('');
+            setLOCENT('');
+            setPROENT('');
+            setCONDVENTA('');
+            setTELEFONOS('');
+            setFECTRANS(null);
+            setCOMENTARIO('');
 
             setItems([{ 
                 ITEM: '001',
-                // NROPED: '',
                 ARTICULO: '',
                 CANTPED: '',
                 PRECIO: '',
+                DESCUENTO: '',
             }]);
+
+            if (items && items.length > 0) {
+                generatePDF(pedidoData);
+            } else {
+                console.error('Error al generar PDF: no hay items');
+                setError('Error al generar PDF: no hay items');
+            }
 
         } catch (error) {
             console.error('Error al crear el pedido', error);
@@ -101,83 +281,210 @@ function PedidosNew(){
     };
 
 
-
     return (
         <div className="form-container w-100">
             <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="text-center">Modificar Pedido</h3>
+            <h3 className="text-center">Nuevo Pedido</h3>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
                     <div className="form-group">
-                        <label>Nro Pedido</label>
-                        <input type="text" value={NROPED} onChange={(e) => setNROPED(e.target.value)} />
-                    </div>
-                    <div className="form-group">
                         <label>Cliente</label>
-                        <input type="text" value={CLIENTE} onChange={(e) => setCLIENTE(e.target.value)} required />
+                        {/* <Select
+                            name="CLIENTE"
+                            value={optionsClientes.find(option => option.value === CLIENTE)}
+                            onChange={handleClientChange}
+                            options={optionsClientes}
+                            isSearchable
+                            placeholder="Seleccionar Cliente"
+                            required
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                            menuPosition="fixed"
+                        /> */}
+
+                            <Select
+                                name="CLIENTE"
+                                value={optionsClientes.find(option => option.value === CLIENTE) || null}
+                                onChange={handleClientChange}
+                                options={optionsClientes}
+                                isSearchable
+                                placeholder="Seleccionar Cliente"
+                                menuPortalTarget={document.body}
+                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                menuPosition="fixed"
+                            />
+
+
+
                     </div>
                     
                     <div className="form-group">
                         <label>Forma de Pago</label>
-                        <input type="text" />
+                        <Select
+                            name="CONDVENTA"
+                            value={optionsFormasDePago.find(option => option.value === CONDVENTA) || null}
+                            onChange={handleFormaDePagoChange}
+                            options={optionsFormasDePago}
+                            isSearchable
+                            placeholder="Seleccionar Forma de Pago"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                            menuPosition="fixed"
+                        />
                     </div>
 
                     <div className="form-group">
                         <label>Direccion Entrega</label>
-                        <input type="text" />
-                    </div>
-                    <div className="form-group">
-                        <label>Localidad</label>
-                        <input type="text"  />
+                        <input
+                            type="text"
+                            name="DIREENT"
+                            value={DIREENT} 
+                            onChange={(e) => setDIREENT(e.target.value)} 
+                            // required 
+                        />
                     </div>
 
                     <div className="form-group">
-                        <label>Hora Entrega</label>
-                        <input type="text" />
+                        <label>Localidad Entrega</label>
+                        <input
+                            type="text"
+                            name="LOCENT"
+                            value={LOCENT} 
+                            onChange={(e) => setLOCENT(e.target.value)} 
+                            // required 
+                        />
                     </div>
+
+                    <div className="form-group">
+                        <label>Provincia Entrega</label>
+                        <Select
+                            name="PROENT"
+                            value={optionsProvincias.find(option => option.value === PROENT) || null}
+                            onChange={handleProvinciasChange}
+                            options={optionsProvincias}
+                            isSearchable
+                            placeholder="Seleccionar Provincia"
+                            menuPortalTarget={document.body}
+                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                            menuPosition="fixed"
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label>Fecha Entrega</label>
-                        <input type="text" />
+                        {/* <DatePicker
+                            name="FECTRANS"
+                            value={FECTRANS} 
+                            onChange={handleDateChange}
+                            selected={FECTRANS}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="dd/mm/yyyy"
+                        /> */}
+
+                        <DatePicker
+                            name="FECTRANS"
+                            selected={FECTRANS}
+                            onChange={handleDateChange}
+                            dateFormat="yyyy-MM-dd"
+                            className="form-control"
+                            placeholderText="Seleccionar Fecha"
+                            // showTimeSelect
+                            // timeFormat="HH:mm"
+                            // timeIntervals={15}
+                            // timeCaption="Hora"
+                        />
+
+
+
+
+                        {/* <input
+                            type="date"
+                            name="FECTRANS"
+                            value={FECTRANS} 
+                            onChange={(e) => setFECTRANS(e.target.value)} 
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="dd/mm/yyyy"
+                            // required 
+                        /> */}
                     </div>
 
                     <div className="form-group">
                         <label>Telefono Entrega</label>
-                        <input type="text" />
+                        <input
+                            type="text"
+                            name="TELEFONOS"
+                            value={TELEFONOS} 
+                            onChange={(e) => setTELEFONOS(e.target.value)} 
+                            // required 
+                        />
                     </div>
 
-                    {/* <div className="form-group">
-                        <label>Nro Real</label>
-                        <input type="text" value={NROREAL} onChange={(e) => setNROREAL(e.target.value)} required />
-                    </div> */}
+                    <div className="form-group">
+                        <label>Comentarios</label>
+                        <input
+                            type="text"
+                            name="COMENTARIO"
+                            value={COMENTARIO} 
+                            onChange={(e) => setCOMENTARIO(e.target.value)} 
+                            // required 
+                        />
+                    </div>
+
                 </div>
 
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">
                     <div className="form-container d-flex justify-content-between">
-                        <h2>Items del Pedido</h2>
-                        <button type="button" className="btn btn-outline-success ml-3 mb-3 mt-2" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button>
+                        <h3>Items del Pedido</h3>
+                        <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button>
                     </div>
                     <div className="table-responsive">
                         <table className="table table-hover">
                             <thead>
                                 <tr className="table-row">
-                                    <th className="column">Item</th>
-                                    {/* <th className="column">Nro Pedido</th> */}
+                                    <th className="column column-small">Item</th>
                                     <th className="column">Articulo</th>
-                                    <th className="column">Cantidad</th>
-                                    <th className="column">Precio</th>
-                                    <th className="column">Eliminar</th>
+                                    <th className="column column-medium">Cantidad</th>
+                                    <th className="column column-medium">Precio</th>
+                                    <th className="column column-medium">Descuento</th>
+                                    <th className="column column-small">Eliminar</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {items.map((item, index) => (
                                     <tr key={index} className="table-row">
-                                        <td className="column"><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required readOnly/></td>
-                                        {/* <td className="column"><input type="text" name="NROPED" value={item.NROPED} onChange={(e) => handleItemChange(index, e)} required/></td> */}
-                                        <td className="column"><input type="text" name="ARTICULO" value={item.ARTICULO} onChange={(e) => handleItemChange(index, e)} required/></td>
-                                        <td className="column"><input type="text" name="CANTPED" value={item.CANTPED} onChange={(e) => handleItemChange(index, e)} required/></td>
-                                        <td className="column"><input type="text" name="PRECIO" value={item.PRECIO} onChange={(e) => handleItemChange(index, e)} required/></td>
+                                        <td className="form-group column column-small"><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required readOnly/></td>
                                         <td className="column">
-                                            <button type="button" className="btn btn-sm btn-outline-danger mr-1 text-center" onClick={() => removeItem(index)}>
+                                            {/* <Select
+                                                name="ARTICULO"
+                                                value={options.find(option => option.value === item.ARTICULO)}
+                                                onChange={(selectedOption) => handleItemChange(index, { target: { name: 'ARTICULO', value: selectedOption.value } })}
+                                                options={options}
+                                                isSearchable
+                                                placeholder="Seleccionar Artículo"
+                                                required
+                                                menuPortalTarget={document.body}  // Renderiza el menú en el body
+                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  // Ajusta el z-index
+                                                menuPosition="fixed"
+                                            /> */}
+
+                                                <Select
+                                                    name="ARTICULO"
+                                                    value={options.find(option => option.value.NUMERO === item.ARTICULO) || null}
+                                                    onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
+                                                    options={options}
+                                                    isSearchable
+                                                    placeholder="Seleccionar Artículo"
+                                                    menuPortalTarget={document.body}
+                                                    styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                                    menuPosition="fixed"
+                                                />
+
+                                        </td>
+                                        <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED} onChange={(e) => handleItemChange(index, e)} required/></td>
+                                        <td className="form-group column column-medium"><input type="text" name="PRECIO" value={item.PRECIO} onChange={(e) => handleItemChange(index, e)} required/></td>
+                                        <td className="form-group column column-medium"><input type="text" name="DESCUENTO" value={item.DESCUENTO} onChange={(e) => handleItemChange(index, e)} required/></td>
+                                        <td className="form-group column column-small text-center">
+                                            <button type="button" className="btn btn-sm btn-outline-danger remove-button" onClick={() => removeItem(index)}>
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </button>
                                         </td>

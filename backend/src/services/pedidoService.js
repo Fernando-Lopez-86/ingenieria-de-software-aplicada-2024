@@ -2,17 +2,15 @@
 const { Op, Association } = require("sequelize");
 const models = require("../database/models");
 const { Pedidos, PedidosItem, Numeracion, sequelize } = require("../database/models");
+// const { format } = require("date-fns");
 
 module.exports = {
   
-
     createPedido: async (pedidoData, res) => {
 
-        const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, items } = pedidoData;
+        const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         
         const transaction = await sequelize.transaction();
-
-
 
         // Consulta al modelo Numeraciones para obtener el valor de FUNCION
         const numeracion = await Numeracion.findOne({
@@ -55,18 +53,30 @@ module.exports = {
         }, 
         transaction });
 
-        //console.log('numero final:'+newFuncion)
+        // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
 
+        //console.log('numero final:'+newFuncion)
+        // console.log("Fecha formateada2:", formattedDate);
 
         try {
             const pedidos = await Pedidos.create({
                 TIPO: 'P',
                 CLIENTE,
+                CONDVENTA,
+                DIREENT,
+                PROENT,
+                LOCENT,
+                TELEFONOS,
+                FECTRANS,
+                FECEMISION: FECTRANS,
+                FECRECEP: FECTRANS,
+                FECALTA: FECTRANS,
+                COMENTARIO,
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
                 ESTADOSEG: 'I',
                 CODIGO: '21'
-            }, { transaction } );   //
+            }, { transaction });    
 
             if (!items || !Array.isArray(items)) {
                 throw new Error('items must be an array');
@@ -78,8 +88,12 @@ module.exports = {
                     CLIENTE,
                     NROPED: newFuncion,
                     ARTICULO: item.ARTICULO,
+                    DESCART: item.DESCART,
                     CANTPED: item.CANTPED,
+                    BULTPED: item.CANTPED,
                     PRECIO: item.PRECIO,
+                    DESCUENTO: item.DESCUENTO,
+                    FECALTA: FECTRANS,
                     ITEM: item.ITEM
                 }, { transaction })  
             ));
@@ -88,68 +102,102 @@ module.exports = {
 
             return { pedidos, pedidositem };
         } catch (error) {
-                await transaction.rollback();
-                throw new Error('Error al crear el pedido');
+                 await transaction.rollback();
+                 throw new Error('Error al crear el pedido');
         }
     }, 
 
 
-    updatePedido: async(updatedData, NROPED) => {
-        // console.log("NROPEDDD: "+NROPED)
-        // console.log("TIPODDD: "+data.tipo)
-        // return Pedidos.update({
-        //     TIPO: data.tipo,
-        //     CLIENTE: data.cliente,
-        //     NROPED: data.nroped,
-        //     NROREAL: data.nroreal,
-        //     ESTADOSEG: data.estadoseg,
-        //     CODIGO: data.codigo
-        // }, {
-        //     where: {
-        //         NROPED: NROPED,
-        //         CLIENTE: data.cliente,
-        //         CODIGO: data.codigo
-        //     }
-        // });
+    updatePedido: async(data, NROPED) => {
+
+        const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato yyyy-MM-dd
+
+        // const { NROPED } = req.params;
+        const { CLIENTE, ENTREGA, LOCENT, PROENT, DIREENT, TELEFONOS, CONDVENTA, FECTRANS, COMENTARIO, pedidoItems } = data;
+        const TIPO = 'P';
 
         try {
-            console.log("NROPEDDDDDDDD: "+NROPED)
-            console.log("TIPODDDDDDDDD: "+updatedData.TIPO)
-            const pedido = await Pedidos.findOne({  
-                where: {
-                    NROPED: NROPED,
-                    CLIENTE: updatedData.CLIENTE,
-                    TIPO: updatedData.TIPO
-                } 
-            });
-            // console.log("NROPEDDDDDDDD: "+NROPED)
-            // console.log("TIPODDDDDDDDD: "+pedido.TIPO)
-            if (pedido) {
-                await pedido.update(updatedData);
-                return pedido;
-            }
-            return null;
-        } catch (error) {
-            throw new Error('Error al actualizar el pedido');
-        }
+            // Transacción para asegurar la atomicidad
+            await sequelize.transaction(async (transaction) => {
+                
+                // Actualizar el pedido principal
+                await Pedidos.update({ 
+                    CLIENTE: CLIENTE,
+                    DIREENT: DIREENT,
+                    LOCENT: LOCENT,
+                    TELEFONOS: TELEFONOS,
+                    PROENT: PROENT,
+                    CONDVENTA: CONDVENTA,
+                    FECTRANS: FECTRANS,
+                    FECMOD: currentDate,
+                    COMENTARIO: COMENTARIO,
+                }, {
+                    where: { NROPED: NROPED,
+                        TIPO: 'P',
+                        CODIGO: '21',
+                     },
+                     transaction });
 
+                // Eliminar ítems antiguos
+                await PedidosItem.destroy({ 
+                    where: { NROPED: NROPED,
+                        TIPO: 'P',
+                     }, 
+                    transaction });
+
+                const newItems = pedidoItems.map(item => ({
+                    NROPED,
+                    CLIENTE,
+                    TIPO,
+                    ITEM: item.ITEM, // Reemplaza ITEM con el nombre de los campos que necesites
+                    ARTICULO: item.ARTICULO, // Reemplaza ITEM con el nombre de los campos que necesites
+                    CANTPED: item.CANTPED, // Reemplaza CANTIDAD con el nombre de los campos que necesites
+                    PRECIO: item.PRECIO, // Reemplaza PRECIO con el nombre de los campos que necesites
+                    DESCUENTO: item.DESCUENTO,
+                }));
+
+                // Crear ítems nuevos
+                // const newItems = pedidoItems.map(item => ({ ...item, NROPED, CLIENTE, TIPO }));
+
+                // console.log("newItems"+newItems)
+                // newItems.map((obj, index) => {
+                //     console.log(`Objeto ${index + 1}:`, obj);
+                //     return null; // No necesitamos retornar nada en particular
+                // });
+                
+                await PedidosItem.bulkCreate(newItems, { transaction });
+            });
+    
+            return true;  // Devolver true si la transacción fue exitosa
+        } catch (error) {
+            console.error('Error al actualizar el pedido:', error);
+            return false;  // Devolver false si hubo un error
+        }
     },
 
     editPedido: async(NROPED) => {
         // console.log("NROPED SERVICE: "+NROPED)
         // return Pedidos.findByPk(NROPED);
         try {
-            const pedido = await Pedidos.findOne({ where: { NROPED } });
+            const pedido = await Pedidos.findOne({ 
+                where: {
+                    NROPED,
+                    TIPO: 'P',
+                    CODIGO: '21',
+                }
+            });
             return pedido;
         } catch (error) {
-            throw new Error('Error al obtener el pedido');
+             throw new Error('Error al obtener el pedido');
         }
     },
 
     destroyPedido: (NROPED) => {
         return Pedidos.destroy({
             where: {
-                NROPED: NROPED
+                NROPED: NROPED,
+                TIPO: 'P',
+                CODIGO: '21',
             }
         });
     },
@@ -157,7 +205,8 @@ module.exports = {
     destroyPedidosItem: (NROPED) => {
         return PedidosItem.destroy({
             where: {
-                NROPED: NROPED
+                NROPED: NROPED,
+                TIPO: 'P',
             }
         });
     },

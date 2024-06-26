@@ -79,17 +79,8 @@ const pedidoControllerAPI = {
     },
 
     update: async(req, res) => {
-        // console.log("NROPEDDD: "+req.params.NROPED)
-        // console.log("TIPODDD: "+req.body.tipo)
-        // pedidoService.updatePedido(req.body, req.params.NROPED)
-        // .then(() => {
-        //     res.redirect("/");
-        // });
-
-        const { NROPED } = req.params;
-        const updatedData = req.body;
         try {
-            const updatedPedido = await pedidoService.updatePedido(updatedData, NROPED);
+            const updatedPedido = await pedidoService.updatePedido(req.body, req.params.NROPED);
             if (updatedPedido) {
                 res.status(200).json({ message: 'Pedido actualizado correctamente' });
             } else {
@@ -98,11 +89,8 @@ const pedidoControllerAPI = {
         } catch (error) {
             res.status(500).json({ message: 'Error al actualizar el pedido', error: error.message });
         }
-
-
     },
 
-   
 };
 
 module.exports = pedidoControllerAPI;
