@@ -327,3 +327,63 @@ button:focus {
     z-index: 1000; /* Ajusta el z-index según tus necesidades */
 }
 
+.table-pedidos th:nth-child(1),
+.table-pedidos td:nth-child(1) {
+    width: 12%;
+}
+
+.table-pedidos th:nth-child(2),
+.table-pedidos td:nth-child(2) {
+    width: 15%;
+}
+
+.table-pedidos th:nth-child(3),
+.table-pedidos td:nth-child(3) {
+    width: 15%;
+}
+
+.table-pedidos th:nth-child(4),
+.table-pedidos td:nth-child(4) {
+    width: 40%;
+}
+
+.table-pedidos th:nth-child(5),
+.table-pedidos td:nth-child(5) {
+    width: 15%;
+}
+
+.table-pedidos-items th:nth-child(1),
+.table-pedidos-items td:nth-child(1) {
+    width: 10%;
+}
+
+.table-pedidos-items th:nth-child(2),
+.table-pedidos-items td:nth-child(2) {
+    width: 10%;
+}
+
+.table-pedidos-items th:nth-child(3),
+.table-pedidos-items td:nth-child(3) {
+    width: 10%;
+}
+
+.table-pedidos-items th:nth-child(4),
+.table-pedidos-items td:nth-child(4) {
+    width: 40%;
+}
+
+.table-pedidos-items th:nth-child(5),
+.table-pedidos-items td:nth-child(5) {
+    width: 10%;
+}
+
+.table-pedidos-items th:nth-child(6),
+.table-pedidos-items td:nth-child(6) {
+    width: 10%;
+}
+
+.table-pedidos-items th:nth-child(7),
+.table-pedidos-items td:nth-child(7) {
+    width: 10%;
+}
+

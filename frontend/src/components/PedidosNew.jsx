@@ -51,7 +51,8 @@ function PedidosNew(){
     }));
 
     const optionsClientes = clientes.map(cliente => ({
-        value: cliente.NUMERO,
+        // value: cliente.NUMERO,
+        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
 
@@ -153,9 +154,17 @@ function PedidosNew(){
     // Agrega un nuevo objeto de artículo vacío a la lista.
     // items es un array de objetos, donde cada objeto representa un artículo en el pedido.
     const addItem = () => {
+
+        // Encontrar el máximo valor actual de ITEM en pedidoItems
+        const maxItem = Math.max(...items.map(item => parseInt(item.ITEM, 10)));
+
+        // Incrementar en 1 el máximo encontrado para obtener el nuevo ITEM
+        const newItem = (maxItem + 1).toString().padStart(3, '0');
+
         setItems([...items, { 
-            ITEM: (items.length + 1).toString().padStart(3, '0'),
+            // ITEM: (items.length + 1).toString().padStart(3, '0'),
             // NROPED: '',
+            ITEM: newItem,
             ARTICULO: '',
             CANTPED: '',
             PRECIO: '',
@@ -200,7 +209,8 @@ function PedidosNew(){
         // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
         
         const pedidoData = {
-            CLIENTE,
+            CLIENTE: CLIENTE ? CLIENTE.NUMERO : '',
+            RAZONSOC: CLIENTE ? CLIENTE.RAZONSOC : '',
             DIREENT,
             LOCENT,
             PROENT,
@@ -304,7 +314,7 @@ function PedidosNew(){
 
                             <Select
                                 name="CLIENTE"
-                                value={optionsClientes.find(option => option.value === CLIENTE) || null}
+                                value={optionsClientes.find(option => option.value.NUMERO === (CLIENTE ? CLIENTE.NUMERO : '')) || null}
                                 onChange={handleClientChange}
                                 options={optionsClientes}
                                 isSearchable
@@ -429,7 +439,6 @@ function PedidosNew(){
                             // required 
                         />
                     </div>
-
                 </div>
 
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">

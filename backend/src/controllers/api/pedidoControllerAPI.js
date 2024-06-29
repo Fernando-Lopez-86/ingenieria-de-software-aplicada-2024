@@ -36,7 +36,7 @@ const pedidoControllerAPI = {
         pedidoService.destroyPedido(req.params.NROPED)
         .then(() => {
             pedidoService.destroyPedidosItem(req.params.NROPED)
-            res.redirect("/");
+            //res.redirect("/api/pedidos");
         });
     },
 

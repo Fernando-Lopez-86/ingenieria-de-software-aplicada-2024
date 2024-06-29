@@ -56,7 +56,8 @@ function PedidoEditForm() {
     }));
 
     const optionsClientes = clientes.map(cliente => ({
-        value: cliente.NUMERO,
+        // value: cliente.NUMERO,
+        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
 
@@ -161,8 +162,16 @@ function PedidoEditForm() {
     };
     
     const addItem = () => {
+
+        // Encontrar el máximo valor actual de ITEM en pedidoItems
+        const maxItem = Math.max(...pedidoItems.map(item => parseInt(item.ITEM, 10)));
+
+        // Incrementar en 1 el máximo encontrado para obtener el nuevo ITEM
+        const newItem = (maxItem + 1).toString().padStart(3, '0');
+
         setPedidoItems([...pedidoItems, { 
-            ITEM: (pedidoItems.length + 1).toString().padStart(3, '0'),
+            //ITEM: (pedidoItems.length + 1).toString().padStart(3, '0'), ///////ERROR NO ES LENGTH ES EL SUPERIOR + 1
+            ITEM: newItem,
             ARTICULO: '',
             CANTPED: '',
             PRECIO: '',
@@ -276,7 +285,8 @@ function PedidoEditForm() {
                         <label>Cliente</label>
                         <Select
                             name="CLIENTE"
-                            value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
+                            // value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
+                            value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE) || null}
                             onChange={handleClientChange}
                             options={optionsClientes}
                             isSearchable
@@ -431,7 +441,7 @@ function PedidoEditForm() {
             </div>
             <div className="form-buttons">
                 <button type="submit" className="m-4 btn btn-primary">Guardar</button>
-                <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/pedidos')}>Cancelar</button>
+                <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
             </div>
             </form>
         </div>

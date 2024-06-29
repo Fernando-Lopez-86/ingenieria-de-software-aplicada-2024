@@ -8,8 +8,18 @@ module.exports = {
   
     createPedido: async (pedidoData, res) => {
 
-        const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
-        
+        //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
+        console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
+
+        // Log de CLIENTE para verificar sus propiedades
+        console.log('CLIENTE:', CLIENTE);
+
+        // Verificar que CLIENTE esté definido y tenga las propiedades NUMERO y RAZONSOC
+        // if (!CLIENTE.CLIENTE || !CLIENTE.RAZONSOC) {
+        //     throw new Error('CLIENTE data is missing or incomplete');
+        // }
+
         const transaction = await sequelize.transaction();
 
         // Consulta al modelo Numeraciones para obtener el valor de FUNCION
@@ -58,10 +68,11 @@ module.exports = {
         //console.log('numero final:'+newFuncion)
         // console.log("Fecha formateada2:", formattedDate);
 
-        try {
+        // try {
             const pedidos = await Pedidos.create({
                 TIPO: 'P',
-                CLIENTE,
+                CLIENTE: CLIENTE,
+                RAZONSOC: RAZONSOC,
                 CONDVENTA,
                 DIREENT,
                 PROENT,
@@ -85,7 +96,7 @@ module.exports = {
             const pedidositem = await Promise.all(items.map(item => 
                 PedidosItem.create({
                     TIPO: 'P',
-                    CLIENTE,
+                    CLIENTE: CLIENTE,
                     NROPED: newFuncion,
                     ARTICULO: item.ARTICULO,
                     DESCART: item.DESCART,
@@ -101,10 +112,10 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem };
-        } catch (error) {
-                 await transaction.rollback();
-                 throw new Error('Error al crear el pedido');
-        }
+        // } catch (error) {
+        //          await transaction.rollback();
+        //          throw new Error('Error al crear el pedido');
+        // }
     }, 
 
 
@@ -113,7 +124,7 @@ module.exports = {
         const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato yyyy-MM-dd
 
         // const { NROPED } = req.params;
-        const { CLIENTE, ENTREGA, LOCENT, PROENT, DIREENT, TELEFONOS, CONDVENTA, FECTRANS, COMENTARIO, pedidoItems } = data;
+        const { CLIENTE, RAZONSOC, ENTREGA, LOCENT, PROENT, DIREENT, TELEFONOS, CONDVENTA, FECTRANS, COMENTARIO, pedidoItems } = data;
         const TIPO = 'P';
 
         try {
@@ -123,6 +134,7 @@ module.exports = {
                 // Actualizar el pedido principal
                 await Pedidos.update({ 
                     CLIENTE: CLIENTE,
+                    RAZONSOC: RAZONSOC,
                     DIREENT: DIREENT,
                     LOCENT: LOCENT,
                     TELEFONOS: TELEFONOS,
@@ -151,6 +163,7 @@ module.exports = {
                     TIPO,
                     ITEM: item.ITEM, // Reemplaza ITEM con el nombre de los campos que necesites
                     ARTICULO: item.ARTICULO, // Reemplaza ITEM con el nombre de los campos que necesites
+                    DESCART: item.DESCART,
                     CANTPED: item.CANTPED, // Reemplaza CANTIDAD con el nombre de los campos que necesites
                     PRECIO: item.PRECIO, // Reemplaza PRECIO con el nombre de los campos que necesites
                     DESCUENTO: item.DESCUENTO,

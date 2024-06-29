@@ -44,13 +44,13 @@ function Pedidos() {
                         })
                         .then(response => {
                             if (response.ok) {
-                                setSelectedNROPED(nroPed);
-                                // setPedidos(pedidos.filter(pedido => pedido.NROPED !== nroPed));
-                                // setPedidosItems([]);
-                                // if (nroPed === selectedNROPED) {
-                                //     setSelectedNROPED(null);
-                                // }
+                                // Actualizar la lista de pedidos después de eliminar
+                                //setPedidos(pedidos.filter(pedido => pedido.NROPED !== nroPed));
+                                //setSelectedNROPED(null); // Reinicia selectedNROPED
                                 console.log(`Pedido ${nroPed} eliminado`);
+                                const updatedPedidos = pedidos.filter(pedido => pedido.NROPED !== nroPed);
+                                setPedidos(updatedPedidos);
+                                setSelectedNROPED(null); // Reinicia selectedNROPED si es necesario
                             } else {
                                 console.error(`Error al eliminar el pedido ${nroPed}`);
                             }
@@ -77,11 +77,11 @@ function Pedidos() {
         <div className="pedidos-container">
             <div className="pedidos">
                 <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS</b></div>
-                <table className="table table-hover">
+                <table className="table table-hover table-pedidos">
                     <thead>
                         <tr>
-                            <th>Fecha</th>
                             <th>Nro Pedido</th>
+                            <th>Fecha</th>
                             <th>Nro Cliente</th>
                             <th>Cliente</th>
                             <th className="text-center">Acciones</th>
@@ -90,8 +90,8 @@ function Pedidos() {
                     <tbody>
                         {pedidos.map(pedido => (
                             <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
-                                <td>{pedido.FECEMISION}</td>
                                 <td>{pedido.NROPED}</td>
+                                <td>{pedido.FECEMISION}</td>
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>
                                 <td className="p-1" align="center">
@@ -114,17 +114,17 @@ function Pedidos() {
                 </table>
             </div>
             <div className="pedidos-items">
-                <table className="table table-hover">
+                <table className="table table-hover table-pedidos-items">
                     <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
                     <thead>
                         <tr>
                             <th>Nro Pedido</th>
                             <th>Cliente</th>
-                            <th>Tipo</th>
                             <th>Item</th>
                             <th>Articulo</th>
-                            <th>Cantidad Pedida</th>
+                            <th>Bultos</th>
                             <th>Precio</th>
+                            <th>Descuento</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,11 +132,11 @@ function Pedidos() {
                             <tr key={`${item.NROPED}-${item.ITEM}`}>
                                 <td>{item.NROPED}</td>
                                 <td>{item.CLIENTE}</td>
-                                <td>{item.TIPO}</td>
                                 <td>{item.ITEM}</td>
-                                <td>{item.ARTICULO}</td>
+                                <td>{item.DESCART}</td>
                                 <td>{item.CANTPED}</td>
                                 <td>{item.PRECIO}</td>
+                                <td>{item.DESCUENTO}</td>
                             </tr>
                         ))}
                     </tbody>
