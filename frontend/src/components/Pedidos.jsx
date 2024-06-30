@@ -3,13 +3,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Importa los estilos de react-confirm-alert
-
+import { format, parse } from 'date-fns';
 
 function Pedidos() {
     const [pedidos, setPedidos] = useState([]);
     const [pedidosItems, setPedidosItems] = useState([]);
     const [selectedNROPED, setSelectedNROPED] = useState(null);
     const navigate = useNavigate();
+
+    const formatDate = (dateString) => {
+        // Convertir la cadena de fecha a un objeto Date
+        const date = new Date(dateString);
+
+        // Obtener los componentes de fecha
+        const day = date.getUTCDate().toString().padStart(2, '0'); // Día con dos dígitos
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Mes con dos dígitos
+        const year = date.getUTCFullYear(); // Año completo
+
+        // Devolver la fecha formateada en el formato deseado
+        return `${day}/${month}/${year}`;
+    };
 
     useEffect(() => {
         fetch("http://localhost:3000/api/pedidos")
@@ -29,7 +42,6 @@ function Pedidos() {
         setSelectedNROPED(nroPed);
         console.log("NROPEDDD:"+selectedNROPED)
     };
-
 
     const handleDelete = (nroPed) => {
         confirmAlert({
@@ -91,7 +103,7 @@ function Pedidos() {
                         {pedidos.map(pedido => (
                             <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
                                 <td>{pedido.NROPED}</td>
-                                <td>{pedido.FECEMISION}</td>
+                                <td>{formatDate(pedido.FECEMISION)}</td>
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>
                                 <td className="p-1" align="center">

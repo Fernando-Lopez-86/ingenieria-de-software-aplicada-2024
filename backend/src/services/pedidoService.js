@@ -10,7 +10,7 @@ module.exports = {
 
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
 
         // Log de CLIENTE para verificar sus propiedades
         console.log('CLIENTE:', CLIENTE);
@@ -68,7 +68,7 @@ module.exports = {
         //console.log('numero final:'+newFuncion)
         // console.log("Fecha formateada2:", formattedDate);
 
-        // try {
+        try {
             const pedidos = await Pedidos.create({
                 TIPO: 'P',
                 CLIENTE: CLIENTE,
@@ -79,9 +79,9 @@ module.exports = {
                 LOCENT,
                 TELEFONOS,
                 FECTRANS,
-                FECEMISION: FECTRANS,
-                FECRECEP: FECTRANS,
-                FECALTA: FECTRANS,
+                FECEMISION: FECEMISION,
+                FECRECEP: FECEMISION,
+                FECALTA: FECEMISION,
                 COMENTARIO,
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
@@ -104,7 +104,7 @@ module.exports = {
                     BULTPED: item.CANTPED,
                     PRECIO: item.PRECIO,
                     DESCUENTO: item.DESCUENTO,
-                    FECALTA: FECTRANS,
+                    FECALTA: FECEMISION,
                     ITEM: item.ITEM
                 }, { transaction })  
             ));
@@ -112,15 +112,16 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem };
-        // } catch (error) {
-        //          await transaction.rollback();
-        //          throw new Error('Error al crear el pedido');
-        // }
+        } catch (error) {
+                 await transaction.rollback();
+                 throw new Error('Error al crear el pedido');
+        }
     }, 
 
 
     updatePedido: async(data, NROPED) => {
 
+        console.log('Data:', JSON.stringify(data, null, 2)); // Log completo del objeto pedidoData
         const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato yyyy-MM-dd
 
         // const { NROPED } = req.params;
@@ -205,24 +206,60 @@ module.exports = {
         }
     },
 
-    destroyPedido: (NROPED) => {
-        return Pedidos.destroy({
-            where: {
-                NROPED: NROPED,
-                TIPO: 'P',
-                CODIGO: '21',
+    destroyPedido: async (NROPED) => {
+        // return Pedidos.destroy({
+        //     where: {
+        //         NROPED: NROPED,
+        //         TIPO: 'P',
+        //         CODIGO: '21',
+        //     }
+        // });
+        let transaction;
+        try {
+            // Iniciar una transacción
+            transaction = await sequelize.transaction();
+
+            // Primera operación de eliminación dentro de la transacción
+            await Pedidos.destroy({
+                where: {
+                    NROPED: NROPED,
+                    TIPO: 'P',
+                    CODIGO: '21',
+                },
+                transaction: transaction // especificar la transacción
+            });
+
+            // Segunda operación de eliminación dentro de la transacción
+            await PedidosItem.destroy({
+                where: {
+                    NROPED: NROPED,
+                    TIPO: 'P',
+                },
+                transaction: transaction // especificar la misma transacción
+            });
+
+            // Confirmar la transacción si ambas operaciones tienen éxito
+            await transaction.commit();
+
+            console.log('Transacción completada exitosamente.');
+        } catch (error) {
+            // Si hay un error, deshacer la transacción
+            if (transaction) {
+                await transaction.rollback();
+                console.error('Error en la transacción:', error);
+                throw error; // opcional: re-lanzar el error para manejarlo más arriba
             }
-        });
+        }
     },
 
-    destroyPedidosItem: (NROPED) => {
-        return PedidosItem.destroy({
-            where: {
-                NROPED: NROPED,
-                TIPO: 'P',
-            }
-        });
-    },
+    // destroyPedidosItem: (NROPED) => {
+    //     return PedidosItem.destroy({
+    //         where: {
+    //             NROPED: NROPED,
+    //             TIPO: 'P',
+    //         }
+    //     });
+    // },
 
     deletePedido: (NROPED) => {
         return Pedidos.findByPk(NROPED);

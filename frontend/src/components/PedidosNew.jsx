@@ -10,6 +10,8 @@ import 'jspdf-autotable';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parse } from 'date-fns';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Para crear un formulario en React que use hooks para manejar el estado y enviar una solicitud a un servidor usando Axios, 
 // UseState para gestionar los campos del formulario y el envío de datos a través de Axios.
@@ -27,6 +29,7 @@ function PedidosNew(){
     const [CONDVENTA, setCONDVENTA] = useState('');
     const [TELEFONOS, setTELEFONOS] = useState('');
     const [FECTRANS, setFECTRANS] = useState('');
+    const [FECEMISION, setFECEMISION] = useState('');
     const [COMENTARIO, setCOMENTARIO] = useState('');
     // const [CODIGO, setCODIGO] = useState('');
     const [items, setItems] = useState([{
@@ -43,6 +46,8 @@ function PedidosNew(){
     const [clientes, setClientes] = useState([]);
     const [formasDePago, setFormasDePago] = useState([]);
     const [provincias, setProvincias] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const options = articulos.map(articulo => ({
         // value: articulo.NUMERO,
@@ -207,6 +212,8 @@ function PedidosNew(){
 
         const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
         // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
+        const today = new Date();
+        const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
         
         const pedidoData = {
             CLIENTE: CLIENTE ? CLIENTE.NUMERO : '',
@@ -217,6 +224,7 @@ function PedidosNew(){
             CONDVENTA,
             TELEFONOS,
             FECTRANS: formattedDate,
+            FECEMISION: formattedToday,
             COMENTARIO,
             items: items.map(item => ({
                 ...item,
@@ -226,16 +234,6 @@ function PedidosNew(){
         };
 
         try {
-            // const response = await axios.post('http://localhost:3000/api/pedidos', {
-            //const response = await axios.post('http://localhost:3000/api/pedidos', pedidoData);
-            //     // TIPO,
-            //     CLIENTE,
-            //     ENTREGA,
-            //     LOCENT,
-            //     PROENT,
-            //     items
-            // });
-
             fetch('http://localhost:3000/api/pedidos', {
                 method: 'POST',
                 headers: {
@@ -251,12 +249,18 @@ function PedidosNew(){
                     }
                     return response.json();
                 })
+
                 .then(() => {
-                    console.log('Pedido cargado correctamente');
-                    navigate('/');  // Redirigir después de la actualización exitosa
+                    setModalMessage('Pedido actualizado correctamente');
+                    setShowModal(true);
+                    setTimeout(() => {
+                        setShowModal(false);
+                        navigate('/');  
+                    }, 3000);
                 })
                 .catch(error => {
-                    setError(error.message);
+                    setModalMessage(`Error: ${error.message}`);
+                    setShowModal(true);
                 });
 
 
@@ -267,6 +271,7 @@ function PedidosNew(){
             setCONDVENTA('');
             setTELEFONOS('');
             setFECTRANS(null);
+            setFECEMISION(null);
             setCOMENTARIO('');
 
             setItems([{ 
@@ -290,6 +295,9 @@ function PedidosNew(){
         } 
     };
 
+    const closeModal = () => {
+        setShowModal(false);
+    };
 
     return (
         <div className="form-container w-100">
@@ -462,7 +470,7 @@ function PedidosNew(){
                                 {items.map((item, index) => (
                                     <tr key={index} className="table-row">
                                         <td className="form-group column column-small"><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required readOnly/></td>
-                                        <td className="column">
+                                        <td className="form-group column">
                                             {/* <Select
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value === item.ARTICULO)}
@@ -509,8 +517,23 @@ function PedidosNew(){
                     <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/pedidos')}>Cancelar</button>
                 </div>
             </form>
+
+            <Modal show={showModal} onHide={closeModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{modalMessage.startsWith('Error') ? 'Error' : 'Éxito'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>{modalMessage}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeModal}>
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
-   
+
     );
 
 }

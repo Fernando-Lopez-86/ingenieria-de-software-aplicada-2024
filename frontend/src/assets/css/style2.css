@@ -92,7 +92,15 @@
 h1 {
     text-align: center;
     font-size: 24px;
-    color: #333;
+    /* color: #333; */
+    color: black;
+}
+
+h3 {
+    text-align: center;
+    font-size: 28px;
+    /* color: #333; */
+    color: black;
 }
 
 .form-table {
@@ -224,6 +232,7 @@ button:focus {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    color: black;
 }
 
 .form-group input {
@@ -280,9 +289,10 @@ button:focus {
     vertical-align: middle; /* Alinea verticalmente al centro */
 }
 
-.table th.column {
-    font-weight: bold; /* Hace las cabeceras más destacadas */
-}
+/* .table th.column {
+    font-weight: bold; 
+} */
+
 
 .table td.column input, .table td.column select, .table td.column button {
     width: 100%; /* Asegura que los inputs y selects ocupen el ancho completo de la celda */

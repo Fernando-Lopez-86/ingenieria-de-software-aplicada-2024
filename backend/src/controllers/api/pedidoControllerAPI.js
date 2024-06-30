@@ -34,10 +34,10 @@ const pedidoControllerAPI = {
     destroy: (req, res) => {
         console.log("NROPED API:"+req.params.NROPED)
         pedidoService.destroyPedido(req.params.NROPED)
-        .then(() => {
-            pedidoService.destroyPedidosItem(req.params.NROPED)
-            //res.redirect("/api/pedidos");
-        });
+        // .then(() => {
+        //     pedidoService.destroyPedidosItem(req.params.NROPED)
+        //     //res.redirect("/api/pedidos");
+        // });
     },
 
     create: (req, res) => {

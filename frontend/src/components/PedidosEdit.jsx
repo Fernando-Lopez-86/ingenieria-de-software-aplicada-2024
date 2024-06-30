@@ -6,6 +6,8 @@ import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format, parse } from 'date-fns';
+import { Modal, Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function PedidoEditForm() {
     const navigate = useNavigate();
@@ -17,7 +19,7 @@ function PedidoEditForm() {
     // const [CONDVENTA, setCONDVENTA] = useState('');
     const [formData, setFormData] = useState({
         // NROPED: '',
-        CLIENTE: '',
+        CLIENTE: { NUMERO: '', RAZONSOC: '' },
         DIREENT: '',
         LOCENT: '',
         PROENT: '',
@@ -30,7 +32,6 @@ function PedidoEditForm() {
     const [pedidoItems, setPedidoItems] = useState([]); // Estado para los ítems del pedido
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const [items, setItems] = useState([{
         ITEM: '001',
         // NROPED: '',
@@ -44,6 +45,8 @@ function PedidoEditForm() {
     const [clientes, setClientes] = useState([]);
     const [formasDePago, setFormasDePago] = useState([]);
     const [provincias, setProvincias] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     // const options = articulos.map(articulo => ({
     //     value: articulo.NUMERO,
@@ -80,7 +83,14 @@ function PedidoEditForm() {
                 return response.json();
             })
             .then(data => {
-                setFormData(data.data);
+                // setFormData(data.data);
+                setFormData({
+                    ...data.data,
+                    CLIENTE: {
+                        NUMERO: data.data.CLIENTE,
+                        RAZONSOC: data.data.RAZONSOC
+                    }
+                });
                 setIsLoading(false);
             })
             .catch(error => {
@@ -130,18 +140,25 @@ function PedidoEditForm() {
         //     .catch(error => console.error('Error fetching clientes:', error));
 
         fetch("http://localhost:3000/api/clientes")
+            // .then(response => response.json())
+            // .then(data => {
+            //     setClientes(data.data);
+            //     // Set initial CLIENTE value after fetching clients
+            //     const selectedCliente = data.data.find(cliente => cliente.NUMERO === formData.CLIENTE);
+            //     if (selectedCliente) {
+            //         setFormData(prevFormData => ({
+            //             ...prevFormData,
+            //             CLIENTE: selectedCliente.NUMERO
+            //         }));
+            //     }
+            // })
+            // .catch(error => console.error('Error fetching clientes:', error));
+            // .then(response => response.json())
+            // .then(data => setClientes(data.data))
+            // .catch(error => console.error('Error fetching clientes:', error));
+
             .then(response => response.json())
-            .then(data => {
-                setClientes(data.data);
-                // Set initial CLIENTE value after fetching clients
-                const selectedCliente = data.data.find(cliente => cliente.NUMERO === formData.CLIENTE);
-                if (selectedCliente) {
-                    setFormData(prevFormData => ({
-                        ...prevFormData,
-                        CLIENTE: selectedCliente.NUMERO
-                    }));
-                }
-            })
+            .then(data => setClientes(data.data))
             .catch(error => console.error('Error fetching clientes:', error));
 
     }, [NROPED]);
@@ -184,9 +201,13 @@ function PedidoEditForm() {
     };
 
 
+    // const handleClientChange = (selectedOption) => {
+    //     //setCLIENTE(selectedOption ? selectedOption.value : null);
+    //     setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : '' });
+    // };
+
     const handleClientChange = (selectedOption) => {
-        //setCLIENTE(selectedOption ? selectedOption.value : null);
-        setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : '' });
+        setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : { NUMERO: '', RAZONSOC: '' } });
     };
 
     // const handleArticuloChange = (index, selectedOption) => {
@@ -222,7 +243,8 @@ function PedidoEditForm() {
             },
             body: JSON.stringify({
                 // ESTADOSEG: formData.ESTADOSEG,
-                CLIENTE: formData.CLIENTE,
+                CLIENTE: formData.CLIENTE.NUMERO,
+                RAZONSOC: formData.CLIENTE.RAZONSOC,
                 DIREENT: formData.DIREENT,
                 LOCENT: formData.LOCENT,
                 PROENT: formData.PROENT,
@@ -246,15 +268,30 @@ function PedidoEditForm() {
                 }
                 return response.json();
             })
+            // .then(() => {
+            //     console.log('Pedido actualizado correctamente');
+            //     navigate('/');  // Redirigir después de la actualización exitosa
+            // })
+            // .catch(error => {
+            //     setError(error.message);
+
             .then(() => {
-                console.log('Pedido actualizado correctamente');
-                navigate('/');  // Redirigir después de la actualización exitosa
+                setModalMessage('Pedido actualizado correctamente');
+                setShowModal(true);
+                setTimeout(() => {
+                    setShowModal(false);
+                    navigate('/');  
+                }, 3000);
             })
             .catch(error => {
-                setError(error.message);
+                setModalMessage(`Error: ${error.message}`);
+                setShowModal(true);
             });
     };
 
+    const closeModal = () => {
+        setShowModal(false);
+    };
 
     if (isLoading) {
         return <div>Cargando...</div>;
@@ -271,22 +308,13 @@ function PedidoEditForm() {
             <h3 className="text-center">Modificar Pedido</h3>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
-                    {/* <div className="form-group">
-                        <label>Nro Pedido</label>
-                        <input
-                            type="text"
-                            name="NROPED"
-                            value={formData.NROPED}
-                            onChange={handleChange}
-                            disabled
-                        />
-                    </div> */}
+
                     <div className="form-group">
                         <label>Cliente</label>
                         <Select
                             name="CLIENTE"
                             // value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
-                            value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE) || null}
+                            value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE.NUMERO) || null}
                             onChange={handleClientChange}
                             options={optionsClientes}
                             isSearchable
@@ -296,6 +324,7 @@ function PedidoEditForm() {
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
                         />
+
                     </div>
                     <div className="form-group">
                         <label>Forma de Pago</label>
@@ -444,6 +473,21 @@ function PedidoEditForm() {
                 <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
             </div>
             </form>
+
+            <Modal show={showModal} onHide={closeModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{modalMessage.startsWith('Error') ? 'Error' : 'Éxito'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>{modalMessage}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={closeModal}>
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
         </div>
     );
 
