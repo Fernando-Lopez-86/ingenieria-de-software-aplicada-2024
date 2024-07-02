@@ -22,53 +22,48 @@ module.exports = {
 
         const transaction = await sequelize.transaction();
 
-        // Consulta al modelo Numeraciones para obtener el valor de FUNCION
-        const numeracion = await Numeracion.findOne({
-            where: { CLAVE: 'SI091PD0001X' },
-            attributes: ['FUNCION'],
-            transaction
-        });
-
-        if (!numeracion) {
-            throw new Error('Numeracion no encontrada');
-        }
-
-        // Asigna el valor de FUNCION a una variable y suma uno a la parte numérica
-        let funcion2 = numeracion.FUNCION;
-        let funcion3 = numeracion.FUNCION.slice(-8);
-        let funcion = funcion2.slice(0, 8);
-
-        // Extraer la parte numérica del string
-        const regex = /(\D*)(\d+)(\D*)/;
-        const match = funcion.match(regex);
-
-        if (!match) {
-            throw new Error('Formato de FUNCION no válido');
-        }
-
-        const prefix = match[1]; // Parte no numérica al inicio
-        const number = parseInt(match[2], 10); // Parte numérica
-        const suffix = match[3]; // Parte no numérica al final
-
-        // Incrementar la parte numérica y reconstruir el string
-        const newNumber = number + 1;
-        const newNumberStr = newNumber.toString().padStart(match[2].length, '0'); // Mantener el mismo número de dígitos
-        const newFuncion = `0001${prefix}${newNumberStr}`.slice(0, 12); // Tomar solo los primeros 8 caracteres
-
-        // Actualizar el valor de FUNCION en la base de datos
-        await Numeracion.update({ 
-            FUNCION: `${newFuncion}${funcion3}`.slice(4) 
-        }, { where: { 
-            CLAVE: 'SI091PD0001X' 
-        }, 
-        transaction });
-
-        // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
-
-        //console.log('numero final:'+newFuncion)
-        // console.log("Fecha formateada2:", formattedDate);
-
         try {
+            // Consulta al modelo Numeraciones para obtener el valor de FUNCION
+            const numeracion = await Numeracion.findOne({
+                where: { CLAVE: 'SI091PD0001X' },
+                attributes: ['FUNCION'],
+                transaction
+            });
+
+            if (!numeracion) {
+                throw new Error('Numeracion no encontrada');
+            }
+
+            // Asigna el valor de FUNCION a una variable y suma uno a la parte numérica
+            let funcion2 = numeracion.FUNCION;
+            let funcion3 = numeracion.FUNCION.slice(-8);
+            let funcion = funcion2.slice(0, 8);
+
+            // Extraer la parte numérica del string
+            const regex = /(\D*)(\d+)(\D*)/;
+            const match = funcion.match(regex);
+
+            if (!match) {
+                throw new Error('Formato de FUNCION no válido');
+            }
+
+            const prefix = match[1]; // Parte no numérica al inicio
+            const number = parseInt(match[2], 10); // Parte numérica
+            const suffix = match[3]; // Parte no numérica al final
+
+            // Incrementar la parte numérica y reconstruir el string
+            const newNumber = number + 1;
+            const newNumberStr = newNumber.toString().padStart(match[2].length, '0'); // Mantener el mismo número de dígitos
+            const newFuncion = `0001${prefix}${newNumberStr}`.slice(0, 12); // Tomar solo los primeros 8 caracteres
+
+            // Actualizar el valor de FUNCION en la base de datos
+            await Numeracion.update({ 
+                FUNCION: `${newFuncion}${funcion3}`.slice(4) 
+            }, { where: { 
+                CLAVE: 'SI091PD0001X' 
+            }, 
+            transaction });
+
             const pedidos = await Pedidos.create({
                 TIPO: 'P',
                 CLIENTE: CLIENTE,
@@ -283,6 +278,7 @@ module.exports = {
 
     getAllPedidos: async () => {
         try {
+            // sequelize.options.logging = true;
             const pedidos = await Pedidos.findAll({
                 where: {
                     TIPO: 'P',
@@ -311,7 +307,7 @@ module.exports = {
             });
             return pedidos;
         } catch (error) {
-            console.error("Error al obtener los pedidos:", error);
+            console.error("Error al obtener los pedidos:", error.message);
             throw error; // Propaga el error para manejo posterior si es necesario
         }
     },
