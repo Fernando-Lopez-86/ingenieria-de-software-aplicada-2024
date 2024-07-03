@@ -1,7 +1,5 @@
 import React from 'react';
-//import { Outlet } from 'react-router-dom';
 import TopBar from './TopBar';
-import Footer from './Footer';
 import Content from './Content';
 
 function ContentWrapper(){
@@ -17,20 +15,6 @@ function ContentWrapper(){
                 </div>
             </div>
         </React.Fragment>
-
-        // <React.Fragment>
-        //     {/*<!-- Content Wrapper -->*/}
-        //     <div id="content-wrapper" className="d-flex flex-column">
-        //         {/*<!-- Main Content -->*/}
-        //         <div id="content">
-        //             <TopBar />
-        //             <div className="container-fluid">
-        //                 <Outlet />
-        //             </div>
-        //             <Footer />
-        //         </div>
-        //     </div>    
-        // </React.Fragment>
     );
 }
 export default ContentWrapper;

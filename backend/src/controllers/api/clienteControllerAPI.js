@@ -15,10 +15,6 @@ const clienteControllerAPI = {
             res.json(respuesta);
         })
     },
-
-    
-
-   
 };
 
 module.exports = clienteControllerAPI;

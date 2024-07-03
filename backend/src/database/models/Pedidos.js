@@ -20,9 +20,6 @@ module.exports = (sequelize, DataTypes) => {
             FECEMISION: {
                 type: DataTypes.DATEONLY,
                 allowNull: true,
-                // get() { 
-                //     return moment(this.getDataValue('FECEMISION')).format('DD/MM/YYYY');
-                // },
                 field: 'FECEMISION',
             },	
             FECRECEP: DataTypes.DATEONLY,		

@@ -9,6 +9,5 @@ router.use("/pedidos", pedidoRouterAPI);
 router.use("/articulos", articuloRouterAPI);
 router.use("/clientes", clienteRouterAPI);
 router.use("/tablas", tablaRouterAPI);
-//router.use("/provincias", tablaRouterAPI);
 
 module.exports = router;

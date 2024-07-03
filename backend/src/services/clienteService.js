@@ -5,7 +5,6 @@ const { Clientes } = require("../database/models");
 
 module.exports = {
   
-
     getAllClientes: async () => {
         try {
             const clientes = await Clientes.findAll({
@@ -19,6 +18,5 @@ module.exports = {
             throw new Error('Error al obtener los artículos: ' + error.message);
         }
     },
-
 
 };

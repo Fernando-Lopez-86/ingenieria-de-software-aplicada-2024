@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
             USRMOD: DataTypes.STRING, 
             DEPOSITO: DataTypes.STRING,
             FECINHAB: DataTypes.DATE,
-
         },
         {
             tableName: "vendedores",

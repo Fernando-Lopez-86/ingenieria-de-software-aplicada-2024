@@ -3,9 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import Pedidos from './Pedidos';
 import PedidosNew from './PedidosNew';
 import PedidosEdit from './PedidosEdit';
-// import Usuarios from './Usuarios'
-// import Categorias from './Categorias'
-// import CardCountProductos from './CardCountProductos'
 
 function Content(){
     return(

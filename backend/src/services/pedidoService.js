@@ -7,18 +7,9 @@ const { Pedidos, PedidosItem, Numeracion, sequelize } = require("../database/mod
 module.exports = {
   
     createPedido: async (pedidoData, res) => {
-
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
-        console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
+        //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
         const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
-
-        // Log de CLIENTE para verificar sus propiedades
-        console.log('CLIENTE:', CLIENTE);
-
-        // Verificar que CLIENTE esté definido y tenga las propiedades NUMERO y RAZONSOC
-        // if (!CLIENTE.CLIENTE || !CLIENTE.RAZONSOC) {
-        //     throw new Error('CLIENTE data is missing or incomplete');
-        // }
 
         const transaction = await sequelize.transaction();
 
@@ -115,8 +106,7 @@ module.exports = {
 
 
     updatePedido: async(data, NROPED) => {
-
-        console.log('Data:', JSON.stringify(data, null, 2)); // Log completo del objeto pedidoData
+        //console.log('Data:', JSON.stringify(data, null, 2)); // Log completo del objeto pedidoData
         const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato yyyy-MM-dd
 
         // const { NROPED } = req.params;
@@ -165,15 +155,6 @@ module.exports = {
                     DESCUENTO: item.DESCUENTO,
                 }));
 
-                // Crear ítems nuevos
-                // const newItems = pedidoItems.map(item => ({ ...item, NROPED, CLIENTE, TIPO }));
-
-                // console.log("newItems"+newItems)
-                // newItems.map((obj, index) => {
-                //     console.log(`Objeto ${index + 1}:`, obj);
-                //     return null; // No necesitamos retornar nada en particular
-                // });
-                
                 await PedidosItem.bulkCreate(newItems, { transaction });
             });
     
@@ -183,6 +164,7 @@ module.exports = {
             return false;  // Devolver false si hubo un error
         }
     },
+
 
     editPedido: async(NROPED) => {
         // console.log("NROPED SERVICE: "+NROPED)
@@ -201,14 +183,8 @@ module.exports = {
         }
     },
 
+
     destroyPedido: async (NROPED) => {
-        // return Pedidos.destroy({
-        //     where: {
-        //         NROPED: NROPED,
-        //         TIPO: 'P',
-        //         CODIGO: '21',
-        //     }
-        // });
         let transaction;
         try {
             // Iniciar una transacción
@@ -247,33 +223,10 @@ module.exports = {
         }
     },
 
-    // destroyPedidosItem: (NROPED) => {
-    //     return PedidosItem.destroy({
-    //         where: {
-    //             NROPED: NROPED,
-    //             TIPO: 'P',
-    //         }
-    //     });
-    // },
 
     deletePedido: (NROPED) => {
         return Pedidos.findByPk(NROPED);
     },
-
-    // getAllProducts: () => {
-    //     // return Pedidos.findAll({ include: ['categorias', 'marcas'] });  // include: ["categoria", "marca"] hace referencia al alias de la asociaciones entre las claves foraneas de las tablas
-    //     return Pedidos.findAll({ 
-    //         include: ['pedidositem','clientes'],
-    //         where: {
-    //             TIPO: 'P',
-    //             CODIGO: '21',
-    //             FECEMISION: {
-    //                 [Op.gte]: new Date('2024-01-01'),   //gt = Greater than operacion de compracion nativa de sequelize
-    //             },
-    //         },
-    //         order: [["NROPED", "ASC"]],
-    //     });
-    // },
 
 
     getAllPedidos: async () => {
@@ -314,7 +267,6 @@ module.exports = {
 
 
     getAllPedidosItems: (nroped) => {
-       
         return PedidosItem.findAll({ 
             where: {
                 NROPED: nroped,
@@ -325,32 +277,6 @@ module.exports = {
             },
 
             order: [["NROPED", "ASC"]],
-            
-        });
-    },
-
-
-    getProductDetail: (id) => {
-        return Productos.findByPk(id, { include: ['categorias', 'marcas'] });
-    },
-
-    getByCategory: (categoryId) => {
-        return Productos.findAll({
-            include: ['categorias', 'marcas'],
-            where: {
-                categoria_id: categoryId,
-            },
-            order: [["nombre", "ASC"]],
-        });
-    },
-
-    searchProducts: (data) => {
-        return Productos.findAll({
-            include: ['categorias', 'marcas'],
-            where: {
-                nombre: { [Op.like]: `%${data.search}%` },
-            },
-            order: [["nombre", "ASC"]],
         });
     },
 

@@ -64,9 +64,9 @@ const pedidoControllerAPI = {
         // .then((pedidos) => {
         //     res.render("/api/pedidos/edit", {pedidos});
         // });
-        const { NROPED } = req.params;
+        //const { NROPED } = req.params;
         try {
-            const pedido = await pedidoService.editPedido(NROPED);
+            const pedido = await pedidoService.editPedido(req.params.NROPED);
             if (pedido) {
                 res.status(200).json({ data: pedido });
             } else {

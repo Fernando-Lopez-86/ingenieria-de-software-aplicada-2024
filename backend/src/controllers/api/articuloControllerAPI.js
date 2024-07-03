@@ -15,10 +15,6 @@ const articuloControllerAPI = {
             res.json(respuesta);
         })
     },
-
-    
-
-   
 };
 
 module.exports = articuloControllerAPI;

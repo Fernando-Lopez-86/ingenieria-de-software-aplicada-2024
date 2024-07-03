@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Importa los estilos de react-confirm-alert
-import { format, parse } from 'date-fns';
 
 function Pedidos() {
     const [pedidos, setPedidos] = useState([]);
@@ -24,11 +23,13 @@ function Pedidos() {
         return `${day}/${month}/${year}`;
     };
 
+
     useEffect(() => {
         fetch("http://localhost:3000/api/pedidos")
             .then(response => response.json())
             .then(data => setPedidos(data.data));
     }, []);
+
 
     useEffect(() => {
         if (selectedNROPED !== null) {
@@ -38,10 +39,12 @@ function Pedidos() {
         }
     }, [selectedNROPED]);
 
+
     const handleRowClick = (nroPed) => {
         setSelectedNROPED(nroPed);
         console.log("NROPEDDD:"+selectedNROPED)
     };
+
 
     const handleDelete = (nroPed) => {
         confirmAlert({
@@ -56,9 +59,7 @@ function Pedidos() {
                         })
                         .then(response => {
                             if (response.ok) {
-                                // Actualizar la lista de pedidos después de eliminar
-                                //setPedidos(pedidos.filter(pedido => pedido.NROPED !== nroPed));
-                                //setSelectedNROPED(null); // Reinicia selectedNROPED
+                                // Actualizar la lista de pedidos después de eliminar REVISAR!!!!!!!
                                 console.log(`Pedido ${nroPed} eliminado`);
                                 const updatedPedidos = pedidos.filter(pedido => pedido.NROPED !== nroPed);
                                 setPedidos(updatedPedidos);
@@ -78,12 +79,11 @@ function Pedidos() {
         });
     };
 
+
     const handleModify = (nroPed) => {
-        // Redirigir a la ruta de edición
-        navigate(`/edit/${nroPed}`);
+        navigate(`/edit/${nroPed}`);   // Redirigir a la ruta de edición
     };
 
-   
 
     return (
         <div className="pedidos-container">

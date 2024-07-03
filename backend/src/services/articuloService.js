@@ -5,7 +5,6 @@ const { Articulos } = require("../database/models");
 
 module.exports = {
   
-
     getAllArticulos: async () => {
         try {
             const articulos = await Articulos.findAll({
@@ -20,6 +19,5 @@ module.exports = {
             throw new Error('Error al obtener los artículos: ' + error.message);
         }
     },
-
 
 };

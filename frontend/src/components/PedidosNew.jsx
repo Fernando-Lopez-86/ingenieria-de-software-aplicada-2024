@@ -4,12 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -31,15 +30,14 @@ function PedidosNew(){
     const [FECTRANS, setFECTRANS] = useState('');
     const [FECEMISION, setFECEMISION] = useState('');
     const [COMENTARIO, setCOMENTARIO] = useState('');
-    // const [CODIGO, setCODIGO] = useState('');
     const [items, setItems] = useState([{
         ITEM: '001',
-        // NROPED: '',
         ARTICULO: '',
         CANTPED: '',
         PRECIO: '',
         DESCUENTO: '',
     }]);
+
 
     const [error, setError] = useState(null);
     const [articulos, setArticulos] = useState([]);
@@ -49,27 +47,30 @@ function PedidosNew(){
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
+
     const options = articulos.map(articulo => ({
-        // value: articulo.NUMERO,
         value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP },
         label: articulo.DESCRIP
     }));
 
+
     const optionsClientes = clientes.map(cliente => ({
-        // value: cliente.NUMERO,
         value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
+
 
     const optionsFormasDePago = formasDePago.map(forma => ({
         value: forma.value,
         label: forma.label
     }));
 
+
     const optionsProvincias = provincias.map(provincia => ({
         value: provincia.value,
         label: provincia.label
     }));
+
 
     useEffect(() => {
         fetch("http://localhost:3000/api/articulos")
@@ -81,6 +82,7 @@ function PedidosNew(){
             .catch(error => console.error('Error fetching articulos:', error));
     }, []);
 
+
     useEffect(() => {
         fetch("http://localhost:3000/api/clientes")
             .then(response => response.json())
@@ -91,12 +93,14 @@ function PedidosNew(){
             .catch(error => console.error('Error fetching clientes:', error));
     }, []);
 
+
     useEffect(() => {
         fetch("http://localhost:3000/api/tablas/formas-pago")
             .then(response => response.json())
             .then(data => setFormasDePago(data.data))
             .catch(error => console.error('Error fetching formas de pago:', error));
     }, []);
+
 
     useEffect(() => {
         fetch("http://localhost:3000/api/tablas/provincias")
@@ -105,17 +109,6 @@ function PedidosNew(){
             .catch(error => console.error('Error fetching formas de pago:', error));
     }, []);
 
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/api/articulos")
-    //         .then(response => response.json())
-    //         .then(data => setArticulos(data.data));
-    // }, []);
-
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/api/clientes")
-    //         .then(response => response.json())
-    //         .then(data => setClientes(data.data));
-    // }, []);
 
     // Actualiza el estado de un artículo específico en la lista cuando su valor cambia.
     const handleItemChange = (index, event) => {
@@ -124,27 +117,22 @@ function PedidosNew(){
         setItems(newItems);
     };
 
-    // const handleClientChange = (selectedOption) => {
-    //     setCLIENTE(selectedOption.value);
-    // };
 
     const handleClientChange = (selectedOption) => {
         setCLIENTE(selectedOption ? selectedOption.value : null);
     };
 
+
     const handleFormaDePagoChange = (selectedOption) => {
         setCONDVENTA(selectedOption ? selectedOption.value : null);
     };
+
 
     const handleProvinciasChange = (selectedOption) => {
         setPROENT(selectedOption ? selectedOption.value : null);
     };
 
-    // const handleArticuloChange = (index, selectedOption) => {
-    //     const newItems = [...items];
-    //     newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
-    //     setItems(newItems);
-    // };
+
     const handleArticuloChange = (index, selectedOption) => {
         const newItems = [...items];
         newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
@@ -152,14 +140,15 @@ function PedidosNew(){
         setItems(newItems);
     };
 
+
     const handleDateChange = (date) => {
         setFECTRANS(date);
     };
 
+
     // Agrega un nuevo objeto de artículo vacío a la lista.
     // items es un array de objetos, donde cada objeto representa un artículo en el pedido.
     const addItem = () => {
-
         // Encontrar el máximo valor actual de ITEM en pedidoItems
         const maxItem = Math.max(...items.map(item => parseInt(item.ITEM, 10)));
 
@@ -177,10 +166,12 @@ function PedidosNew(){
         }]);
     };
 
+
     const removeItem = (index) => {
         const newItems = items.filter((item, i) => i !== index);
         setItems(newItems);
     };
+
 
     const generatePDF = (data) => {
         const doc = new jsPDF();
@@ -199,6 +190,7 @@ function PedidosNew(){
         doc.save('pedido.pdf');
     };
     
+
     // Gestiona el envío del formulario, recopila todos los datos del formulario y los envía a la API utilizando axios.
     // La función handleSubmit se ejecuta al enviar el formulario.
     // Hace una solicitud POST a la API para crear un nuevo pedido.
@@ -211,7 +203,6 @@ function PedidosNew(){
         setError(null);
 
         const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
-        // const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
         const today = new Date();
         const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
         
@@ -249,7 +240,6 @@ function PedidosNew(){
                     }
                     return response.json();
                 })
-
                 .then(() => {
                     setModalMessage('Pedido actualizado correctamente');
                     setShowModal(true);
@@ -262,7 +252,6 @@ function PedidosNew(){
                     setModalMessage(`Error: ${error.message}`);
                     setShowModal(true);
                 });
-
 
             setCLIENTE('');
             setDIREENT('');
@@ -295,9 +284,11 @@ function PedidosNew(){
         } 
     };
 
+
     const closeModal = () => {
         setShowModal(false);
     };
+
 
     return (
         <div className="form-container w-100">
@@ -307,19 +298,6 @@ function PedidosNew(){
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
                     <div className="form-group">
                         <label>Cliente</label>
-                        {/* <Select
-                            name="CLIENTE"
-                            value={optionsClientes.find(option => option.value === CLIENTE)}
-                            onChange={handleClientChange}
-                            options={optionsClientes}
-                            isSearchable
-                            placeholder="Seleccionar Cliente"
-                            required
-                            menuPortalTarget={document.body}
-                            styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-                            menuPosition="fixed"
-                        /> */}
-
                             <Select
                                 name="CLIENTE"
                                 value={optionsClientes.find(option => option.value.NUMERO === (CLIENTE ? CLIENTE.NUMERO : '')) || null}
@@ -331,9 +309,6 @@ function PedidosNew(){
                                 styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                 menuPosition="fixed"
                             />
-
-
-
                     </div>
                     
                     <div className="form-group">
@@ -390,15 +365,6 @@ function PedidosNew(){
 
                     <div className="form-group">
                         <label>Fecha Entrega</label>
-                        {/* <DatePicker
-                            name="FECTRANS"
-                            value={FECTRANS} 
-                            onChange={handleDateChange}
-                            selected={FECTRANS}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="dd/mm/yyyy"
-                        /> */}
-
                         <DatePicker
                             name="FECTRANS"
                             selected={FECTRANS}
@@ -406,24 +372,7 @@ function PedidosNew(){
                             dateFormat="yyyy-MM-dd"
                             className="form-control"
                             placeholderText="Seleccionar Fecha"
-                            // showTimeSelect
-                            // timeFormat="HH:mm"
-                            // timeIntervals={15}
-                            // timeCaption="Hora"
                         />
-
-
-
-
-                        {/* <input
-                            type="date"
-                            name="FECTRANS"
-                            value={FECTRANS} 
-                            onChange={(e) => setFECTRANS(e.target.value)} 
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="dd/mm/yyyy"
-                            // required 
-                        /> */}
                     </div>
 
                     <div className="form-group">
@@ -471,30 +420,17 @@ function PedidosNew(){
                                     <tr key={index} className="table-row">
                                         <td className="form-group column column-small"><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required readOnly/></td>
                                         <td className="form-group column">
-                                            {/* <Select
+                                            <Select
                                                 name="ARTICULO"
-                                                value={options.find(option => option.value === item.ARTICULO)}
-                                                onChange={(selectedOption) => handleItemChange(index, { target: { name: 'ARTICULO', value: selectedOption.value } })}
+                                                value={options.find(option => option.value.NUMERO === item.ARTICULO) || null}
+                                                onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
-                                                required
-                                                menuPortalTarget={document.body}  // Renderiza el menú en el body
-                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  // Ajusta el z-index
+                                                menuPortalTarget={document.body}
+                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                                 menuPosition="fixed"
-                                            /> */}
-
-                                                <Select
-                                                    name="ARTICULO"
-                                                    value={options.find(option => option.value.NUMERO === item.ARTICULO) || null}
-                                                    onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
-                                                    options={options}
-                                                    isSearchable
-                                                    placeholder="Seleccionar Artículo"
-                                                    menuPortalTarget={document.body}
-                                                    styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-                                                    menuPosition="fixed"
-                                                />
+                                            />
 
                                         </td>
                                         <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED} onChange={(e) => handleItemChange(index, e)} required/></td>
@@ -533,7 +469,6 @@ function PedidosNew(){
             </Modal>
 
         </div>
-
     );
 
 }

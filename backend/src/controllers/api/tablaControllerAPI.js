@@ -1,6 +1,7 @@
 const tablaService = require("../../services/tablaService");
  
 const tablaControllerAPI = {
+    
     formasPago: (req, res) => {
         tablaService.getAllFormasPago()
         .then(formasPago => {

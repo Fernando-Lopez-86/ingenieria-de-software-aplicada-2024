@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -18,7 +18,6 @@ function PedidoEditForm() {
     // const [PROENT, setPROENT] = useState('');
     // const [CONDVENTA, setCONDVENTA] = useState('');
     const [formData, setFormData] = useState({
-        // NROPED: '',
         CLIENTE: { NUMERO: '', RAZONSOC: '' },
         DIREENT: '',
         LOCENT: '',
@@ -34,7 +33,6 @@ function PedidoEditForm() {
     const [error, setError] = useState(null);
     const [items, setItems] = useState([{
         ITEM: '001',
-        // NROPED: '',
         ARTICULO: '',
         CANTPED: '',
         PRECIO: '',
@@ -48,15 +46,12 @@ function PedidoEditForm() {
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
-    // const options = articulos.map(articulo => ({
-    //     value: articulo.NUMERO,
-    //     label: articulo.DESCRIP
-    // }));
 
     const options = articulos.map(articulo => ({
         value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP },
         label: articulo.DESCRIP
     }));
+
 
     const optionsClientes = clientes.map(cliente => ({
         // value: cliente.NUMERO,
@@ -64,15 +59,18 @@ function PedidoEditForm() {
         label: cliente.RAZONSOC
     }));
 
+
     const optionsFormasDePago = formasDePago.map(forma => ({
         value: forma.value,
         label: forma.label
     }));
 
+
     const optionsProvincias = provincias.map(provincia => ({
         value: provincia.value,
         label: provincia.label
     }));
+
 
     useEffect(() => {
         fetch(`http://localhost:3000/api/pedidos/edit/${NROPED}`)
@@ -83,7 +81,6 @@ function PedidoEditForm() {
                 return response.json();
             })
             .then(data => {
-                // setFormData(data.data);
                 setFormData({
                     ...data.data,
                     CLIENTE: {
@@ -105,8 +102,8 @@ function PedidoEditForm() {
             .catch(error => console.error(`Error fetching items: ${error}`));
         
         fetch("http://localhost:3000/api/articulos")
-        .then(response => response.json())
-        .then(data => setArticulos(data.data));
+            .then(response => response.json())
+            .then(data => setArticulos(data.data));
 
         fetch("http://localhost:3000/api/tablas/formas-pago")
             .then(response => response.json())
@@ -118,55 +115,18 @@ function PedidoEditForm() {
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
 
-        // fetch("http://localhost:3000/api/clientes")
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log("Clientes:", data.data);
-        //         setClientes(data.data);
-        //     })
-        //     .catch(error => console.error('Error fetching clientes:', error));
-    
-        // fetch("http://localhost:3000/api/clientes")
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log("Clientes:", data.data);
-        //         setClientes(data.data);
-        //         // Set initial CLIENTE value after fetching clients
-        //         const selectedCliente = data.data.find(cliente => cliente.NUMERO === formData.CLIENTE);
-        //         if (selectedCliente) {
-        //             setCLIENTE(selectedCliente.NUMERO);
-        //         }
-        //     })
-        //     .catch(error => console.error('Error fetching clientes:', error));
-
         fetch("http://localhost:3000/api/clientes")
-            // .then(response => response.json())
-            // .then(data => {
-            //     setClientes(data.data);
-            //     // Set initial CLIENTE value after fetching clients
-            //     const selectedCliente = data.data.find(cliente => cliente.NUMERO === formData.CLIENTE);
-            //     if (selectedCliente) {
-            //         setFormData(prevFormData => ({
-            //             ...prevFormData,
-            //             CLIENTE: selectedCliente.NUMERO
-            //         }));
-            //     }
-            // })
-            // .catch(error => console.error('Error fetching clientes:', error));
-            // .then(response => response.json())
-            // .then(data => setClientes(data.data))
-            // .catch(error => console.error('Error fetching clientes:', error));
-
             .then(response => response.json())
             .then(data => setClientes(data.data))
             .catch(error => console.error('Error fetching clientes:', error));
-
     }, [NROPED]);
+
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
+
 
     const handleItemChange = (index, event) => {
         const newItems = [...pedidoItems]; // Clonar el array
@@ -174,12 +134,12 @@ function PedidoEditForm() {
         setPedidoItems(newItems);
     };
 
+
     const handleDateChange = (date) => {
         setFormData({ ...formData, FECTRANS: date });
     };
     
     const addItem = () => {
-
         // Encontrar el máximo valor actual de ITEM en pedidoItems
         const maxItem = Math.max(...pedidoItems.map(item => parseInt(item.ITEM, 10)));
 
@@ -195,26 +155,17 @@ function PedidoEditForm() {
         }]);
     };
     
+
     const removeItem = (index) => {
         const newItems = pedidoItems.filter((item, i) => i !== index);
         setPedidoItems(newItems);
     };
 
 
-    // const handleClientChange = (selectedOption) => {
-    //     //setCLIENTE(selectedOption ? selectedOption.value : null);
-    //     setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : '' });
-    // };
-
     const handleClientChange = (selectedOption) => {
         setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : { NUMERO: '', RAZONSOC: '' } });
     };
 
-    // const handleArticuloChange = (index, selectedOption) => {
-    //     const newItems = [...pedidoItems];
-    //     newItems[index].ARTICULO = selectedOption ? selectedOption.value : null;
-    //     setItems(newItems);
-    // };
 
     const handleArticuloChange = (index, selectedOption) => {
         const newItems = [...pedidoItems];
@@ -223,13 +174,16 @@ function PedidoEditForm() {
         setItems(newItems);
     };
 
+
     const handleFormaDePagoChange = (selectedOption) => {
         setFormData({ ...formData, CONDVENTA: selectedOption ? selectedOption.value : '' });
     };
 
+
     const handleProvinciasChange = (selectedOption) => {
         setFormData({ ...formData, PROENT: selectedOption ? selectedOption.value : '' });
     };
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -268,13 +222,6 @@ function PedidoEditForm() {
                 }
                 return response.json();
             })
-            // .then(() => {
-            //     console.log('Pedido actualizado correctamente');
-            //     navigate('/');  // Redirigir después de la actualización exitosa
-            // })
-            // .catch(error => {
-            //     setError(error.message);
-
             .then(() => {
                 setModalMessage('Pedido actualizado correctamente');
                 setShowModal(true);
@@ -289,13 +236,16 @@ function PedidoEditForm() {
             });
     };
 
+
     const closeModal = () => {
         setShowModal(false);
     };
 
+
     if (isLoading) {
         return <div>Cargando...</div>;
     }
+
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -386,12 +336,6 @@ function PedidoEditForm() {
                             dateFormat="dd/MM/yyyy"
                             placeholderText="dd/mm/yyyy"
                         />
-                        {/* <input
-                            type="text"
-                            name="FECTRANS"
-                            value={formData.FECTRANS}
-                            onChange={handleChange}
-                        /> */}
                     </div>
 
                     <div className="form-group">
@@ -413,10 +357,8 @@ function PedidoEditForm() {
                             onChange={handleChange}
                         />
                     </div>
-                    
                 </div>
                 
-            
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">
                     <div className="form-container d-flex justify-content-between">
                         <h3>Items del Pedido</h3>
@@ -490,7 +432,7 @@ function PedidoEditForm() {
 
         </div>
     );
-
+    
 }
 
 export default PedidoEditForm;
