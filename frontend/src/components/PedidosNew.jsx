@@ -12,10 +12,6 @@ import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Para crear un formulario en React que use hooks para manejar el estado y enviar una solicitud a un servidor usando Axios, 
-// UseState para gestionar los campos del formulario y el envío de datos a través de Axios.
-// Backend ejecutandose y listo para recibir solicitudes en http://localhost:3000/api/pedidos.
-// Recibe los datos del formulario y los procesa para crear un nuevo pedido en la base de datos.
 
 function PedidosNew(){
     const navigate = useNavigate();
@@ -156,8 +152,6 @@ function PedidosNew(){
         const newItem = (maxItem + 1).toString().padStart(3, '0');
 
         setItems([...items, { 
-            // ITEM: (items.length + 1).toString().padStart(3, '0'),
-            // NROPED: '',
             ITEM: newItem,
             ARTICULO: '',
             CANTPED: '',

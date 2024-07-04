@@ -2,7 +2,6 @@
 const { Op, Association } = require("sequelize");
 const models = require("../database/models");
 const { Pedidos, PedidosItem, Numeracion, sequelize } = require("../database/models");
-// const { format } = require("date-fns");
 
 module.exports = {
   

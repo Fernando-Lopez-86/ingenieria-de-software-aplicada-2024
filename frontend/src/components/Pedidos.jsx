@@ -60,10 +60,14 @@ function Pedidos() {
                         .then(response => {
                             if (response.ok) {
                                 // Actualizar la lista de pedidos después de eliminar REVISAR!!!!!!!
-                                console.log(`Pedido ${nroPed} eliminado`);
                                 const updatedPedidos = pedidos.filter(pedido => pedido.NROPED !== nroPed);
                                 setPedidos(updatedPedidos);
-                                setSelectedNROPED(null); // Reinicia selectedNROPED si es necesario
+                                
+                                // Actualizar pedidosItems si el pedido eliminado 
+                                if (selectedNROPED === nroPed) {
+                                    setPedidosItems([]);
+                                    setSelectedNROPED(null);
+                                }
                             } else {
                                 console.error(`Error al eliminar el pedido ${nroPed}`);
                             }

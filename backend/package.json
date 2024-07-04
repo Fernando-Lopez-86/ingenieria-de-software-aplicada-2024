@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "set NODE_ENV=test&& jest --runInBand",
+    "test": "export NODE_ENV=test&& jest --runInBand",
     "start": "node src/app.js",
-    "prod": "set NODE_ENV=production&& node src/app.js",
-    "dev": "set NODE_ENV=development&& nodemon -e js src/app.js"
+    "prod": "export NODE_ENV=production&& node src/app.js",
+    "dev": "export NODE_ENV=development&& nodemon -e js src/app.js"
   },
   "keywords": [],
   "author": "",

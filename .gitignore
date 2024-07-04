@@ -15,6 +15,7 @@ data
 
 # production
 /build
+build
 frontend/build/
 /dist
 

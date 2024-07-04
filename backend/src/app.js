@@ -54,6 +54,7 @@ const sequelize = new Sequelize(
     }
 );
 
+
 const MAX_RETRIES = 5;
 const RETRY_INTERVAL_MS = 5000; // 5 segundos
 

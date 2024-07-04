@@ -31,13 +31,13 @@ const pedidoControllerAPI = {
         })
     },
 
-    destroy: (req, res) => {
-        console.log("NROPED API:"+req.params.NROPED)
-        pedidoService.destroyPedido(req.params.NROPED)
-        // .then(() => {
-        //     pedidoService.destroyPedidosItem(req.params.NROPED)
-        //     //res.redirect("/api/pedidos");
-        // });
+    destroy: async (req, res) => {
+        try {
+            await pedidoService.destroyPedido(req.params.NROPED);
+            res.status(200).send({ message: 'Pedido eliminado con éxito' });
+        } catch (error) {
+            res.status(500).send({ message: 'Error al eliminar el pedido' });
+        }
     },
 
     create: (req, res) => {
