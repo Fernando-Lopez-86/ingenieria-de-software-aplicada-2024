@@ -55,6 +55,21 @@ const pedidoControllerAPI = {
         })
     },
 
+    createCheck: (req, res) => {
+        pedidoService.createPedidoCheck(req.body)
+        .then(pedidos => {
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    total: pedidos.length,
+                    url: "/api/pedidos/check",
+                },
+                data: pedidos,
+            };
+            res.json(respuesta);
+        })
+    },
+
     edit: async(req, res) => {
         // const marcas = await brandService.getAllBrands();
         // const categorias = await categoryService.getAllCategories();

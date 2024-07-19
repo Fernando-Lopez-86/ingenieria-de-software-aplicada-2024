@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Importa los estilos de react-confirm-alert
 
-function Pedidos() {
+function PedidosCheck() {
     const [pedidos, setPedidos] = useState([]);
     const [pedidosItems, setPedidosItems] = useState([]);
     const [selectedNROPED, setSelectedNROPED] = useState(null);
@@ -85,7 +85,7 @@ function Pedidos() {
 
 
     const handleModify = (nroPed) => {
-        navigate(`/edit/${nroPed}`);   // Redirigir a la ruta de edición
+        navigate(`/check/${nroPed}`);   // Redirigir a la ruta de edición
     };
 
 
@@ -111,17 +111,17 @@ function Pedidos() {
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>
                                 <td className="p-1" align="center">
-                                    <button
+                                    {/* <button
                                         className="btn btn-sm btn-outline-danger mr-1"
                                         onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}
                                     >
                                         Eliminar
-                                    </button>
+                                    </button> */}
                                     <button
                                         className="btn btn-sm btn-outline-primary"
                                         onClick={(e) => { e.stopPropagation(); handleModify(pedido.NROPED); }}
                                     >
-                                        Modificar
+                                        Ver Pedido
                                     </button>
                                 </td>
                             </tr>
@@ -129,9 +129,9 @@ function Pedidos() {
                     </tbody>
                 </table>
             </div>
-            <div className="pedidos-items">
+            {/* <div className="pedidos-items">
                 <table className="table table-hover table-pedidos-items">
-                    <div className="bg-primary text-white h5" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
+                    <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
                     <thead>
                         <tr>
                             <th>Nro Pedido</th>
@@ -157,9 +157,9 @@ function Pedidos() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </div> */}
         </div>
     );
 }
 
-export default Pedidos;
+export default PedidosCheck;

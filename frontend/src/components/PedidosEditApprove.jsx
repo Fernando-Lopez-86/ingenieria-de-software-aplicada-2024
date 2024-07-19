@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function PedidoEditForm() {
+function PedidoEditApprove() {
     const navigate = useNavigate();
     const { NROPED } = useParams();
     // const [CLIENTE, setCLIENTE] = useState('');
@@ -122,75 +122,19 @@ function PedidoEditForm() {
     }, [NROPED]);
 
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-
-    const handleItemChange = (index, event) => {
-        const newItems = [...pedidoItems]; // Clonar el array
-        newItems[index][event.target.name] = event.target.value;
-        setPedidoItems(newItems);
-    };
-
-
-    const handleDateChange = (date) => {
-        setFormData({ ...formData, FECTRANS: date });
-    };
-    
-    const addItem = () => {
-        // Encontrar el máximo valor actual de ITEM en pedidoItems
-        const maxItem = Math.max(...pedidoItems.map(item => parseInt(item.ITEM, 10)));
-
-        // Incrementar en 1 el máximo encontrado para obtener el nuevo ITEM
-        const newItem = (maxItem + 1).toString().padStart(3, '0');
-
-        setPedidoItems([...pedidoItems, { 
-            //ITEM: (pedidoItems.length + 1).toString().padStart(3, '0'), ///////ERROR NO ES LENGTH ES EL SUPERIOR + 1
-            ITEM: newItem,
-            ARTICULO: '',
-            CANTPED: '',
-            PRECIO: '',
-        }]);
-    };
     
 
-    const removeItem = (index) => {
-        const newItems = pedidoItems.filter((item, i) => i !== index);
-        setPedidoItems(newItems);
-    };
-
-
-    const handleClientChange = (selectedOption) => {
-        setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : { NUMERO: '', RAZONSOC: '' } });
-    };
-
-
-    const handleArticuloChange = (index, selectedOption) => {
-        const newItems = [...pedidoItems];
-        newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
-        newItems[index].DESCART = selectedOption ? selectedOption.DESCRIP : null;
-        setItems(newItems);
-    };
-
-
-    const handleFormaDePagoChange = (selectedOption) => {
-        setFormData({ ...formData, CONDVENTA: selectedOption ? selectedOption.value : '' });
-    };
-
-
-    const handleProvinciasChange = (selectedOption) => {
-        setFormData({ ...formData, PROENT: selectedOption ? selectedOption.value : '' });
-    };
 
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
         const formattedDate = formData.FECTRANS ? format(formData.FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
+        const today = new Date();
+        const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
 
-        fetch(`http://localhost:3000/api/pedidos/update/${NROPED}`, {
+
+        fetch('http://localhost:3000/api/pedidos/check', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -205,6 +149,7 @@ function PedidoEditForm() {
                 TELEFONOS: formData.TELEFONOS,
                 CONDVENTA: formData.CONDVENTA,
                 FECTRANS: formattedDate,
+                FECEMISION: formattedToday,
                 COMENTARIO: formData.COMENTARIO,
                 // pedidoItems: pedidoItems
                 pedidoItems: pedidoItems.map(item => ({
@@ -223,7 +168,7 @@ function PedidoEditForm() {
                 return response.json();
             })
             .then(() => {
-                setModalMessage('Pedido actualizado correctamente');
+                setModalMessage('Pedido APROBADO correctamente');
                 setShowModal(true);
                 setTimeout(() => {
                     setShowModal(false);
@@ -255,7 +200,7 @@ function PedidoEditForm() {
     return (
         <div className="form-container w-100 ">
             <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="text-center">Modificar Pedido</h3>
+            <h3 className="text-center">Controlar Pedido</h3>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
 
@@ -265,7 +210,7 @@ function PedidoEditForm() {
                             name="CLIENTE"
                             // value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
                             value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE.NUMERO) || null}
-                            onChange={handleClientChange}
+                            // onChange={handleClientChange}
                             options={optionsClientes}
                             isSearchable
                             placeholder="Seleccionar Cliente"
@@ -273,6 +218,7 @@ function PedidoEditForm() {
                             menuPortalTarget={document.body}
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
+                            isDisabled
                         />
 
                     </div>
@@ -281,13 +227,14 @@ function PedidoEditForm() {
                         <Select
                             name="CONDVENTA"
                             value={optionsFormasDePago.find(option => option.value === formData.CONDVENTA) || null}
-                            onChange={handleFormaDePagoChange}
+                            // onChange={handleFormaDePagoChange}
                             options={optionsFormasDePago}
                             isSearchable
                             placeholder="Seleccionar Forma de Pago"
                             menuPortalTarget={document.body}
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
+                            isDisabled
                         />
                     </div>
 
@@ -297,7 +244,8 @@ function PedidoEditForm() {
                             type="text"
                             name="DIREENT"
                             value={formData.DIREENT}
-                            onChange={handleChange}
+                            disabled
+                            // onChange={handleChange}
                         />
                     </div>
 
@@ -307,7 +255,8 @@ function PedidoEditForm() {
                             type="text"
                             name="LOCENT"
                             value={formData.LOCENT}
-                            onChange={handleChange}
+                            disabled
+                            // onChange={handleChange}
                         />
                     </div>
 
@@ -316,13 +265,14 @@ function PedidoEditForm() {
                         <Select
                             name="PROENT"
                             value={optionsProvincias.find(option => option.value === formData.PROENT) || null}
-                            onChange={handleProvinciasChange}
+                            // onChange={handleProvinciasChange}
                             options={optionsProvincias}
                             isSearchable
                             placeholder="Seleccionar Provincia"
                             menuPortalTarget={document.body}
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
+                            isDisabled
                         />
                     </div>
 
@@ -331,10 +281,11 @@ function PedidoEditForm() {
                         <DatePicker
                             name="FECTRANS"
                             value={formData.FECTRANS} 
-                            onChange={handleDateChange}
+                            // onChange={handleDateChange}
                             selected={formData.FECTRANS ? new Date(formData.FECTRANS) : null}
                             dateFormat="dd/MM/yyyy"
                             placeholderText="dd/mm/yyyy"
+                            disabled
                         />
                     </div>
 
@@ -344,7 +295,8 @@ function PedidoEditForm() {
                             type="text"
                             name="TELEFONOS"
                             value={formData.TELEFONOS}
-                            onChange={handleChange}
+                            disabled
+                            // onChange={handleChange}
                         />
                     </div>
 
@@ -353,16 +305,16 @@ function PedidoEditForm() {
                         <textarea
                             name="COMENTARIO"
                             value={formData.COMENTARIO}
-                            onChange={handleChange} 
                             rows="3" 
+                            disabled
                         ></textarea>
                     </div>
                 </div>
                 
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">
                     <div className="form-container d-flex justify-content-between">
-                        <h3>Items del Pedido</h3>
-                        <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button>
+                        {/* <h3>Items del Pedido</h3> */}
+                        {/* <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button> */}
                     </div>
                     <div className="table-responsive">
                         <table className="table table-hover">
@@ -373,19 +325,19 @@ function PedidoEditForm() {
                                     <th className="column column-medium">Cantidad</th>
                                     <th className="column column-medium">Precio</th>
                                     <th className="column column-medium">Descuento</th>
-                                    <th className="column column-small">Eliminar</th>
+                                    {/* <th className="column column-small">Eliminar</th> */}
                                 </tr>
                             </thead>
                             <tbody>
                                 {pedidoItems.map((item, index) => (
                                     <tr key={item.ITEM} className="table-row">
-                                        <td className="form-group column column-small"><input type="text" name="ITEM" value={item.ITEM} onChange={(e) => handleItemChange(index, e)} required readOnly/></td>
+                                        <td className="form-group column column-small"><input type="text" name="ITEM" value={item.ITEM} required readOnly disabled/></td>
                                         <td className="form-group column">
                                             <Select
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value.NUMERO === item.ARTICULO)}
                                                 // onChange={(selectedOption) => handleItemChange(index, { target: { name: 'ARTICULO', value: selectedOption.value } })}
-                                                onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
+                                                // onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
@@ -393,16 +345,17 @@ function PedidoEditForm() {
                                                 menuPortalTarget={document.body}  // Renderiza el menú en el body
                                                 styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  // Ajusta el z-index
                                                 menuPosition="fixed"
+                                                isDisabled
                                             />
                                         </td>
-                                        <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED} onChange={(e) => handleItemChange(index, e)} required/></td>
-                                        <td className="form-group column column-medium"><input type="text" name="PRECIO" value={item.PRECIO} onChange={(e) => handleItemChange(index, e)} required/></td>
-                                        <td className="form-group column column-medium"><input type="text" name="DESCUENTO" value={item.DESCUENTO ? parseInt(Math.round(item.DESCUENTO)) : 0} onChange={(e) => handleItemChange(index, e)} required/></td>
-                                        <td className="form-group column column-small text-center">
+                                        <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED}  required disabled/></td>
+                                        <td className="form-group column column-medium"><input type="text" name="PRECIO" value={item.PRECIO}  required disabled/></td>
+                                        <td className="form-group column column-medium"><input type="text" name="DESCUENTO" value={item.DESCUENTO ? parseInt(Math.round(item.DESCUENTO)) : 0}  required disabled/></td>
+                                        {/* <td className="form-group column column-small text-center">
                                             <button type="button" className="btn btn-sm btn-outline-danger remove-button" onClick={() => removeItem(index)}>
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </button>
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>
@@ -411,7 +364,7 @@ function PedidoEditForm() {
                 </div>
             </div>
             <div className="form-buttons">
-                <button type="submit" className="m-4 btn btn-primary">Guardar</button>
+                <button type="submit" className="m-4 btn btn-primary">Aprobar</button>
                 <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
             </div>
             </form>
@@ -435,4 +388,4 @@ function PedidoEditForm() {
     
 }
 
-export default PedidoEditForm;
+export default PedidoEditApprove;

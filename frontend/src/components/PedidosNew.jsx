@@ -171,14 +171,18 @@ function PedidosNew(){
         const doc = new jsPDF();
         doc.text("Pedido", 20, 10);
         doc.text(`Cliente: ${data.CLIENTE}`, 20, 20);
-        doc.text(`Entrega: ${data.ENTREGA}`, 20, 30);
-        doc.text(`Localidad Entrega: ${data.LOCENT}`, 20, 40);
-        doc.text(`Provincia Entrega: ${data.PROENT}`, 20, 50);
+        doc.text(`Forma de Pago: ${data.CONDVENTA}`, 20, 30);
+        doc.text(`Direccion Entrega: ${data.DIREENT}`, 20, 40);
+        doc.text(`Localidad Entrega: ${data.LOCENT}`, 20, 50);
+        doc.text(`Provincia Entrega: ${data.FECTRANS}`, 20, 60);
+        doc.text(`Fecha Entrega: ${data.PROENT}`, 20, 70);
+        doc.text(`Telefono Entrega: ${data.TELEFONOS}`, 20, 80);
+        doc.text(`Comentarios: ${data.COMENTARIO}`, 20, 90);
 
         doc.autoTable({
-            startY: 60,
-            head: [['Item', 'Artículo', 'Cantidad', 'Precio']],
-            body: data.items.map(item => [item.ITEM, item.ARTICULO, item.CANTPED, item.PRECIO])
+            startY: 110,
+            head: [['Item', 'Artículo', 'Cantidad', 'Precio', 'Descuento']],
+            body: data.items.map(item => [item.ITEM, item.ARTICULO, item.CANTPED, item.PRECIO, item.DESCUENTO])
         });
 
         doc.save('pedido.pdf');
@@ -382,13 +386,12 @@ function PedidosNew(){
 
                     <div className="form-group">
                         <label>Comentarios</label>
-                        <input
-                            type="text"
+                        <textarea
                             name="COMENTARIO"
-                            value={COMENTARIO} 
+                            value={COMENTARIO}
                             onChange={(e) => setCOMENTARIO(e.target.value)} 
-                            // required 
-                        />
+                            rows="3" 
+                        ></textarea>
                     </div>
                 </div>
 

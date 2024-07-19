@@ -1,7 +1,7 @@
 
 const { Op, Association } = require("sequelize");
 const models = require("../database/models");
-const { Pedidos, PedidosItem, Numeracion, sequelize } = require("../database/models");
+const { Pedidos, PedidosItem,Pedidos_temp, PedidosItem_temp, Numeracion, sequelize } = require("../database/models");
 
 module.exports = {
   
@@ -13,6 +13,105 @@ module.exports = {
         const transaction = await sequelize.transaction();
 
         try {
+            // Consulta al modelo Numeraciones para obtener el valor de FUNCION
+            const numeracion = await Numeracion.findOne({
+                where: { CLAVE: 'SI091PD0001X' },
+                attributes: ['FUNCION'],
+                transaction
+            });
+
+            if (!numeracion) {
+                throw new Error('Numeracion no encontrada');
+            }
+
+            // Asigna el valor de FUNCION a una variable y suma uno a la parte numérica
+            let funcion2 = numeracion.FUNCION;
+            let funcion3 = numeracion.FUNCION.slice(-8);
+            let funcion = funcion2.slice(0, 8);
+
+            // Extraer la parte numérica del string
+            const regex = /(\D*)(\d+)(\D*)/;
+            const match = funcion.match(regex);
+
+            if (!match) {
+                throw new Error('Formato de FUNCION no válido');
+            }
+
+            const prefix = match[1]; // Parte no numérica al inicio
+            const number = parseInt(match[2], 10); // Parte numérica
+            const suffix = match[3]; // Parte no numérica al final
+
+            // Incrementar la parte numérica y reconstruir el string
+            const newNumber = number + 1;
+            const newNumberStr = newNumber.toString().padStart(match[2].length, '0'); // Mantener el mismo número de dígitos
+            const newFuncion = `0001${prefix}${newNumberStr}`.slice(0, 12); // Tomar solo los primeros 8 caracteres
+
+            // Actualizar el valor de FUNCION en la base de datos
+            await Numeracion.update({ 
+                FUNCION: `${newFuncion}${funcion3}`.slice(4) 
+            }, { where: { 
+                CLAVE: 'SI091PD0001X' 
+            }, 
+            transaction });
+
+            const pedidos = await Pedidos_temp.create({
+                TIPO: 'P',
+                CLIENTE: CLIENTE,
+                RAZONSOC: RAZONSOC,
+                CONDVENTA,
+                DIREENT,
+                PROENT,
+                LOCENT,
+                TELEFONOS,
+                FECTRANS,
+                FECEMISION: FECEMISION,
+                FECRECEP: FECEMISION,
+                FECALTA: FECEMISION,
+                COMENTARIO,
+                NROPED: newFuncion,
+                NROREAL: newFuncion,
+                ESTADOSEG: 'I',
+                CODIGO: '21'
+            }, { transaction });    
+
+            if (!items || !Array.isArray(items)) {
+                throw new Error('items must be an array');
+            }
+
+            const pedidositem = await Promise.all(items.map(item => 
+                PedidosItem_temp.create({
+                    TIPO: 'P',
+                    CLIENTE: CLIENTE,
+                    NROPED: newFuncion,
+                    ARTICULO: item.ARTICULO,
+                    DESCART: item.DESCART,
+                    CANTPED: item.CANTPED,
+                    BULTPED: item.CANTPED,
+                    PRECIO: item.PRECIO,
+                    DESCUENTO: item.DESCUENTO,
+                    FECALTA: FECEMISION,
+                    ITEM: item.ITEM
+                }, { transaction })  
+            ));
+
+            await transaction.commit();
+
+            return { pedidos, pedidositem };
+        } catch (error) {
+                 await transaction.rollback();
+                 throw new Error('Error al crear el pedido');
+        }
+    }, 
+
+
+    createPedidoCheck: async (pedidoData, res) => {
+        //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
+        //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, FECEMISION, COMENTARIO, pedidoItems } = pedidoData;
+
+        const transaction = await sequelize.transaction();
+
+        // try {
             // Consulta al modelo Numeraciones para obtener el valor de FUNCION
             const numeracion = await Numeracion.findOne({
                 where: { CLAVE: 'SI091PD0001X' },
@@ -74,11 +173,11 @@ module.exports = {
                 CODIGO: '21'
             }, { transaction });    
 
-            if (!items || !Array.isArray(items)) {
+            if (!pedidoItems || !Array.isArray(pedidoItems)) {
                 throw new Error('items must be an array');
             }
 
-            const pedidositem = await Promise.all(items.map(item => 
+            const pedidositem = await Promise.all(pedidoItems.map(item => 
                 PedidosItem.create({
                     TIPO: 'P',
                     CLIENTE: CLIENTE,
@@ -97,10 +196,10 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem };
-        } catch (error) {
-                 await transaction.rollback();
-                 throw new Error('Error al crear el pedido');
-        }
+        // } catch (error) {
+        //          await transaction.rollback();
+        //          throw new Error('Error al crear el pedido');
+        // }
     }, 
 
 
@@ -117,7 +216,7 @@ module.exports = {
             await sequelize.transaction(async (transaction) => {
                 
                 // Actualizar el pedido principal
-                await Pedidos.update({ 
+                await Pedidos_temp.update({ 
                     CLIENTE: CLIENTE,
                     RAZONSOC: RAZONSOC,
                     DIREENT: DIREENT,
@@ -136,7 +235,7 @@ module.exports = {
                      transaction });
 
                 // Eliminar ítems antiguos
-                await PedidosItem.destroy({ 
+                await PedidosItem_temp.destroy({ 
                     where: { NROPED: NROPED,
                         TIPO: 'P',
                      }, 
@@ -154,7 +253,7 @@ module.exports = {
                     DESCUENTO: item.DESCUENTO,
                 }));
 
-                await PedidosItem.bulkCreate(newItems, { transaction });
+                await PedidosItem_temp.bulkCreate(newItems, { transaction });
             });
     
             return true;  // Devolver true si la transacción fue exitosa
@@ -169,7 +268,7 @@ module.exports = {
         // console.log("NROPED SERVICE: "+NROPED)
         // return Pedidos.findByPk(NROPED);
         try {
-            const pedido = await Pedidos.findOne({ 
+            const pedido = await Pedidos_temp.findOne({ 
                 where: {
                     NROPED,
                     TIPO: 'P',
@@ -190,7 +289,7 @@ module.exports = {
             transaction = await sequelize.transaction();
 
             // Primera operación de eliminación dentro de la transacción
-            await Pedidos.destroy({
+            await Pedidos_temp.destroy({
                 where: {
                     NROPED: NROPED,
                     TIPO: 'P',
@@ -200,7 +299,7 @@ module.exports = {
             });
 
             // Segunda operación de eliminación dentro de la transacción
-            await PedidosItem.destroy({
+            await PedidosItem_temp.destroy({
                 where: {
                     NROPED: NROPED,
                     TIPO: 'P',
@@ -224,14 +323,14 @@ module.exports = {
 
 
     deletePedido: (NROPED) => {
-        return Pedidos.findByPk(NROPED);
+        return Pedidos_temp.findByPk(NROPED);
     },
 
 
     getAllPedidos: async () => {
         try {
             // sequelize.options.logging = true;
-            const pedidos = await Pedidos.findAll({
+            const pedidos = await Pedidos_temp.findAll({
                 where: {
                     TIPO: 'P',
                     CODIGO: '21',
@@ -241,7 +340,7 @@ module.exports = {
                 },
                 include: [
                     {
-                        model: models.PedidosItem,
+                        model: models.PedidosItem_temp,
                         as: 'pedidositem',
                         where: {
                             TIPO: 'P'
@@ -266,7 +365,7 @@ module.exports = {
 
 
     getAllPedidosItems: (nroped) => {
-        return PedidosItem.findAll({ 
+        return PedidosItem_temp.findAll({ 
             where: {
                 NROPED: nroped,
                 TIPO: 'P',

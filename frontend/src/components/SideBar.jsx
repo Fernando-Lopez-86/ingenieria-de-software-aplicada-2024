@@ -25,6 +25,10 @@ function SideBar(){
                         <Link className="text-white fw-bold" to={{pathname: "/new"}} style={{fontSize: '1.3rem'}}>Nuevo</Link>
                     </li>
 
+                    <li className="nav-item container-fluid p-1 ml-4">
+                        <Link className="text-white fw-bold" to={{pathname: "/check"}} style={{fontSize: '1.3rem'}}>Controlar</Link>
+                    </li>
+
                     <hr className="sidebar-divider d-none d-md-block"/>
                 </ul>
             </nav>
