@@ -7,6 +7,13 @@
     width: 100%;
 }
 
+.pedidos-check {
+    display: block;
+    max-height: calc(20 * 60px); /* Muestra 6 filas con una altura de 60px cada una */
+    overflow-y: auto;
+    width: 100%;
+}
+
 .pedidos-items table tbody {
     display: block;
     
@@ -40,8 +47,8 @@
 }
 
 .table-hover th, .table-hover td {
-    padding: 3px; /* Reducir el padding de las celdas */
-    box-sizing: border-box; /* Incluir padding en el ancho y alto de los elementos */
+    padding: 2px; /* Reducir el padding de las celdas */
+    box-sizing: border-box; 
     width: 100%;
 }
 
@@ -292,7 +299,7 @@ button:focus {
 
 .table th.column, .table td.column {
     text-align: left; /* Alinea el texto a la izquierda */
-    padding: 10px; /* Ajusta el padding para consistencia */
+    padding: 10px; 
     vertical-align: middle; /* Alinea verticalmente al centro */
 }
 
@@ -346,47 +353,52 @@ button:focus {
 
 .table-pedidos th:nth-child(1),
 .table-pedidos td:nth-child(1) {
-    width: 12%;
+    width: 13%;
 }
 
 .table-pedidos th:nth-child(2),
 .table-pedidos td:nth-child(2) {
-    width: 15%;
+    width: 13%;
 }
 
 .table-pedidos th:nth-child(3),
 .table-pedidos td:nth-child(3) {
-    width: 15%;
+    width: 40%;
 }
 
 .table-pedidos th:nth-child(4),
 .table-pedidos td:nth-child(4) {
-    width: 40%;
+    width: 13%;
 }
 
 .table-pedidos th:nth-child(5),
 .table-pedidos td:nth-child(5) {
-    width: 15%;
+    width: 10%;
+}
+
+.table-pedidos th:nth-child(6),
+.table-pedidos td:nth-child(6) {
+    width: 10%;
 }
 
 .table-pedidos-items th:nth-child(1),
 .table-pedidos-items td:nth-child(1) {
-    width: 10%;
+    width: 13%;
 }
 
 .table-pedidos-items th:nth-child(2),
 .table-pedidos-items td:nth-child(2) {
-    width: 10%;
+    width: 13%;
 }
 
 .table-pedidos-items th:nth-child(3),
 .table-pedidos-items td:nth-child(3) {
-    width: 10%;
+    width: 40%;
 }
 
 .table-pedidos-items th:nth-child(4),
 .table-pedidos-items td:nth-child(4) {
-    width: 40%;
+    width: 13%;
 }
 
 .table-pedidos-items th:nth-child(5),
@@ -399,8 +411,42 @@ button:focus {
     width: 10%;
 }
 
-.table-pedidos-items th:nth-child(7),
-.table-pedidos-items td:nth-child(7) {
-    width: 10%;
+
+
+.logout-button {
+    /* position: absolute; */
+    /* top: 20px; */
+    /* right: 10px;  */
+    padding: 5px 15px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-right: 15px;
 }
+
+.logout-button:hover {
+    background-color: #555;
+}
+
+.header {
+    position: absolute;
+    justify-content: space-between;
+    /* align-items: center; */
+    /* padding: 10px 20px; */
+    /* background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6; */
+    /* border: solid; */
+    top: 5px;
+    right: 10px;
+}
+
+.user-info {
+    font-size: 1rem;
+    color: #333;
+}
+
+
 

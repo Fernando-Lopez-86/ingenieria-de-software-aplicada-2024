@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../components/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Importa los estilos de react-confirm-alert
@@ -8,6 +9,7 @@ function PedidosCheck() {
     const [pedidos, setPedidos] = useState([]);
     const [pedidosItems, setPedidosItems] = useState([]);
     const [selectedNROPED, setSelectedNROPED] = useState(null);
+    const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
     const formatDate = (dateString) => {
@@ -24,11 +26,29 @@ function PedidosCheck() {
     };
 
 
+    // useEffect(() => {
+    //     fetch("http://localhost:3000/api/pedidos")
+    //         .then(response => response.json())
+    //         .then(data => setPedidos(data.data));
+    // }, []);
+
     useEffect(() => {
-        fetch("http://localhost:3000/api/pedidos")
-            .then(response => response.json())
-            .then(data => setPedidos(data.data));
-    }, []);
+        const fetchPedidos = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`);
+                const data = await response.json();
+                setPedidos(data.data);
+            } catch (error) {
+                console.error("Error al obtener los pedidos:", error);
+            }
+        };
+
+        if (user && user.numero_vendedor) {
+            fetchPedidos();
+        } else {
+            console.error("El usuario no tiene un numero_vendedor definido.");
+        }
+    }, [user]);
 
 
     useEffect(() => {
@@ -91,26 +111,28 @@ function PedidosCheck() {
 
     return (
         <div className="pedidos-container">
-            <div className="pedidos">
-                <div className="bg-primary text-white h5" align="center" colSpan="11"><b>PEDIDOS</b></div>
+            <div className="pedidos-check">
+                <div className="bg-primary text-white h5" align="center" colSpan="11"><b>AUTORIZAR PEDIDOS</b></div>
                 <table className="table table-hover table-pedidos">
                     <thead>
                         <tr>
-                            <th>Nro Pedido</th>
                             <th>Fecha</th>
                             <th>Nro Cliente</th>
                             <th>Cliente</th>
+                            <th>Vendedor</th>
+                            <th>Estado</th>
                             <th className="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pedidos.map(pedido => (
                             <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
-                                <td>{pedido.NROPED}</td>
                                 <td>{formatDate(pedido.FECEMISION)}</td>
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>
-                                <td className="p-1" align="center">
+                                <td>{pedido.VENDEDOR}</td>
+                                <td>{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
+                                <td className="" align="center">
                                     {/* <button
                                         className="btn btn-sm btn-outline-danger mr-1"
                                         onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}
@@ -120,6 +142,7 @@ function PedidosCheck() {
                                     <button
                                         className="btn btn-sm btn-outline-primary"
                                         onClick={(e) => { e.stopPropagation(); handleModify(pedido.NROPED); }}
+                                        disabled={pedido.ESTADOSEG === 'A'} // Deshabilitar si el estado es 'A'
                                     >
                                         Ver Pedido
                                     </button>

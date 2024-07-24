@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
             FECINHAB: DataTypes.DATE,
         },
         {
-            tableName: "vendedores",
+            tableName: "vendedor",
             timestamps: false,   
         }
     );
@@ -46,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
         //     as: 'categorias',
         //     foreignKey: 'categoria_id',
         // });
+        Model.hasMany(models.Pedidos_temp, {
+            as: 'pedidos',
+            foreignKey: 'VENDEDOR',
+        });
     };
 
     return Model;

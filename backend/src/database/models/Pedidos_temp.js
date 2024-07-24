@@ -124,6 +124,17 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
         );
+
+        Model.belongsTo(models.Vendedores, 
+            {
+                as: 'vendedores',
+                foreignKey: {
+                    name: 'VENDEDOR',
+                    allowNull: false
+                },
+            }
+        );
+
     };
     return Model;
 };

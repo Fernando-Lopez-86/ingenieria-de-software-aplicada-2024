@@ -2,7 +2,8 @@ const clienteService = require("../../services/clienteService");
  
 const clienteControllerAPI = {
     list: (req, res) => {
-        clienteService.getAllClientes()
+        const { numero_vendedor } = req.query;
+        clienteService.getAllClientes(numero_vendedor)
         .then(clientes => {
             let respuesta = {
                 meta: {

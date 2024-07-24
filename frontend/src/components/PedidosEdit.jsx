@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,10 +7,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
+import { UserContext } from './UserContext'; 
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function PedidoEditForm() {
     const navigate = useNavigate();
+    const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
     const { NROPED } = useParams();
     // const [CLIENTE, setCLIENTE] = useState('');
     // const [ENTREGA, setENTREGA] = useState('');
@@ -115,11 +119,27 @@ function PedidoEditForm() {
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
 
-        fetch("http://localhost:3000/api/clientes")
-            .then(response => response.json())
-            .then(data => setClientes(data.data))
-            .catch(error => console.error('Error fetching clientes:', error));
+        // fetch("http://localhost:3000/api/clientes")
+        //     .then(response => response.json())
+        //     .then(data => setClientes(data.data))
+        //     .catch(error => console.error('Error fetching clientes:', error));
+
     }, [NROPED]);
+
+
+    useEffect(() => {
+        if (user && user.numero_vendedor) {
+            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Clientes:", data.data);
+                    setClientes(data.data);
+                })
+                .catch(error => console.error('Error fetching clientes:', error));
+        } else {
+            console.error("El usuario no tiene un numero_vendedor definido.");
+        }
+    }, [user]);
 
 
     const handleChange = (event) => {
@@ -184,6 +204,28 @@ function PedidoEditForm() {
         setFormData({ ...formData, PROENT: selectedOption ? selectedOption.value : '' });
     };
 
+    const generatePDF = (data) => {
+        const doc = new jsPDF();
+        doc.text("Pedido", 15, 10);
+        doc.text(`Cliente: ${formData.RAZONSOC}`, 15, 20);
+        doc.text(`Forma de Pago: ${formData.CONDVENTA}`, 15, 30);
+        doc.text(`Direccion Entrega: ${formData.DIREENT}`, 15, 40);
+        doc.text(`Localidad Entrega: ${formData.LOCENT}`, 15, 50);
+        doc.text(`Provincia Entrega: ${formData.FECTRANS}`, 15, 60);
+        doc.text(`Fecha Entrega: ${formData.PROENT}`, 15, 70);
+        doc.text(`Telefono Entrega: ${formData.TELEFONOS}`, 15, 80);
+        doc.text(`Comentarios: ${formData.COMENTARIO}`, 15, 90);
+        doc.text(`Numero Control: ${formData.NROPED}`, 15, 100);
+
+        doc.autoTable({
+            startY: 120,
+            head: [['Item', 'Artículo', 'Cantidad', 'Precio', 'Descuento']],
+            body: pedidoItems.map(item => [item.ITEM, item.ARTICULO, item.CANTPED, item.PRECIO, item.DESCUENTO])
+        });
+
+        doc.save('pedido.pdf');
+    };
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -222,7 +264,15 @@ function PedidoEditForm() {
                 }
                 return response.json();
             })
-            .then(() => {
+            .then((body) => {
+
+                if (pedidoItems && pedidoItems.length > 0) {
+                    generatePDF(formData);
+                } else {
+                    console.error('Error al generar PDF: no hay items');
+                    setError('Error al generar PDF: no hay items');
+                }
+
                 setModalMessage('Pedido actualizado correctamente');
                 setShowModal(true);
                 setTimeout(() => {
@@ -234,6 +284,7 @@ function PedidoEditForm() {
                 setModalMessage(`Error: ${error.message}`);
                 setShowModal(true);
             });
+
     };
 
 
@@ -255,7 +306,8 @@ function PedidoEditForm() {
     return (
         <div className="form-container w-100 ">
             <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="text-center">Modificar Pedido</h3>
+            {/* <h3 className="text-center">Modificar Pedido</h3> */}
+            <div className="bg-primary text-white h5" align="center" colSpan="11"><b>MODIFICAR PEDIDO</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
 

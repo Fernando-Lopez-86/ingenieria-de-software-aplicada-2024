@@ -1,4 +1,4 @@
-const moment = require("moment");
+
 
 module.exports = (sequelize, DataTypes) => {
     const Model = sequelize.define(
@@ -124,6 +124,7 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
         );
+
     };
     return Model;
 };

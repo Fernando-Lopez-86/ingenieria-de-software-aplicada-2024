@@ -2,7 +2,8 @@ const pedidoService = require("../../services/pedidoService");
  
 const pedidoControllerAPI = {
     list: (req, res) => {
-        pedidoService.getAllPedidos()
+        const { numero_vendedor } = req.query;
+        pedidoService.getAllPedidos(numero_vendedor)
         .then(pedidos => {
             let respuesta = {
                 meta: {

@@ -5,11 +5,12 @@ const { Clientes } = require("../database/models");
 
 module.exports = {
   
-    getAllClientes: async () => {
+    getAllClientes: async (numeroVendedor) => {
         try {
             const clientes = await Clientes.findAll({
                 where: {
                     FECINHAB: null,
+                    VENDEDOR: numeroVendedor,
                 },
                 order: [["RAZONSOC", "ASC"]],
             });

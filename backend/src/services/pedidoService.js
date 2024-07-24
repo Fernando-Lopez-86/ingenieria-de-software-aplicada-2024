@@ -1,20 +1,20 @@
 
 const { Op, Association } = require("sequelize");
 const models = require("../database/models");
-const { Pedidos, PedidosItem,Pedidos_temp, PedidosItem_temp, Numeracion, sequelize } = require("../database/models");
+const { Pedidos, PedidosItem, Pedidos_temp, PedidosItem_temp, Numeracion, Numeracion_temp, sequelize } = require("../database/models");
 
 module.exports = {
   
     createPedido: async (pedidoData, res) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
         try {
             // Consulta al modelo Numeraciones para obtener el valor de FUNCION
-            const numeracion = await Numeracion.findOne({
+            const numeracion = await Numeracion_temp.findOne({
                 where: { CLAVE: 'SI091PD0001X' },
                 attributes: ['FUNCION'],
                 transaction
@@ -47,7 +47,7 @@ module.exports = {
             const newFuncion = `0001${prefix}${newNumberStr}`.slice(0, 12); // Tomar solo los primeros 8 caracteres
 
             // Actualizar el valor de FUNCION en la base de datos
-            await Numeracion.update({ 
+            await Numeracion_temp.update({ 
                 FUNCION: `${newFuncion}${funcion3}`.slice(4) 
             }, { where: { 
                 CLAVE: 'SI091PD0001X' 
@@ -64,13 +64,14 @@ module.exports = {
                 LOCENT,
                 TELEFONOS,
                 FECTRANS,
+                VENDEDOR: VENDEDOR,
                 FECEMISION: FECEMISION,
                 FECRECEP: FECEMISION,
                 FECALTA: FECEMISION,
                 COMENTARIO,
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
-                ESTADOSEG: 'I',
+                ESTADOSEG: 'P',
                 CODIGO: '21'
             }, { transaction });    
 
@@ -107,7 +108,7 @@ module.exports = {
     createPedidoCheck: async (pedidoData, res) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, FECEMISION, COMENTARIO, pedidoItems } = pedidoData;
+        const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, pedidoItems } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
@@ -153,6 +154,17 @@ module.exports = {
             }, 
             transaction });
 
+            // Actualizar el valor de ESTADOSEG
+            await Pedidos_temp.update({ 
+                ESTADOSEG: 'A'
+            }, { where: { 
+                NROPED: NROPED,
+                CLIENTE: CLIENTE,
+                CODIGO: '21',
+                TIPO: 'P',
+            }, 
+            transaction });
+
             const pedidos = await Pedidos.create({
                 TIPO: 'P',
                 CLIENTE: CLIENTE,
@@ -163,13 +175,14 @@ module.exports = {
                 LOCENT,
                 TELEFONOS,
                 FECTRANS,
+                VENDEDOR: VENDEDOR,
                 FECEMISION: FECEMISION,
                 FECRECEP: FECEMISION,
                 FECALTA: FECEMISION,
                 COMENTARIO,
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
-                ESTADOSEG: 'I',
+                ESTADOSEG: 'A',
                 CODIGO: '21'
             }, { transaction });    
 
@@ -327,13 +340,18 @@ module.exports = {
     },
 
 
-    getAllPedidos: async () => {
+    getAllPedidos: async (numeroVendedor) => {
+        if (!numeroVendedor) {
+            throw new Error("El valor de numeroVendedor es undefined");
+        }
+
         try {
             // sequelize.options.logging = true;
             const pedidos = await Pedidos_temp.findAll({
                 where: {
                     TIPO: 'P',
                     CODIGO: '21',
+                    VENDEDOR: numeroVendedor,
                     FECEMISION: {
                         [Op.gte]: new Date('2024-01-01'), // gte = Greater than or equal
                     },
@@ -352,11 +370,27 @@ module.exports = {
                         as: 'clientes',
                         required: false, // LEFT OUTER JOIN
                         foreignKey: 'CLIENTE', // Clave foránea correcta
+                    },
+                    {
+                        model: models.Vendedores,
+                        as: 'vendedores',
+                        attributes: ['APEYNOM'], // Atributo que queremos incluir
+                        required: false, // LEFT OUTER JOIN
+                        foreignKey: 'VENDEDOR', // Clave foránea correcta
                     }
                 ],
                 order: [["NROPED", "ASC"]],
             });
-            return pedidos;
+
+            // Mapea los resultados para agregar el nombre del vendedor en el campo adecuado
+            const result = pedidos.map(pedido => {
+                return {
+                    ...pedido.toJSON(),
+                    VENDEDOR: pedido.vendedores ? pedido.vendedores.APEYNOM : null
+                };
+            });
+
+            return result;
         } catch (error) {
             console.error("Error al obtener los pedidos:", error.message);
             throw error; // Propaga el error para manejo posterior si es necesario

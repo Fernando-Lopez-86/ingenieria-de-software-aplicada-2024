@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,11 +10,13 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
+import { UserContext } from './UserContext'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function PedidosNew(){
     const navigate = useNavigate();
+    const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
     // const [TIPO, setTIPO] = useState('');
     const [CLIENTE, setCLIENTE] = useState('');
@@ -79,15 +81,28 @@ function PedidosNew(){
     }, []);
 
 
+    // useEffect(() => {
+    //     fetch("http://localhost:3000/api/clientes")
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             console.log("Clientes:", data.data);
+    //             setClientes(data.data);
+    //         })
+    //         .catch(error => console.error('Error fetching clientes:', error));
+    // }, []);
     useEffect(() => {
-        fetch("http://localhost:3000/api/clientes")
-            .then(response => response.json())
-            .then(data => {
-                console.log("Clientes:", data.data);
-                setClientes(data.data);
-            })
-            .catch(error => console.error('Error fetching clientes:', error));
-    }, []);
+        if (user && user.numero_vendedor) {
+            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Clientes:", data.data);
+                    setClientes(data.data);
+                })
+                .catch(error => console.error('Error fetching clientes:', error));
+        } else {
+            console.error("El usuario no tiene un numero_vendedor definido.");
+        }
+    }, [user]);
 
 
     useEffect(() => {
@@ -169,18 +184,19 @@ function PedidosNew(){
 
     const generatePDF = (data) => {
         const doc = new jsPDF();
-        doc.text("Pedido", 20, 10);
-        doc.text(`Cliente: ${data.CLIENTE}`, 20, 20);
-        doc.text(`Forma de Pago: ${data.CONDVENTA}`, 20, 30);
-        doc.text(`Direccion Entrega: ${data.DIREENT}`, 20, 40);
-        doc.text(`Localidad Entrega: ${data.LOCENT}`, 20, 50);
-        doc.text(`Provincia Entrega: ${data.FECTRANS}`, 20, 60);
-        doc.text(`Fecha Entrega: ${data.PROENT}`, 20, 70);
-        doc.text(`Telefono Entrega: ${data.TELEFONOS}`, 20, 80);
-        doc.text(`Comentarios: ${data.COMENTARIO}`, 20, 90);
+        doc.text("Pedido", 15, 10);
+        doc.text(`Cliente: ${data.RAZONSOC}`, 15, 20);
+        doc.text(`Forma de Pago: ${data.CONDVENTA}`, 15, 30);
+        doc.text(`Direccion Entrega: ${data.DIREENT}`, 15, 40);
+        doc.text(`Localidad Entrega: ${data.LOCENT}`, 15, 50);
+        doc.text(`Provincia Entrega: ${data.FECTRANS}`, 15, 60);
+        doc.text(`Fecha Entrega: ${data.PROENT}`, 15, 70);
+        doc.text(`Telefono Entrega: ${data.TELEFONOS}`, 15, 80);
+        doc.text(`Comentarios: ${data.COMENTARIO}`, 15, 90);
+        doc.text(`Numero Control: aaaaaaaaaaaaa`, 15, 100);
 
         doc.autoTable({
-            startY: 110,
+            startY: 120,
             head: [['Item', 'Artículo', 'Cantidad', 'Precio', 'Descuento']],
             body: data.items.map(item => [item.ITEM, item.ARTICULO, item.CANTPED, item.PRECIO, item.DESCUENTO])
         });
@@ -212,6 +228,7 @@ function PedidosNew(){
             PROENT,
             CONDVENTA,
             TELEFONOS,
+            VENDEDOR: user.numero_vendedor,
             FECTRANS: formattedDate,
             FECEMISION: formattedToday,
             COMENTARIO,
@@ -291,7 +308,8 @@ function PedidosNew(){
     return (
         <div className="form-container w-100">
             <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="text-center">Nuevo Pedido</h3>
+            {/* <h3 className="text-center">Nuevo Pedido</h3> */}
+            <div className="bg-primary text-white h5" align="center" colSpan="11"><b>NUEVO PEDIDOS</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
                     <div className="form-group">
@@ -447,7 +465,7 @@ function PedidosNew(){
                 </div>
                 <div className="form-buttons">
                     <button type="submit" className="m-4 btn btn-primary">Guardar</button>
-                    <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/pedidos')}>Cancelar</button>
+                    <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
                 </div>
             </form>
 

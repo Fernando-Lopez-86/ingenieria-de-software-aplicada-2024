@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../components/UserContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,6 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function PedidoEditApprove() {
     const navigate = useNavigate();
     const { NROPED } = useParams();
+    const { user } = useContext(UserContext);
     // const [CLIENTE, setCLIENTE] = useState('');
     // const [ENTREGA, setENTREGA] = useState('');
     // const [LOCENT, setLOCENT] = useState('');
@@ -115,14 +117,25 @@ function PedidoEditApprove() {
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
 
-        fetch("http://localhost:3000/api/clientes")
-            .then(response => response.json())
-            .then(data => setClientes(data.data))
-            .catch(error => console.error('Error fetching clientes:', error));
+        // fetch("http://localhost:3000/api/clientes")
+        //     .then(response => response.json())
+        //     .then(data => setClientes(data.data))
+        //     .catch(error => console.error('Error fetching clientes:', error));
     }, [NROPED]);
 
-
-    
+    useEffect(() => {
+        if (user && user.numero_vendedor) {
+            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Clientes:", data.data);
+                    setClientes(data.data);
+                })
+                .catch(error => console.error('Error fetching clientes:', error));
+        } else {
+            console.error("El usuario no tiene un numero_vendedor definido.");
+        }
+    }, [user]);
 
 
 
@@ -141,12 +154,14 @@ function PedidoEditApprove() {
             },
             body: JSON.stringify({
                 // ESTADOSEG: formData.ESTADOSEG,
+                NROPED: NROPED,
                 CLIENTE: formData.CLIENTE.NUMERO,
                 RAZONSOC: formData.CLIENTE.RAZONSOC,
                 DIREENT: formData.DIREENT,
                 LOCENT: formData.LOCENT,
                 PROENT: formData.PROENT,
                 TELEFONOS: formData.TELEFONOS,
+                VENDEDOR: formData.VENDEDOR,
                 CONDVENTA: formData.CONDVENTA,
                 FECTRANS: formattedDate,
                 FECEMISION: formattedToday,
@@ -200,7 +215,8 @@ function PedidoEditApprove() {
     return (
         <div className="form-container w-100 ">
             <form className="w-100" onSubmit={handleSubmit}>
-            <h3 className="text-center">Controlar Pedido</h3>
+            {/* <h3 className="text-center">Controlar Pedido</h3> */}
+            <div className="bg-primary text-white h5" align="center" colSpan="11"><b>AUTORIZAR PEDIDOS</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
 
@@ -365,7 +381,7 @@ function PedidoEditApprove() {
             </div>
             <div className="form-buttons">
                 <button type="submit" className="m-4 btn btn-primary">Aprobar</button>
-                <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/')}>Cancelar</button>
+                <button type="button" className="m-4 btn btn-secondary" onClick={() => navigate('/check')}>Cancelar</button>
             </div>
             </form>
 
