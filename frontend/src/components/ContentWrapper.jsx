@@ -7,11 +7,9 @@ function ContentWrapper(){
         <React.Fragment>
             <div id="content-wrapper" className="d-flex flex-column">
                 <div id="content">
-                    <TopBar />
-                    <div className="container-fluid">
+                    <div className="">
                         <Content />
                     </div>
-                    {/* <Footer /> */}
                 </div>
             </div>
         </React.Fragment>

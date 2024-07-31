@@ -9,44 +9,99 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
+
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await fetch('http://localhost:3000/auth/login', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ username, password }),
+    //         });
+
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             localStorage.setItem('token', data.token);
+    //             localStorage.setItem('refreshToken', data.refreshToken);
+    //             setUser(data.user);
+    //             setMessage('Login successful');
+    //             navigate('/');
+    //         } else {
+    //             alert(data.message);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error logging in:', error);
+    //     }
+    // };
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:3000/auth/login', {
+            const response = await fetch('http://localhost:3000/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
             });
-
-            if (!res.ok) {
-                throw new Error('Login failed');
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                setUser(data.user);
+                setMessage('Login successful');
+                navigate('/');
+            } else {
+                console.error('Login failed:', data.message);
             }
-
-            const data = await res.json();
-            const { token, numero_vendedor } = data;
-
-            if (!token || !numero_vendedor) {
-                throw new Error('Invalid response from server');
-            }
-            
-            localStorage.setItem('token', token);
-            const authenticatedUser = { username, numero_vendedor }; // Reemplaza con datos reales
-            localStorage.setItem('user', JSON.stringify(authenticatedUser)); // Guardar usuario en local storage
-
-            setMessage('Login successful');
-            setUser(authenticatedUser);
-            
-            // window.location.href = '/'; 
-            navigate('/');
-        } catch (error) {
-            setMessage('Error logging in');
+        } catch (err) {
+            console.error('Login error:', err);
         }
     };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const res = await fetch('http://localhost:3000/auth/login', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ username, password }),
+    //         });
+
+    //         if (!res.ok) {
+    //             throw new Error('Login failed');
+    //         }
+
+    //         const data = await res.json();
+    //         localStorage.setItem('token', data.token);
+    //         setUser(data.user);
+    //         setMessage('Login successful');
+    //         navigate('/');
+    //     } catch (error) {
+    //         setMessage('Error logging in');
+    //     }
+    // };
 
     return (
         <div className="login-container">

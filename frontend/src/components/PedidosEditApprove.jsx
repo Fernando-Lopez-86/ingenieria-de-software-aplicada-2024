@@ -8,11 +8,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function PedidoEditApprove() {
     const navigate = useNavigate();
-    const { NROPED } = useParams();
+    const location = useLocation();
+    const { NROPED } = location.state;
+    // const { NROPED } = useParams();
     const { user } = useContext(UserContext);
     // const [CLIENTE, setCLIENTE] = useState('');
     // const [ENTREGA, setENTREGA] = useState('');
@@ -74,15 +77,32 @@ function PedidoEditApprove() {
     }));
 
 
+
+
     useEffect(() => {
-        fetch(`http://localhost:3000/api/pedidos/edit/${NROPED}`)
-            .then(response => {
+        if (!NROPED) {
+            setError('No se recibió un número de pedido válido');
+            setIsLoading(false);
+            return;
+        }
+
+        const fetchPedido = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/api/pedidos/edit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    body: JSON.stringify({ NROPED }),
+                });
+
                 if (!response.ok) {
                     throw new Error('Error al obtener los datos del pedido');
                 }
-                return response.json();
-            })
-            .then(data => {
+
+                const data = await response.json();
+                // setPedidoData(data.data);
                 setFormData({
                     ...data.data,
                     CLIENTE: {
@@ -91,14 +111,53 @@ function PedidoEditApprove() {
                     }
                 });
                 setIsLoading(false);
-            })
-            .catch(error => {
+            } catch (error) {
                 setError(error.message);
                 setIsLoading(false);
-            });
+            }
+        };
+
+        fetchPedido();
+    }, [NROPED]);
+
+
+
+    useEffect(() => {
+        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+        // fetch(`http://localhost:3000/api/pedidos/edit/${NROPED}?numero_vendedor=${user.numero_vendedor}`,{
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+        //         'Content-Type': 'application/json'
+        //     }
+        // })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error('Error al obtener los datos del pedido');
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         setFormData({
+        //             ...data.data,
+        //             CLIENTE: {
+        //                 NUMERO: data.data.CLIENTE,
+        //                 RAZONSOC: data.data.RAZONSOC
+        //             }
+        //         });
+        //         setIsLoading(false);
+        //     })
+        //     .catch(error => {
+        //         setError(error.message);
+        //         setIsLoading(false);
+        //     });
 
         // Fetch para obtener los ítems del pedido
-        fetch(`http://localhost:3000/api/pedidos/items/${NROPED}`)
+        fetch(`http://localhost:3000/api/pedidos/items/${NROPED}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Content-Type': 'application/json'
+            }
+        })
             .then(response => response.json())
             .then(data => setPedidoItems(data.data))
             .catch(error => console.error(`Error fetching items: ${error}`));
@@ -139,19 +198,22 @@ function PedidoEditApprove() {
 
 
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const formattedDate = formData.FECTRANS ? format(formData.FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
         const today = new Date();
         const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
-
-
-        fetch('http://localhost:3000/api/pedidos/check', {
+        
+        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+        const response = await fetch('http://localhost:3000/api/pedidos/check', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Content-Type': 'application/json'
+        },
+
+        
             body: JSON.stringify({
                 // ESTADOSEG: formData.ESTADOSEG,
                 NROPED: NROPED,

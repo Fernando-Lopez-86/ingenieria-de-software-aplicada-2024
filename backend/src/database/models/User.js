@@ -13,7 +13,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             numero_vendedor: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            rol: {
+                type: DataTypes.STRING,
                 allowNull: false,
             },
         },

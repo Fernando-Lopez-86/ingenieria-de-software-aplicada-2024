@@ -10,6 +10,7 @@ function Pedidos() {
     const [pedidosItems, setPedidosItems] = useState([]);
     const [selectedNROPED, setSelectedNROPED] = useState(null);
     const { user } = useContext(UserContext);
+    const numero_vendedor = user.numero_vendedor;
     const navigate = useNavigate();
 
     const formatDate = (dateString) => {
@@ -26,23 +27,63 @@ function Pedidos() {
     };
 
 
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/api/pedidos")
-    //         .then(response => response.json())
-    //         .then(data => setPedidos(data.data));
-    // }, []);
 
-    useEffect(() => {
-        const fetchPedidos = async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`);
+    const fetchPedidos = async () => {
+        try {
+            let token = localStorage.getItem('token');
+            // const refreshToken = localStorage.getItem('refreshToken');
+            const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
                 const data = await response.json();
                 setPedidos(data.data);
-            } catch (error) {
-                console.error("Error al obtener los pedidos:", error);
+            } else if (response.status === 401 ) {
+                // if (token) {
+                //     fetchPedidos(false);
+                // }
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                throw new Error(`Error fetching pedidos: ${response.status}`);
             }
-        };
+        } catch (error) {
+            console.error("Error al obtener los pedidos:", error);
+        }
+    };
 
+    const fetchPedidosItems = async (nroPed, retry = true) => {
+        try {
+            let token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/api/pedidos/items/${nroPed}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPedidosItems(data.data);
+            } else if (response.status === 401) {
+                // if (token) {
+                //     fetchPedidosItems(nroPed, false);
+                // }
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                throw new Error(`Error fetching pedidos items: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error al obtener los items de pedidos:", error);
+        }
+    };
+
+    useEffect(() => {
         if (user && user.numero_vendedor) {
             fetchPedidos();
         } else {
@@ -50,14 +91,110 @@ function Pedidos() {
         }
     }, [user]);
 
-
     useEffect(() => {
         if (selectedNROPED !== null) {
-            fetch(`http://localhost:3000/api/pedidos/items/${selectedNROPED}`)
-                .then(response => response.json())
-                .then(data => setPedidosItems(data.data));
+            fetchPedidosItems(selectedNROPED);
         }
     }, [selectedNROPED]);
+
+
+
+    // const fetchPedidos = async () => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             setPedidos(data.data);
+    //         } else {
+    //             throw new Error(`Error fetching pedidos: ${response.status}`);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error al obtener los pedidos:", error);
+    //     }
+    // };
+
+    // const fetchPedidosItems = async (nroPed) => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         const response = await fetch(`http://localhost:3000/api/pedidos/items/${nroPed}`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             setPedidosItems(data.data);
+    //         } else {
+    //             throw new Error(`Error fetching pedidos items: ${response.status}`);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error al obtener los items de pedidos:", error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     if (user && user.numero_vendedor) {
+    //         fetchPedidos();
+    //     } else {
+    //         console.error("El usuario no tiene un numero_vendedor definido.");
+    //     }
+    // }, [user]);
+
+    // useEffect(() => {
+    //     if (selectedNROPED !== null) {
+    //         fetchPedidosItems(selectedNROPED);
+    //     }
+    // }, [selectedNROPED]);
+
+
+
+    // useEffect(() => {
+    //     const fetchPedidos = async () => {
+    //         try {
+    //             const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+    //             const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
+    //             const data = await response.json();
+    //             setPedidos(data.data);
+    //         } catch (error) {
+    //             console.error("Error al obtener los pedidos:", error);
+    //         }
+    //     };
+
+    //     if (user && user.numero_vendedor) {
+    //         fetchPedidos();
+    //     } else {
+    //         console.error("El usuario no tiene un numero_vendedor definido.");
+    //     }
+    // }, [user]);
+
+
+    // useEffect(() => {
+    //     if (selectedNROPED !== null) {
+    //         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+    //         fetch(`http://localhost:3000/api/pedidos/items/${selectedNROPED}`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         })
+    //             .then(response => response.json())
+    //             .then(data => setPedidosItems(data.data));
+    //     }
+    // }, [selectedNROPED]);
 
 
     const handleRowClick = (nroPed) => {
@@ -74,8 +211,13 @@ function Pedidos() {
                 {
                     label: 'Sí',
                     onClick: () => {
-                        fetch(`http://localhost:3000/api/pedidos/${nroPed}`, {
+                        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+                        fetch(`http://localhost:3000/api/pedidos/${nroPed}?numero_vendedor=${user.numero_vendedor}`, {
                             method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                                'Content-Type': 'application/json'
+                            }
                         })
                         .then(response => {
                             if (response.ok) {
@@ -104,9 +246,37 @@ function Pedidos() {
     };
 
 
-    const handleModify = (nroPed) => {
-        navigate(`/edit/${nroPed}`);   // Redirigir a la ruta de edición
+    const handleModify = (NROPED) => {
+        // navigate(`/edit/${nroPed}`);   // Redirigir a la ruta de edición
+        // navigate('/edit');   // Redirigir a la ruta de edición
+        navigate('/edit', { state: { NROPED } });
     };
+
+    // Calcular el total de cada fila
+    const calcularTotal = (item) => {
+        const precio = parseFloat(item.PRECIO) || 0;
+        const cantidad = parseFloat(item.CANTPED) || 0;
+        const descuento = parseFloat(item.DESCUENTO) || 0;
+        return (precio * cantidad * (1 - descuento / 100)).toFixed(2);
+    };
+
+    // Formatear número para que tenga 2 decimales, punto como separador de miles y coma como separador de decimales
+    const formatearNumero = (numero) => {
+        return parseFloat(numero)
+            .toFixed(2) // Asegura que hay exactamente 2 decimales
+            .replace('.', ',') // Reemplaza el punto decimal con una coma
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Añade los puntos como separadores de miles
+    };
+
+    // Formatear número sin decimales, con punto como separador de miles
+    const formatearNumeroSinDecimales = (numero) => {
+        return parseInt(numero, 10)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
+    // Calcular el total general
+    const totalGeneral = pedidosItems.reduce((total, item) => total + parseFloat(calcularTotal(item)), 0).toFixed(2);
 
 
     return (
@@ -163,6 +333,7 @@ function Pedidos() {
                             <th>Bultos</th>
                             <th>Precio</th>
                             <th>Descuento</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -172,11 +343,17 @@ function Pedidos() {
                                 <td>{item.CLIENTE}</td>
                                 <td>{item.ITEM}</td>
                                 <td>{item.DESCART}</td>
-                                <td>{item.CANTPED}</td>
-                                <td>{item.PRECIO}</td>
-                                <td>{parseInt(Math.round(item.DESCUENTO))}</td>
+                                <td>{formatearNumeroSinDecimales(item.CANTPED)}</td>
+                                {/* <td>{item.PRECIO}</td> */}
+                                <td>{formatearNumero(item.PRECIO)}</td>
+                                <td>{formatearNumero(item.DESCUENTO)}</td>
+                                <td>{formatearNumero(calcularTotal(item))}</td>
                             </tr>
                         ))}
+                        <tr>
+                            <td></td><td></td><td></td><td><td></td></td><td></td><td><b></b></td>
+                            <td><b>{formatearNumero(totalGeneral)}</b></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

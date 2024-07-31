@@ -35,7 +35,13 @@ function PedidosCheck() {
     useEffect(() => {
         const fetchPedidos = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`);
+                const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+                const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                        'Content-Type': 'application/json'
+                    }
+                });
                 const data = await response.json();
                 setPedidos(data.data);
             } catch (error) {
@@ -104,8 +110,9 @@ function PedidosCheck() {
     };
 
 
-    const handleModify = (nroPed) => {
-        navigate(`/check/${nroPed}`);   // Redirigir a la ruta de edición
+    const handleModify = (NROPED) => {
+        // navigate(`/check/${nroPed}`);   // Redirigir a la ruta de edición
+        navigate('/check/approve', { state: { NROPED } });
     };
 
 

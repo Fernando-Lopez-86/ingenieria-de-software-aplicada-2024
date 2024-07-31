@@ -5,7 +5,7 @@ const { Pedidos, PedidosItem, Pedidos_temp, PedidosItem_temp, Numeracion, Numera
 
 module.exports = {
   
-    createPedido: async (pedidoData, res) => {
+    createPedido: async (pedidoData) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
         const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
@@ -72,7 +72,8 @@ module.exports = {
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
                 ESTADOSEG: 'P',
-                CODIGO: '21'
+                CODIGO: '21',
+                ESTADO: '00'
             }, { transaction });    
 
             if (!items || !Array.isArray(items)) {
@@ -97,7 +98,7 @@ module.exports = {
 
             await transaction.commit();
 
-            return { pedidos, pedidositem };
+            return { pedidos, pedidositem, newFuncion };
         } catch (error) {
                  await transaction.rollback();
                  throw new Error('Error al crear el pedido');
@@ -105,14 +106,14 @@ module.exports = {
     }, 
 
 
-    createPedidoCheck: async (pedidoData, res) => {
+    createPedidoCheck: async (pedidoData) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
         const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, pedidoItems } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
-        // try {
+        try {
             // Consulta al modelo Numeraciones para obtener el valor de FUNCION
             const numeracion = await Numeracion.findOne({
                 where: { CLAVE: 'SI091PD0001X' },
@@ -183,7 +184,8 @@ module.exports = {
                 NROPED: newFuncion,
                 NROREAL: newFuncion,
                 ESTADOSEG: 'A',
-                CODIGO: '21'
+                CODIGO: '21',
+                ESTADO: '00'
             }, { transaction });    
 
             if (!pedidoItems || !Array.isArray(pedidoItems)) {
@@ -209,19 +211,19 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem };
-        // } catch (error) {
-        //          await transaction.rollback();
-        //          throw new Error('Error al crear el pedido');
-        // }
+        } catch (error) {
+                 await transaction.rollback();
+                 throw new Error('Error al crear el pedido');
+        }
     }, 
 
 
-    updatePedido: async(data, NROPED) => {
+    updatePedido: async(data) => {
         //console.log('Data:', JSON.stringify(data, null, 2)); // Log completo del objeto pedidoData
         const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato yyyy-MM-dd
 
         // const { NROPED } = req.params;
-        const { CLIENTE, RAZONSOC, ENTREGA, LOCENT, PROENT, DIREENT, TELEFONOS, CONDVENTA, FECTRANS, COMENTARIO, pedidoItems } = data;
+        const { NROPED, CLIENTE, RAZONSOC, ENTREGA, LOCENT, PROENT, DIREENT, TELEFONOS, CONDVENTA, FECTRANS, COMENTARIO, pedidoItems } = data;
         const TIPO = 'P';
 
         try {
@@ -254,6 +256,8 @@ module.exports = {
                      }, 
                     transaction });
 
+                    console.log("item.PRECIO ",pedidoItems)
+
                 const newItems = pedidoItems.map(item => ({
                     NROPED,
                     CLIENTE,
@@ -277,8 +281,8 @@ module.exports = {
     },
 
 
-    editPedido: async(NROPED) => {
-        // console.log("NROPED SERVICE: "+NROPED)
+    editPedido: async(NROPED, numeroVendedor) => {
+        console.log("numeroVendedorrrrrr: "+numeroVendedor)
         // return Pedidos.findByPk(NROPED);
         try {
             const pedido = await Pedidos_temp.findOne({ 
@@ -286,6 +290,7 @@ module.exports = {
                     NROPED,
                     TIPO: 'P',
                     CODIGO: '21',
+                    VENDEDOR: numeroVendedor
                 }
             });
             return pedido;
@@ -295,7 +300,7 @@ module.exports = {
     },
 
 
-    destroyPedido: async (NROPED) => {
+    destroyPedido: async (NROPED, numeroVendedor) => {
         let transaction;
         try {
             // Iniciar una transacción
@@ -307,6 +312,7 @@ module.exports = {
                     NROPED: NROPED,
                     TIPO: 'P',
                     CODIGO: '21',
+                    VENDEDOR: numeroVendedor
                 },
                 transaction: transaction // especificar la transacción
             });

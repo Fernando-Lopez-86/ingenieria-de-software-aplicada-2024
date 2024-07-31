@@ -33,8 +33,9 @@ const pedidoControllerAPI = {
     },
 
     destroy: async (req, res) => {
+        const { numero_vendedor } = req.user
         try {
-            await pedidoService.destroyPedido(req.params.NROPED);
+            await pedidoService.destroyPedido(req.params.NROPED, numero_vendedor);
             res.status(200).send({ message: 'Pedido eliminado con éxito' });
         } catch (error) {
             res.status(500).send({ message: 'Error al eliminar el pedido' });
@@ -81,14 +82,19 @@ const pedidoControllerAPI = {
         //     res.render("/api/pedidos/edit", {pedidos});
         // });
         //const { NROPED } = req.params;
+        const { numero_vendedor } = req.user
+        console.log("req.user: ", req.user)
+        console.log("body: ", req.body.NROPED)
+        console.log("numero_vendedor", numero_vendedor)
         try {
-            const pedido = await pedidoService.editPedido(req.params.NROPED);
+            const pedido = await pedidoService.editPedido(req.body.NROPED, numero_vendedor);
             if (pedido) {
                 res.status(200).json({ data: pedido });
             } else {
                 res.status(404).json({ message: 'Pedido no encontrado' });
             }
         } catch (error) {
+            console.error('Error al obtener el pedido:', error);
             res.status(500).json({ message: 'Error al obtener el pedido', error: error.message });
         }
 
