@@ -75,7 +75,6 @@ function PedidosNew(){
         fetch("http://localhost:3000/api/articulos")
             .then(response => response.json())
             .then(data => {
-                console.log("Articulos:", data.data);
                 setArticulos(data.data);
             })
             .catch(error => console.error('Error fetching articulos:', error));
@@ -96,7 +95,6 @@ function PedidosNew(){
             fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Clientes:", data.data);
                     setClientes(data.data);
                 })
                 .catch(error => console.error('Error fetching clientes:', error));

@@ -256,7 +256,7 @@ module.exports = {
                      }, 
                     transaction });
 
-                    console.log("item.PRECIO ",pedidoItems)
+                    // console.log("item.PRECIO ",pedidoItems)
 
                 const newItems = pedidoItems.map(item => ({
                     NROPED,
@@ -282,7 +282,7 @@ module.exports = {
 
 
     editPedido: async(NROPED, numeroVendedor) => {
-        console.log("numeroVendedorrrrrr: "+numeroVendedor)
+        // console.log("numeroVendedorrrrrr: "+numeroVendedor)
         // return Pedidos.findByPk(NROPED);
         try {
             const pedido = await Pedidos_temp.findOne({ 

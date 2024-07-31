@@ -68,7 +68,6 @@ function PedidosCheck() {
 
     const handleRowClick = (nroPed) => {
         setSelectedNROPED(nroPed);
-        console.log("NROPEDDD:"+selectedNROPED)
     };
 
 
@@ -133,7 +132,8 @@ function PedidosCheck() {
                     </thead>
                     <tbody>
                         {pedidos.map(pedido => (
-                            <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
+                            // <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
+                            <tr key={pedido.NROPED} >
                                 <td>{formatDate(pedido.FECEMISION)}</td>
                                 <td>{pedido.CLIENTE}</td>
                                 <td>{pedido.RAZONSOC}</td>

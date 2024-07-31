@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
+import { UserContext } from '../components/UserContext';
 import image from '../assets/images/logo3.png';
 import '../assets/css/style.css';
 
 function SideBar(){
+    const { user } = useContext(UserContext);
     return(
         <React.Fragment>
             <nav className="">
@@ -26,9 +28,12 @@ function SideBar(){
                         <Link className="text-white fw-bold" to={{pathname: "/new"}} style={{fontSize: '1.3rem'}}>Nuevo</Link>
                     </li>
 
-                    <li className="nav-item container-fluid p-1 ml-4">
-                        <Link className="text-white fw-bold" to={{pathname: "/check"}} style={{fontSize: '1.3rem'}}>Controlar</Link>
-                    </li>
+                    {user && user.rol !== 'vendedor' && (
+                        <li className="nav-item container-fluid p-1 ml-4">
+                            <Link className="text-white fw-bold" to={{pathname: "/check"}} style={{fontSize: '1.3rem'}}>Controlar</Link>
+                        </li>
+                    )}
+
 
                     <hr className="sidebar-divider d-none d-md-block"/>
                 </ul>

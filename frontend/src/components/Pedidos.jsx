@@ -199,7 +199,6 @@ function Pedidos() {
 
     const handleRowClick = (nroPed) => {
         setSelectedNROPED(nroPed);
-        console.log("NROPEDDD:"+selectedNROPED)
     };
 
 

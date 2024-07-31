@@ -187,7 +187,7 @@ function PedidoEditApprove() {
             fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Clientes:", data.data);
+                    // console.log("Clientes:", data.data);
                     setClientes(data.data);
                 })
                 .catch(error => console.error('Error fetching clientes:', error));

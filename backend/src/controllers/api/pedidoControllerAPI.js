@@ -83,9 +83,9 @@ const pedidoControllerAPI = {
         // });
         //const { NROPED } = req.params;
         const { numero_vendedor } = req.user
-        console.log("req.user: ", req.user)
-        console.log("body: ", req.body.NROPED)
-        console.log("numero_vendedor", numero_vendedor)
+        // console.log("req.user: ", req.user)
+        // console.log("body: ", req.body.NROPED)
+        // console.log("numero_vendedor", numero_vendedor)
         try {
             const pedido = await pedidoService.editPedido(req.body.NROPED, numero_vendedor);
             if (pedido) {
