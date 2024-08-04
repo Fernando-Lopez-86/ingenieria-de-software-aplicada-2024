@@ -102,7 +102,7 @@ const pedidoControllerAPI = {
 
     update: async(req, res) => {
         try {
-            const updatedPedido = await pedidoService.updatePedido(req.body, req.params.NROPED);
+            const updatedPedido = await pedidoService.updatePedido(req.body);
             if (updatedPedido) {
                 res.status(200).json({ message: 'Pedido actualizado correctamente' });
             } else {

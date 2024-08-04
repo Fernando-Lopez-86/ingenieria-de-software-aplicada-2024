@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,10 +14,20 @@ import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import { UserContext } from './UserContext'; 
 import { NumericFormat } from 'react-number-format';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+
+// Establecer la ruta del trabajador a la versión local del paquete
+// pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.mjs`;
+
+
 
 
 function PedidosNew(){
+
+    const [pdfText, setPdfText] = useState('');
+
     const navigate = useNavigate();
     const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
@@ -48,7 +60,7 @@ function PedidosNew(){
 
 
     const options = articulos.map(articulo => ({
-        value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP },
+        value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP, CODBARRAS: articulo.CODBARRAS },
         label: articulo.DESCRIP
     }));
 
@@ -147,6 +159,7 @@ function PedidosNew(){
         const newItems = [...items];
         newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
         newItems[index].DESCART = selectedOption ? selectedOption.DESCRIP : null;
+        newItems[index].CODBARRAS = selectedOption ? selectedOption.CODBARRAS : null;
         setItems(newItems);
     };
 
@@ -186,6 +199,352 @@ function PedidosNew(){
         const newItems = items.filter((item, i) => i !== index);
         setItems(newItems);
     };
+
+
+
+
+
+
+
+
+    const handleImportPdf = () => {
+        document.getElementById('pdfInput').click();
+    };
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            console.log('Archivo seleccionado:', file.name);
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const typedArray = new Uint8Array(reader.result);
+                await parsePdf(typedArray);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            setError('Solo se permiten archivos PDF.');
+            setShowModal(true);
+            setModalMessage('Solo se permiten archivos PDF.'); // Asegurar que el mensaje se establece para el modal
+        }
+    };
+
+
+    const parsePdf = async (typedArray) => {
+        try {
+            removeItem(0);
+            console.log('Comenzando a parsear el PDF...');
+            const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+    
+            const pdf = await loadingTask.promise;
+            console.log('PDF cargado:', pdf);
+    
+            const numPages = pdf.numPages;
+            console.log(`El PDF tiene ${numPages} páginas.`);
+    
+            let orderItems = [];
+    
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdf.getPage(i);
+                console.log(`Página ${i} cargada.`);
+    
+                const textContent = await page.getTextContent();
+                console.log(`Contenido de texto de la página ${i}:`, textContent.items);
+    
+                // Agrupar el texto en líneas completas
+                const lines = [];
+                let currentLine = '';
+                let lastY = null;
+    
+                textContent.items.forEach((item, index) => {
+                    const { str, transform } = item;
+    
+                    // Verificar que str es una cadena válida
+                    if (typeof str !== 'string') {
+                        console.warn(`Elemento ${index} no es un string:`, item);
+                        return; // Saltar si no es un string válido
+                    }
+    
+                    // Verificar que transform tiene la longitud esperada
+                    if (!transform || transform.length < 6) {
+                        console.warn(`Elemento ${index} no tiene un transform válido:`, item);
+                        return; // Saltar si transform no tiene la longitud correcta
+                    }
+    
+                    // Detectar nueva línea basada en el cambio vertical en 'transform'
+                    const y = transform[5]; // Posición vertical
+                    if (lastY === null || Math.abs(y - lastY) > 2) { // Ajustar la diferencia según sea necesario
+                        if (currentLine.trim()) {
+                            lines.push(currentLine.trim());
+                        }
+                        currentLine = str;
+                    } else {
+                        currentLine += ' ' + str;
+                    }
+    
+                    lastY = y;
+                });
+    
+                // Añadir la última línea si existe
+                if (currentLine.trim()) {
+                    lines.push(currentLine.trim());
+                }
+    
+                let tableStarted = false;
+    
+                lines.forEach((line) => {
+                    // Verificar que line es un string antes de usar includes
+                    if (typeof line !== 'string') {
+                        console.warn('Texto no es un string:', line);
+                        return; // Saltar si no es un string válido
+                    }
+    
+                    if (!tableStarted && line.includes('EAN')) {
+                        tableStarted = true;
+                        console.log('Encontrado el inicio de la tabla de EANs.');
+                        return; // Continuar a la siguiente línea, ya que esta es la cabecera
+                    }
+    
+                    if (tableStarted) {
+                        const ean = extractEanFromLine(line);
+    
+                        if (ean) {
+                            console.log('Línea completa:', line); // Imprime toda la línea de la tabla
+    
+                            // Divide la línea en componentes separados por espacio
+                            const detailsArray = line.split(/\s+/);
+    
+                            // Crea un objeto JSON con la línea completa
+                            const jsonObject = {
+                                ean: detailsArray[0], // El primer valor como EAN
+                                refProv: detailsArray[1],
+                                descripcion: detailsArray.slice(2, -4).join(' '), // Todo el texto hasta las últimas 4 columnas
+                                um: "",
+                                uc: "",
+                                talle: "",
+                                color: "",
+                                cantPed: parseInt(detailsArray[detailsArray.length - 3], 10),
+                                precio: parseFloat(detailsArray[detailsArray.length - 2])
+                                // precio: parseFloat(detailsArray[detailsArray.length - 2].replace(',', '.'))
+                            };
+    
+                            console.log('JSON de la fila:', jsonObject); // Muestra el objeto JSON por consola
+    
+                            orderItems.push(jsonObject);
+                        }
+                    }
+                });
+            }
+    
+            console.log('Ítems extraídos:', orderItems);
+            addItemsToOrder(orderItems);
+        } catch (error) {
+            console.error('Error al parsear el PDF:', error);
+        }
+    };
+    
+
+
+    // const parsePdf = async (typedArray) => {
+    //     try {
+    //         removeItem(0);
+    //         console.log('Comenzando a parsear el PDF...');
+    //         const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+    
+    //         const pdf = await loadingTask.promise;
+    //         console.log('PDF cargado:', pdf);
+    
+    //         const numPages = pdf.numPages;
+    //         console.log(`El PDF tiene ${numPages} páginas.`);
+    
+    //         let orderItems = [];
+    
+    //         for (let i = 1; i <= numPages; i++) {
+    //             const page = await pdf.getPage(i);
+    //             console.log(`Página ${i} cargada.`);
+    
+    //             const textContent = await page.getTextContent();
+    //             console.log(`Contenido de texto de la página ${i}:`, textContent.items);
+    
+    //             // Agrupar el texto en líneas completas
+    //             const lines = [];
+    //             let currentLine = '';
+    
+    //             textContent.items.forEach((item, index) => {
+    //                 const { str, transform } = item;
+    
+    //                 // Verificar que str es una cadena válida
+    //                 if (typeof str !== 'string') {
+    //                     console.warn(`Elemento ${index} no es un string:`, item);
+    //                     return; // Saltar si no es un string válido
+    //                 }
+    
+    //                 // Detectar nueva línea basada en el cambio vertical en 'transform'
+    //                 if (currentLine && transform[5] !== lines[lines.length - 1]?.transform[5]) {
+    //                     lines.push(currentLine);
+    //                     currentLine = '';
+    //                 }
+    
+    //                 currentLine += str + ' ';
+    //                 lines.push({ text: currentLine.trim(), transform });
+    //             });
+    
+    //             let tableStarted = false;
+    
+    //             lines.forEach(({ text }) => {
+    //                 // Verificar que text es un string antes de usar includes
+    //                 if (typeof text !== 'string') {
+    //                     console.warn('Texto no es un string:', text);
+    //                     return; // Saltar si no es un string válido
+    //                 }
+    
+    //                 if (!tableStarted && text.includes('EAN')) {
+    //                     tableStarted = true;
+    //                     console.log('Encontrado el inicio de la tabla de EANs.');
+    //                     return; // Continuar a la siguiente línea, ya que esta es la cabecera
+    //                 }
+    
+    //                 if (tableStarted) {
+    //                     const ean = extractEanFromLine(text);
+                        
+    //                     if (ean) {
+    //                         console.log('Línea completa:', text); // Imprime toda la línea de la tabla
+    //                         const otherDetails = extractDetailsFromLine(text);
+    //                         console.log('EAN encontrado:', ean);
+    //                         orderItems.push({ ean, ...otherDetails });
+    //                     }
+    //                 }
+    //             });
+    //         }
+    
+    //         console.log('Ítems extraídos:', orderItems);
+    //         addItemsToOrder(orderItems);
+    //     } catch (error) {
+    //         console.error('Error al parsear el PDF:', error);
+    //     }
+    // };
+
+
+    // const parsePdf = async (typedArray) => {
+    //     try {
+    //         removeItem(0)
+    //         console.log('Comenzando a parsear el PDF...');
+    //         const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+    
+    //         const pdf = await loadingTask.promise;
+    //         console.log('PDF cargado:', pdf);
+    
+    //         const numPages = pdf.numPages;
+    //         console.log(`El PDF tiene ${numPages} páginas.`);
+    
+    //         let orderItems = [];
+           
+    
+    //         for (let i = 1; i <= numPages; i++) {
+    //             const page = await pdf.getPage(i);
+    //             console.log(`Página ${i} cargada.`);
+    
+    //             const textContent = await page.getTextContent();
+    //             console.log(`Contenido de texto de la página ${i}:`, textContent.items);
+    
+    //             const lines = textContent.items.map((item) => item.str);
+
+    //             let tableStarted = false;
+
+    //             lines.forEach((line) => {
+    //                 if (!tableStarted && line.includes('EAN')) {
+    //                     tableStarted = true;
+    //                     console.log('Encontrado el inicio de la tabla de EANs.');
+    //                     return; // Continuar a la siguiente línea, ya que esta es la cabecera
+    //                 }
+    
+    //                 if (tableStarted) {
+    //                     const ean = extractEanFromLine(line);
+                        
+    //                     if (ean) {
+    //                         console.log('Línea completa:', line);
+    //                         const otherDetails = extractDetailsFromLine(line);
+    //                         console.log('EAN encontrado:', ean);
+    //                         orderItems.push({ ean, ...otherDetails });
+    //                     }
+    //                 }
+    //             });
+    //         }
+    
+    //         console.log('Ítems extraídos:', orderItems);
+    //         addItemsToOrder(orderItems);
+    //     } catch (error) {
+    //         console.error('Error al parsear el PDF:', error);
+    //     }
+    // };
+
+
+
+    const addItemsToOrder = (orderItems) => {
+        setItems((prevItems) => {
+            const maxItem = prevItems.length > 0 ? Math.max(...prevItems.map(item => parseInt(item.ITEM, 10))) : 0;
+    
+            const newItems = orderItems.map((item, index) => {
+                const articulo = articulos.find((art) => art.CODBARRAS === item.ean);
+    
+                if (articulo) {
+                    console.log('Artículo encontrado:', articulo);
+    
+                    // Incrementar en 1 para cada nuevo artículo añadido
+                    const newItemNumber = (maxItem + index + 1).toString().padStart(3, '0');
+    
+                    return {
+                        ITEM: newItemNumber,
+                        DESCART: articulo.DESCRIP,
+                        ARTICULO: articulo.NUMERO,
+                        CANTPED: item.cantPed || 0,
+                        PRECIO: item.precio || 0.0,
+                        DESCUENTO: 0
+                    };
+                } else {
+                    console.log('Artículo no encontrado para EAN:', item.ean);
+                    return null; 
+                }
+            }).filter(item => item !== null); 
+    
+            return [...prevItems, ...newItems]; 
+        });
+    };
+
+
+
+    const extractEanFromLine = (line) => {
+        const eanRegex = /(\d{13})/; 
+        const match = line.match(eanRegex);
+        return match ? match[0] : null;
+    };
+
+    const extractDetailsFromLine = (line) => {
+        // Expresión regular para capturar cantidad y precio basado en el formato
+        const detailsRegex = /\b(\d{13})\s+\d+\s+.*?\s+\d+\s+\d+\s+\S+\s+\S+\s+(\d+)\s+([\d,.]+)/;
+        const match = line.match(detailsRegex);
+    
+        if (match) {
+            // const cantidad = parseInt(match[2].replace(',', ''), 10);
+            // const precio = parseFloat(match[3].replace(',', '.'));
+            const cantidad = match[2];
+            const precio = match[3];
+    
+            console.log('Detalles extraídos:', { cantidad, precio });
+    
+            return {
+                cantidad,
+                precio
+            };
+        }
+    
+        console.log('No se encontraron detalles en la línea:', line);
+        return {};
+    };
+    
+
+
+
+
 
 
     const generatePDF = (data, formaPagoLabel, provinciaLabel, nropedido) => {
@@ -257,9 +616,9 @@ function PedidosNew(){
         currentY += cellHeight;
         drawRow(currentY, "Localidad Entrega:",  data.LOCENT.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Fecha Entrega:",  data.FECTRANS);
-        currentY += cellHeight;
         drawRow(currentY, "Provincia Entrega:", provinciaLabel.toUpperCase());
+        currentY += cellHeight;
+        drawRow(currentY, "Fecha Entrega:",  data.FECTRANS);
         currentY += cellHeight;
         drawRow(currentY, "Teléfono Entrega:",  data.TELEFONOS);
         currentY += cellHeight;
@@ -425,7 +784,7 @@ function PedidosNew(){
 
     return (
         <div className="form-container w-100">
-            <form className="w-100" onSubmit={handleSubmit} noValidate>
+            <form className="w-100" onSubmit={handleSubmit} noValidate autoComplete="off">
             {/* <h3 className="text-center">Nuevo Pedido</h3> */}
             <div className="bg-primary text-white h5" align="center" colSpan="11"><b>NUEVO PEDIDOS</b></div>
             <div className="form-container w-100">
@@ -454,6 +813,7 @@ function PedidosNew(){
                             value={optionsFormasDePago.find(option => option.value === CONDVENTA) || null}
                             onChange={handleFormaDePagoChange}
                             options={optionsFormasDePago}
+                            autoComplete="off"
                             isSearchable
                             placeholder="Seleccionar Forma de Pago"
                             menuPortalTarget={document.body}
@@ -549,7 +909,17 @@ function PedidosNew(){
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">
                     <div className="form-container d-flex justify-content-between">
                         <h3>Items del Pedido</h3>
-                        <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button>
+                        <div>
+                            <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem} style={{ marginRight: '10px' }}><FontAwesomeIcon icon={faPlus} /></button>
+                            <button onClick={handleImportPdf} className="btn btn-outline-primary mr-2 mb-2 mt-1" style={{ borderRadius: '4px' }} disabled={CLIENTE.NUMERO !== '0340002'}>Importar PDF</button>
+                                <input
+                                type="file"
+                                accept="application/pdf"
+                                id="pdfInput"
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange}
+                                />
+                        </div>
                     </div>
                     <div className="table-responsive">
                         <table className="table table-hover">
@@ -572,6 +942,7 @@ function PedidosNew(){
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value.NUMERO === item.ARTICULO) || null}
                                                 onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
+                                                // onValueChange={(selectedOption) => handleArticuloChange(index, selectedOption.value, 'DESCRIPT')}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
@@ -581,6 +952,12 @@ function PedidosNew(){
                                                 required
                                                 data-error="Por favor, seleccione un artículo."
                                             />
+
+                                            {/* <Select
+                                                value={options.find(option => option.value.NUMERO === item.ARTICULO)}
+                                                onChange={selectedOption => handleArticuloChange(index, selectedOption)}
+                                                options={options}
+                                            /> */}
 
                                         </td>
                                         <td className="form-group column column-medium">
@@ -674,4 +1051,7 @@ function PedidosNew(){
 }
 
 export default PedidosNew;
+
+
+
 

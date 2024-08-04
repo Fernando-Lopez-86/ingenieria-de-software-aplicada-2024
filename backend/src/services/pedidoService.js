@@ -73,7 +73,10 @@ module.exports = {
                 NROREAL: newFuncion,
                 ESTADOSEG: 'P',
                 CODIGO: '21',
-                ESTADO: '00'
+                ESTADO: '00',
+                TRANSPORTE: '000',
+                CONGELA: 'S',
+                OPERACION: '01'
             }, { transaction });    
 
             if (!items || !Array.isArray(items)) {
@@ -185,7 +188,10 @@ module.exports = {
                 NROREAL: newFuncion,
                 ESTADOSEG: 'A',
                 CODIGO: '21',
-                ESTADO: '00'
+                ESTADO: '00',
+                TRANSPORTE: '000',
+                CONGELA: 'S',
+                OPERACION: '01'
             }, { transaction });    
 
             if (!pedidoItems || !Array.isArray(pedidoItems)) {
@@ -275,6 +281,7 @@ module.exports = {
     
             return true;  // Devolver true si la transacción fue exitosa
         } catch (error) {
+            await transaction.rollback();
             console.error('Error al actualizar el pedido:', error);
             return false;  // Devolver false si hubo un error
         }
@@ -385,7 +392,7 @@ module.exports = {
                         foreignKey: 'VENDEDOR', // Clave foránea correcta
                     }
                 ],
-                order: [["NROPED", "ASC"]],
+                order: [["FECEMISION", "DESC"]],
             });
 
             // Mapea los resultados para agregar el nombre del vendedor en el campo adecuado
