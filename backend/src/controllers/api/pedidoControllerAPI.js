@@ -17,6 +17,21 @@ const pedidoControllerAPI = {
         })
     },
 
+    listCheck: (req, res) => {
+        pedidoService.getAllPedidosCheck()
+        .then(pedidos => {
+            let respuesta = {
+                meta: {
+                    status: 200,
+                    total: pedidos.length,
+                    url: "/api/pedidos/pending",
+                },
+                data: pedidos,
+            };
+            res.json(respuesta);
+        })
+    },
+
     listItems: (req, res) => {
         pedidoService.getAllPedidosItems(req.params.nroped)
         .then(items => {
@@ -88,6 +103,34 @@ const pedidoControllerAPI = {
         // console.log("numero_vendedor", numero_vendedor)
         try {
             const pedido = await pedidoService.editPedido(req.body.NROPED, numero_vendedor);
+            if (pedido) {
+                res.status(200).json({ data: pedido });
+            } else {
+                res.status(404).json({ message: 'Pedido no encontrado' });
+            }
+        } catch (error) {
+            console.error('Error al obtener el pedido:', error);
+            res.status(500).json({ message: 'Error al obtener el pedido', error: error.message });
+        }
+
+    },
+
+    editApprove: async(req, res) => {
+        // const marcas = await brandService.getAllBrands();
+        // const categorias = await categoryService.getAllCategories();
+        // console.log("NROPEDDDDD: "+req.params.NROPED)
+        //pedidoService.editPedido(req.params.NROPED)
+        //console.log("TIPODDD: "+req.body.tipo)
+        // .then((pedidos) => {
+        //     res.render("/api/pedidos/edit", {pedidos});
+        // });
+        //const { NROPED } = req.params;
+        // const { numero_vendedor } = req.user
+        // console.log("req.user: ", req.user)
+        // console.log("body: ", req.body.NROPED)
+        // console.log("numero_vendedor", numero_vendedor)
+        try {
+            const pedido = await pedidoService.editPedidoApprove(req.body.NROPED);
             if (pedido) {
                 res.status(200).json({ data: pedido });
             } else {

@@ -9,12 +9,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { Modal, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
+import { NumericFormat } from 'react-number-format';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function PedidoEditApprove() {
     const navigate = useNavigate();
     const location = useLocation();
     const { NROPED } = location.state;
+    const API_URL = process.env.REACT_APP_API_URL;
     // const { NROPED } = useParams();
     const { user } = useContext(UserContext);
     // const [CLIENTE, setCLIENTE] = useState('');
@@ -88,7 +90,7 @@ function PedidoEditApprove() {
 
         const fetchPedido = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/pedidos/edit', {
+                const response = await fetch(`${API_URL}/api/pedidos/approve`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -152,7 +154,7 @@ function PedidoEditApprove() {
         //     });
 
         // Fetch para obtener los ítems del pedido
-        fetch(`http://localhost:3000/api/pedidos/items/${NROPED}`, {
+        fetch(`${API_URL}/api/pedidos/items/${NROPED}`, {
             headers: {
                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
                 'Content-Type': 'application/json'
@@ -162,16 +164,16 @@ function PedidoEditApprove() {
             .then(data => setPedidoItems(data.data))
             .catch(error => console.error(`Error fetching items: ${error}`));
         
-        fetch("http://localhost:3000/api/articulos")
+        fetch(`${API_URL}/api/articulos`)
             .then(response => response.json())
             .then(data => setArticulos(data.data));
 
-        fetch("http://localhost:3000/api/tablas/formas-pago")
+        fetch(`${API_URL}/api/tablas/formas-pago`)
             .then(response => response.json())
             .then(data => setFormasDePago(data.data))
             .catch(error => console.error('Error fetching formas de pago:', error));
         
-        fetch("http://localhost:3000/api/tablas/provincias")
+        fetch(`${API_URL}/api/tablas/provincias`)
             .then(response => response.json())
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
@@ -184,7 +186,7 @@ function PedidoEditApprove() {
 
     useEffect(() => {
         if (user && user.numero_vendedor) {
-            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+            fetch(`${API_URL}/api/clientes?numero_vendedor=${user.numero_vendedor}`)
                 .then(response => response.json())
                 .then(data => {
                     // console.log("Clientes:", data.data);
@@ -206,7 +208,7 @@ function PedidoEditApprove() {
         const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
         
         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-        const response = await fetch('http://localhost:3000/api/pedidos/check', {
+        const response = await fetch(`${API_URL}/api/pedidos/check`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
@@ -249,7 +251,7 @@ function PedidoEditApprove() {
                 setShowModal(true);
                 setTimeout(() => {
                     setShowModal(false);
-                    navigate('/');  
+                    navigate('/check');  
                 }, 3000);
             })
             .catch(error => {
@@ -427,8 +429,32 @@ function PedidoEditApprove() {
                                             />
                                         </td>
                                         <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED}  required disabled/></td>
-                                        <td className="form-group column column-medium"><input type="text" name="PRECIO" value={item.PRECIO}  required disabled/></td>
-                                        <td className="form-group column column-medium"><input type="text" name="DESCUENTO" value={item.DESCUENTO ? parseInt(Math.round(item.DESCUENTO)) : 0}  required disabled/></td>
+                                        <td className="form-group column column-medium">
+                                            {/* <input type="text" name="PRECIO" value={item.PRECIO}  required disabled/> */}
+                                            <NumericFormat
+                                                value={item.PRECIO} // Valor numérico a mostrar
+                                                displayType="input" // Tipo de componente a mostrar ("input" o "text")
+                                                thousandSeparator="." // Separador de miles
+                                                decimalSeparator="," // Separador decimal
+                                                decimalScale={2} // Máximo de decimales permitidos
+                                                fixedDecimalScale={true} // Mostrar siempre los decimales
+                                                allowNegative={false} // No permitir valores negativos
+                                                disabled // Campo de entrada deshabilitado
+                                            />
+                                        </td>
+                                        <td className="form-group column column-medium">
+                                            {/* <input type="text" name="DESCUENTO" value={item.DESCUENTO ? parseInt(Math.round(item.DESCUENTO)) : 0}  required disabled/> */}
+                                            <NumericFormat
+                                                value={item.DESCUENTO} // Valor numérico a mostrar
+                                                displayType="input" // Tipo de componente a mostrar ("input" o "text")
+                                                thousandSeparator="." // Separador de miles
+                                                decimalSeparator="," // Separador decimal
+                                                decimalScale={2} // Máximo de decimales permitidos
+                                                fixedDecimalScale={true} // Mostrar siempre los decimales
+                                                allowNegative={false} // No permitir valores negativos
+                                                disabled // Campo de entrada deshabilitado
+                                            />
+                                        </td>
                                         {/* <td className="form-group column column-small text-center">
                                             <button type="button" className="btn btn-sm btn-outline-danger remove-button" onClick={() => removeItem(index)}>
                                                 <FontAwesomeIcon icon={faTrash} />

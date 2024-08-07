@@ -9,12 +9,15 @@ span{
 
   .sidebar-brand {
     margin-top: 10px; /* Ajusta el valor según sea necesario */
-    margin-bottom: 30px;
+    /* margin-bottom: 10px; */
 }
 
 .sidebar-brand img {
-    height: 60px; /* Ajusta el valor según sea necesario */
-    
+    height: 65px; /* Ajusta el valor según sea necesario */
+}
+
+.sidebar-brand-icon img {
+    max-height: 65px; /* Ajusta la altura máxima de la imagen si es necesario */
 }
 
 /* Agrega esta regla CSS para ajustar el ancho de la topbar */
@@ -26,6 +29,8 @@ span{
 #sidebarToggleTop {
   margin-right: 15px; /* Ajusta el margen según sea necesario */
 }
+
+
 
 
 

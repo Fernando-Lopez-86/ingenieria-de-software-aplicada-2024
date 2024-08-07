@@ -1,9 +1,11 @@
 
 const config = require("./config");
+const fs = require('fs');
 const express = require("express");
 const app = express();
 const path = require("path");
 const cors = require("cors");
+const https = require('https');
 const { Sequelize } = require('sequelize');
 const CircuitBreaker = require('opossum');
 
@@ -19,7 +21,7 @@ app.use(
     cors(
         (corsOptions = {
             origin: "*",
-            methods: ['GET', 'POST'],
+            methods: ['GET', 'POST', 'DELETE'],
             allowedHeaders: ['Content-Type', 'Authorization'],
         })
     )
@@ -105,8 +107,20 @@ function connectDatabase() {
 // Se intenta conectar a la base de datos al inicio y, si es exitoso, se inicia el servidor.
 connectDatabase()
     .then(() => {
+        // Carga los certificados SSL
+        const sslOptions = {
+            key: fs.readFileSync('C:/nginx/ssl/nginx-selfsigned.key'),
+            cert: fs.readFileSync('C:/nginx/ssl/nginx-selfsigned.crt')
+        };
         const PORT = process.env.PORT || 3000;
-        app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+        const HOST = '0.0.0.0'
+        // app.listen(PORT, HOST,  () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+
+        // Escuchar en HTTPS
+        https.createServer(sslOptions, app).listen(PORT, HOST, '0.0.0.0', () => {
+            console.log(`Servidor corriendo en https://0.0.0.0:${PORT}`);
+        });
+
     })
     .catch(err => {
         console.error('Error connecting to database:', err);

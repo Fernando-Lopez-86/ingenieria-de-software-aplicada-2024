@@ -12,6 +12,8 @@ function PedidosCheck() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const formatDate = (dateString) => {
         // Convertir la cadena de fecha a un objeto Date
         const date = new Date(dateString);
@@ -36,7 +38,8 @@ function PedidosCheck() {
         const fetchPedidos = async () => {
             try {
                 const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-                const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+                const response = await fetch(`${API_URL}/api/pedidos/pending`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
                         'Content-Type': 'application/json'
@@ -49,7 +52,7 @@ function PedidosCheck() {
             }
         };
 
-        if (user && user.numero_vendedor) {
+        if (user) {
             fetchPedidos();
         } else {
             console.error("El usuario no tiene un numero_vendedor definido.");
@@ -59,7 +62,7 @@ function PedidosCheck() {
 
     useEffect(() => {
         if (selectedNROPED !== null) {
-            fetch(`http://localhost:3000/api/pedidos/items/${selectedNROPED}`)
+            fetch(`${API_URL}/api/pedidos/items/${selectedNROPED}`)
                 .then(response => response.json())
                 .then(data => setPedidosItems(data.data));
         }
@@ -79,7 +82,7 @@ function PedidosCheck() {
                 {
                     label: 'Sí',
                     onClick: () => {
-                        fetch(`http://localhost:3000/api/pedidos/${nroPed}`, {
+                        fetch(`${API_URL}/api/pedidos/${nroPed}`, {
                             method: 'DELETE',
                         })
                         .then(response => {
@@ -112,34 +115,35 @@ function PedidosCheck() {
     const handleModify = (NROPED) => {
         // navigate(`/check/${nroPed}`);   // Redirigir a la ruta de edición
         navigate('/check/approve', { state: { NROPED } });
+        // navigate('/approve', { state: { NROPED } });
     };
 
 
     return (
         <div className="pedidos-container">
             <div className="pedidos-check">
-                <div className="bg-primary text-white h5" align="center" colSpan="11"><b>AUTORIZAR PEDIDOS</b></div>
-                <table className="table table-hover table-pedidos">
+                <div className="header-sticky bg-primary text-white h4" align="center" colSpan="11"><b>AUTORIZAR PEDIDOS</b></div>
+                <table className="table table-hover table-pedidos-check">
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Nro Cliente</th>
-                            <th>Cliente</th>
-                            <th>Vendedor</th>
-                            <th>Estado</th>
-                            <th className="text-center">Acciones</th>
+                            <th className="p-1">Fecha</th>
+                            <th className="p-1">Nro Cliente</th>
+                            <th className="p-1">Cliente</th>
+                            <th className="p-1">Vendedor</th>
+                            <th className="p-1">Estado</th>
+                            <th className="p-1 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pedidos.map(pedido => (
                             // <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
                             <tr key={pedido.NROPED} >
-                                <td>{formatDate(pedido.FECEMISION)}</td>
-                                <td>{pedido.CLIENTE}</td>
-                                <td>{pedido.RAZONSOC}</td>
-                                <td>{pedido.VENDEDOR}</td>
-                                <td>{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
-                                <td className="" align="center">
+                                <td className="p-1">{formatDate(pedido.FECEMISION)}</td>
+                                <td className="p-1">{pedido.CLIENTE}</td>
+                                <td className="p-1">{pedido.RAZONSOC}</td>
+                                <td className="p-1">{pedido.VENDEDOR}</td>
+                                <td className="p-1">{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
+                                <td className="p-1" align="center">
                                     {/* <button
                                         className="btn btn-sm btn-outline-danger mr-1"
                                         onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}

@@ -18,6 +18,7 @@ function PedidoEditForm() {
     const navigate = useNavigate();
     const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
 
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const location = useLocation();
     const { NROPED } = location.state;
@@ -84,11 +85,11 @@ function PedidoEditForm() {
    
     useEffect(() => {
         const fetchPedido = async () => {
+            
             try {
                 const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
                 
-                // const response = await fetch(`http://localhost:3000/api/pedidos/edit/${NROPED}?numero_vendedor=${user.numero_vendedor}`, {
-                const response = await fetch('http://localhost:3000/api/pedidos/edit', {
+                const response = await fetch(`${API_URL}/api/pedidos/edit`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
@@ -128,7 +129,7 @@ function PedidoEditForm() {
     useEffect(() => {
         // Fetch para obtener los ítems del pedido
         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-        fetch(`http://localhost:3000/api/pedidos/items/${NROPED}`, {
+        fetch(`${API_URL}/api/pedidos/items/${NROPED}`, {
             headers: {
                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
                 'Content-Type': 'application/json'
@@ -138,28 +139,26 @@ function PedidoEditForm() {
             .then(data => setPedidoItems(data.data))
             .catch(error => console.error(`Error fetching items: ${error}`));
         
-        fetch("http://localhost:3000/api/articulos")
+        fetch(`${API_URL}/api/articulos`)
             .then(response => response.json())
             .then(data => setArticulos(data.data));
 
-        fetch("http://localhost:3000/api/tablas/formas-pago")
+        fetch(`${API_URL}/api/tablas/formas-pago`)
             .then(response => response.json())
             .then(data => setFormasDePago(data.data))
             .catch(error => console.error('Error fetching formas de pago:', error));
         
-        fetch("http://localhost:3000/api/tablas/provincias")
+        fetch(`${API_URL}/api/tablas/provincias`)
             .then(response => response.json())
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
-
-
 
     }, [NROPED]);
 
 
     useEffect(() => {
         if (user && user.numero_vendedor) {
-            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+            fetch(`${API_URL}/api/clientes?numero_vendedor=${user.numero_vendedor}`)
                 .then(response => response.json())
                 .then(data => {
                     setClientes(data.data);
@@ -410,7 +409,7 @@ function PedidoEditForm() {
 
         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
         // fetch(`http://localhost:3000/api/pedidos/update/${NROPED}`, {
-        fetch('http://localhost:3000/api/pedidos/update', {
+        fetch(`${API_URL}/api/pedidos/update`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
@@ -700,7 +699,7 @@ function PedidoEditForm() {
                                                 fixedDecimalScale={true}
                                                 isAllowed={(values) => {
                                                     const { floatValue, formattedValue } = values;
-                                                    return (floatValue === undefined || floatValue <= 99) && (formattedValue === '' || /^\d{1,2}(\.\d{3})*(,\d{0,2})?$/.test(formattedValue));
+                                                    return (floatValue === undefined || floatValue <= 100) && (formattedValue === '' || /^\d{1,3}(\.\d{3})*(,\d{0,2})?$/.test(formattedValue));
                                                 }}
                                                 onValueChange={(values) => handleItemChangeFloat(index, values.value, 'DESCUENTO')}
                                                 required 

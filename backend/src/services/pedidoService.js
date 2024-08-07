@@ -1,5 +1,6 @@
 
 const { Op, Association } = require("sequelize");
+const { format } = require('date-fns');
 const models = require("../database/models");
 const { Pedidos, PedidosItem, Pedidos_temp, PedidosItem_temp, Numeracion, Numeracion_temp, sequelize } = require("../database/models");
 
@@ -8,7 +9,7 @@ module.exports = {
     createPedido: async (pedidoData) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, items } = pedidoData;
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, items } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
@@ -54,6 +55,7 @@ module.exports = {
             }, 
             transaction });
 
+
             const pedidos = await Pedidos_temp.create({
                 TIPO: 'P',
                 CLIENTE: CLIENTE,
@@ -76,7 +78,9 @@ module.exports = {
                 ESTADO: '00',
                 TRANSPORTE: '000',
                 CONGELA: 'S',
-                OPERACION: '01'
+                OPERACION: '01',
+                MOTIVO: '01',
+                USUARIO,
             }, { transaction });    
 
             if (!items || !Array.isArray(items)) {
@@ -95,7 +99,10 @@ module.exports = {
                     PRECIO: item.PRECIO,
                     DESCUENTO: item.DESCUENTO,
                     FECALTA: FECEMISION,
-                    ITEM: item.ITEM
+                    ITEM: item.ITEM,
+                    LISTA: '01',
+                    DEPSALIDA: '01',
+
                 }, { transaction })  
             ));
 
@@ -112,7 +119,7 @@ module.exports = {
     createPedidoCheck: async (pedidoData) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, pedidoItems } = pedidoData;
+        const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, pedidoItems } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
@@ -191,7 +198,9 @@ module.exports = {
                 ESTADO: '00',
                 TRANSPORTE: '000',
                 CONGELA: 'S',
-                OPERACION: '01'
+                OPERACION: '01',
+                MOTIVO: '01',
+                USUARIO,
             }, { transaction });    
 
             if (!pedidoItems || !Array.isArray(pedidoItems)) {
@@ -210,7 +219,9 @@ module.exports = {
                     PRECIO: item.PRECIO,
                     DESCUENTO: item.DESCUENTO,
                     FECALTA: FECEMISION,
-                    ITEM: item.ITEM
+                    ITEM: item.ITEM,
+                    LISTA: '01',
+                    DEPSALIDA: '01',
                 }, { transaction })  
             ));
 
@@ -306,6 +317,23 @@ module.exports = {
         }
     },
 
+    editPedidoApprove: async(NROPED) => {
+        // console.log("numeroVendedorrrrrr: "+numeroVendedor)
+        // return Pedidos.findByPk(NROPED);
+        try {
+            const pedido = await Pedidos_temp.findOne({ 
+                where: {
+                    NROPED,
+                    TIPO: 'P',
+                    CODIGO: '21'
+                }
+            });
+            return pedido;
+        } catch (error) {
+             throw new Error('Error al obtener el pedido');
+        }
+    },
+
 
     destroyPedido: async (NROPED, numeroVendedor) => {
         let transaction;
@@ -393,6 +421,60 @@ module.exports = {
                     }
                 ],
                 order: [["FECEMISION", "DESC"]],
+            });
+
+            // Mapea los resultados para agregar el nombre del vendedor en el campo adecuado
+            const result = pedidos.map(pedido => {
+                return {
+                    ...pedido.toJSON(),
+                    VENDEDOR: pedido.vendedores ? pedido.vendedores.APEYNOM : null
+                };
+            });
+
+            return result;
+        } catch (error) {
+            console.error("Error al obtener los pedidos:", error.message);
+            throw error; // Propaga el error para manejo posterior si es necesario
+        }
+    },
+
+
+    getAllPedidosCheck: async () => {
+        try {
+            // sequelize.options.logging = true;
+            const pedidos = await Pedidos_temp.findAll({
+                where: {
+                    TIPO: 'P',
+                    CODIGO: '21',
+                    FECEMISION: {
+                        [Op.gte]: new Date('2024-01-01'), // gte = Greater than or equal
+                    },
+                },
+                include: [
+                    {
+                        model: models.PedidosItem_temp,
+                        as: 'pedidositem',
+                        where: {
+                            TIPO: 'P'
+                        },
+                        required: false, // Utilizamos LEFT OUTER JOIN
+                    },
+                    {
+                        model: models.Clientes,
+                        as: 'clientes',
+                        required: false, // LEFT OUTER JOIN
+                        foreignKey: 'CLIENTE', // Clave foránea correcta
+                    },
+                    {
+                        model: models.Vendedores,
+                        as: 'vendedores',
+                        attributes: ['APEYNOM'], // Atributo que queremos incluir
+                        required: false, // LEFT OUTER JOIN
+                        foreignKey: 'VENDEDOR', // Clave foránea correcta
+                    }
+                ],
+                order: [["FECEMISION", "DESC"],
+                        ["ESTADOSEG", "DESC"]],
             });
 
             // Mapea los resultados para agregar el nombre del vendedor en el campo adecuado

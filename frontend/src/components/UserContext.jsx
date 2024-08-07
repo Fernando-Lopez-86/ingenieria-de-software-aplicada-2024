@@ -10,10 +10,12 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    
     useEffect(() => {
+        const API_URL = process.env.REACT_APP_API_URL;
         const token = localStorage.getItem('token');
         if (token) {
-            fetch('http://localhost:3000/api/auth/me', {
+            fetch(`${API_URL}/api/auth/me`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

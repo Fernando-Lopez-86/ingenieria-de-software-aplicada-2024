@@ -15,6 +15,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { UserContext } from './UserContext'; 
 import { NumericFormat } from 'react-number-format';
 
+
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 
 // Establecer la ruta del trabajador a la versión local del paquete
@@ -22,14 +23,17 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.mjs`;
 
 
-
-
 function PedidosNew(){
+
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const [pdfText, setPdfText] = useState('');
 
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
     const navigate = useNavigate();
     const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
+
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
     // const [TIPO, setTIPO] = useState('');
     const [CLIENTE, setCLIENTE] = useState('');
@@ -58,9 +62,49 @@ function PedidosNew(){
     const [showModal, setShowModal] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
 
+    const validateForm = () => {
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        const selects = form.querySelectorAll('.react-select-container');
+        selects.forEach(select => {
+            const control = select.querySelector('.react-select__control');
+            const selectedOption = control.querySelector('div[aria-selected="true"]');
+            if (!selectedOption || !selectedOption.textContent.trim()) {
+                control.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                control.classList.remove('is-invalid');
+            }
+        });
+
+        const datePickers = form.querySelectorAll('.react-datepicker-wrapper');
+        datePickers.forEach(datePicker => {
+            const input = datePicker.querySelector('input');
+            if (!input.value.trim()) {
+                datePicker.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                datePicker.classList.remove('is-invalid');
+            }
+        });
+
+        return isValid;
+    };
+
 
     const options = articulos.map(articulo => ({
-        value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP, CODBARRAS: articulo.CODBARRAS },
+        value: { NUMERO: articulo.NUMERO, DESCRIP: articulo.DESCRIP, CODBARRAS: articulo.CODBARRAS, AUXILIAR4: articulo.AUXILIAR4 },
         label: articulo.DESCRIP
     }));
 
@@ -84,7 +128,7 @@ function PedidosNew(){
 
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/articulos")
+        fetch(`${API_URL}/api/articulos`)
             .then(response => response.json())
             .then(data => {
                 setArticulos(data.data);
@@ -104,7 +148,7 @@ function PedidosNew(){
     // }, []);
     useEffect(() => {
         if (user && user.numero_vendedor) {
-            fetch(`http://localhost:3000/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+            fetch(`${API_URL}/api/clientes?numero_vendedor=${user.numero_vendedor}`)
                 .then(response => response.json())
                 .then(data => {
                     setClientes(data.data);
@@ -117,7 +161,7 @@ function PedidosNew(){
 
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/tablas/formas-pago")
+        fetch(`${API_URL}/api/tablas/formas-pago`)
             .then(response => response.json())
             .then(data => setFormasDePago(data.data))
             .catch(error => console.error('Error fetching formas de pago:', error));
@@ -125,7 +169,7 @@ function PedidosNew(){
 
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/tablas/provincias")
+        fetch(`${API_URL}/api/tablas/provincias`)
             .then(response => response.json())
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching formas de pago:', error));
@@ -137,6 +181,11 @@ function PedidosNew(){
         const newItems = [...items];
         newItems[index][name] = value;
         setItems(newItems);
+
+        // Eliminar la clase 'is-invalid' si el campo tiene un valor válido
+        if (value.trim() !== '') {
+            document.getElementById(`item-${name}-${index}`).classList.remove('is-invalid');
+        }
     };
 
 
@@ -160,6 +209,7 @@ function PedidosNew(){
         newItems[index].ARTICULO = selectedOption ? selectedOption.NUMERO : null;
         newItems[index].DESCART = selectedOption ? selectedOption.DESCRIP : null;
         newItems[index].CODBARRAS = selectedOption ? selectedOption.CODBARRAS : null;
+        newItems[index].AUXILIAR4= selectedOption ? selectedOption.AUXILIAR4 : null;
         setItems(newItems);
     };
 
@@ -172,6 +222,13 @@ function PedidosNew(){
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();
+        }
+    };
+
+    const handleChange = (e, setter) => {
+        setter(e.target.value);
+        if (e.target.value.trim()) {
+            e.target.classList.remove('is-invalid');
         }
     };
 
@@ -312,6 +369,16 @@ function PedidosNew(){
     
                             // Divide la línea en componentes separados por espacio
                             const detailsArray = line.split(/\s+/);
+
+                            // Obtener y multiplicar el precio según options.AUXILIAR4
+                            // let precio = parseFloat(detailsArray[detailsArray.length - 2]);
+                            // const factor = 1.21; // Factor de multiplicación fijo
+
+                            // if (options.AUXILIAR4 === 12) {
+                            //     precio *= factor * 12;
+                            // } else if (options.AUXILIAR4 === 4.5) {
+                            //     precio *= factor * 6;
+                            // }
     
                             // Crea un objeto JSON con la línea completa
                             const jsonObject = {
@@ -319,7 +386,7 @@ function PedidosNew(){
                                 refProv: detailsArray[1],
                                 descripcion: detailsArray.slice(2, -4).join(' '), // Todo el texto hasta las últimas 4 columnas
                                 um: "",
-                                uc: "",
+                                uc: parseInt(detailsArray[detailsArray.length - 4]),
                                 talle: "",
                                 color: "",
                                 cantPed: parseInt(detailsArray[detailsArray.length - 3], 10),
@@ -485,6 +552,18 @@ function PedidosNew(){
     
             const newItems = orderItems.map((item, index) => {
                 const articulo = articulos.find((art) => art.CODBARRAS === item.ean);
+
+                // let precio = item.precio ;
+                // const factor = 1.21; // Factor de multiplicación fijo
+
+                // console.log("articulosssss:", articulo)
+
+                // if (articulo.AUXILIAR4 === 12) {
+                //     precio *= factor * 12;
+                // } else if (articulo.AUXILIAR4 === 4.5) {
+                //     precio *= factor * 6;
+                // }
+
     
                 if (articulo) {
                     console.log('Artículo encontrado:', articulo);
@@ -497,7 +576,7 @@ function PedidosNew(){
                         DESCART: articulo.DESCRIP,
                         ARTICULO: articulo.NUMERO,
                         CANTPED: item.cantPed || 0,
-                        PRECIO: item.precio || 0.0,
+                        PRECIO: (item.precio * item.uc * 1.21) || 0.0,
                         DESCUENTO: 0
                     };
                 } else {
@@ -670,6 +749,11 @@ function PedidosNew(){
         event.preventDefault();
         setError(null);
 
+        setIsSubmitted(true);
+        if (validateForm()) {
+            handleSubmit(event);
+        }
+
         const form = event.target;
         let valid = true;
         
@@ -692,8 +776,8 @@ function PedidosNew(){
     
         const formattedDate = FECTRANS ? format(FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
         const today = new Date();
-        const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
-    
+        const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss.SSS') : null;
+
         const pedidoData = {
             CLIENTE: CLIENTE ? CLIENTE.NUMERO : '',
             RAZONSOC: CLIENTE ? CLIENTE.RAZONSOC : '',
@@ -706,6 +790,7 @@ function PedidosNew(){
             FECTRANS: formattedDate,
             FECEMISION: formattedToday,
             COMENTARIO,
+            USUARIO: user.username.toUpperCase(),
             items: items.map(item => ({
                 ...item,
                 ARTICULO: item.ARTICULO,
@@ -715,7 +800,7 @@ function PedidosNew(){
     
         try {
             const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-            const response = await fetch('http://localhost:3000/api/pedidos', {
+            const response = await fetch(`${API_URL}/api/pedidos`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
@@ -786,7 +871,7 @@ function PedidosNew(){
         <div className="form-container w-100">
             <form className="w-100" onSubmit={handleSubmit} noValidate autoComplete="off">
             {/* <h3 className="text-center">Nuevo Pedido</h3> */}
-            <div className="bg-primary text-white h5" align="center" colSpan="11"><b>NUEVO PEDIDOS</b></div>
+            <div className="bg-primary text-white h4" align="center" colSpan="11"><b>NUEVO PEDIDO</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
                     <div className="form-group">
@@ -799,6 +884,8 @@ function PedidosNew(){
                                 isSearchable
                                 placeholder="Seleccionar Cliente"
                                 menuPortalTarget={document.body}
+                                classNamePrefix="react-select"
+                                className={`react-select-container ${isSubmitted && !CLIENTE ? 'is-invalid' : ''}`}
                                 styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                 menuPosition="fixed"
                                 required
@@ -817,6 +904,8 @@ function PedidosNew(){
                             isSearchable
                             placeholder="Seleccionar Forma de Pago"
                             menuPortalTarget={document.body}
+                            classNamePrefix="react-select"
+                            className={`react-select-container ${isSubmitted && !CONDVENTA ? 'is-invalid' : ''}`}
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
                             required
@@ -830,7 +919,8 @@ function PedidosNew(){
                             type="text"
                             name="DIREENT"
                             value={DIREENT} 
-                            onChange={(e) => setDIREENT(e.target.value)} 
+                            // onChange={(e) => setDIREENT(e.target.value)}
+                            onChange={(e) => handleChange(e, setDIREENT)} 
                             required
                             data-error="Por favor, ingrese la dirección de entrega."
                         />
@@ -842,7 +932,8 @@ function PedidosNew(){
                             type="text"
                             name="LOCENT"
                             value={LOCENT} 
-                            onChange={(e) => setLOCENT(e.target.value)} 
+                            // onChange={(e) => setLOCENT(e.target.value)} 
+                            onChange={(e) => handleChange(e, setLOCENT)} 
                             required
                             data-error="Por favor, ingrese la localidad de entrega." 
                         />
@@ -858,6 +949,8 @@ function PedidosNew(){
                             isSearchable
                             placeholder="Seleccionar Provincia"
                             menuPortalTarget={document.body}
+                            classNamePrefix="react-select"
+                            className={`react-select-container ${isSubmitted && !PROENT ? 'is-invalid' : ''}`}
                             styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                             menuPosition="fixed"
                             required
@@ -882,10 +975,11 @@ function PedidosNew(){
                     <div className="form-group">
                         <label>Telefono Entrega</label>
                         <input
-                            type="text"
+                            type="number"
                             name="TELEFONOS"
                             value={TELEFONOS} 
-                            onChange={(e) => setTELEFONOS(e.target.value)} 
+                            // onChange={(e) => setTELEFONOS(e.target.value)} 
+                            onChange={(e) => handleChange(e, setTELEFONOS)} 
                             required
                             data-error="Por favor, ingrese un teléfono de entrega."
                         />
@@ -947,6 +1041,8 @@ function PedidosNew(){
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
                                                 menuPortalTarget={document.body}
+                                                // classNamePrefix="react-select"
+                                                // className={`react-select-container ${isSubmitted && !ARTICULO ? 'is-invalid' : ''}`}
                                                 styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                                 menuPosition="fixed"
                                                 required
@@ -974,6 +1070,7 @@ function PedidosNew(){
                                                 required 
                                                 data-error="Por favor, ingrese la cantidad."
                                                 maxLength={6}
+                                                id={`item-CANTPED-${index}`}
                                             />
                                         </td>
                                         <td className="form-group column column-medium">
@@ -992,6 +1089,7 @@ function PedidosNew(){
                                                 required 
                                                 data-error="Por favor, ingrese el precio."
                                                 maxLength={10}
+                                                id={`item-PRECIO-${index}`}
                                             />
                                         </td>
                                         <td className="form-group column column-medium">
@@ -1004,13 +1102,14 @@ function PedidosNew(){
                                                 fixedDecimalScale={true}
                                                 isAllowed={(values) => {
                                                     const { floatValue, formattedValue } = values;
-                                                    return (floatValue === undefined || floatValue <= 99) && (formattedValue === '' || /^\d{1,2}(\.\d{3})*(,\d{0,2})?$/.test(formattedValue));
+                                                    return (floatValue === undefined || floatValue <= 100) && (formattedValue === '' || /^\d{1,3}(\.\d{3})*(,\d{0,2})?$/.test(formattedValue));
                                                 }}
                                                 onValueChange={(values) => handleItemChange(index, values.value, 'DESCUENTO')}
                                                 required 
                                                 data-error="Por favor, ingrese el descuento."
                                                 // maxLength={5}
                                                 onKeyDown={handleKeyDown} // Añadir el evento onKeyDown aquí
+                                                id={`item-DESCUENTO-${index}`}
                                             />
                                         </td>
                                         <td className="form-group column column-small text-center">

@@ -74,3 +74,31 @@
     margin-top: 1rem;
     color: red;
 }
+
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.eye-button {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #666; /* Color del ícono */
+    padding: 5px; /* Añadir padding para facilitar el clic */
+}
+
+.eye-button:focus {
+    outline: none; /* Eliminar borde al enfocarse */
+}
+
+.eye-button:hover {
+    color: #333; /* Cambia solo el color del ícono */
+    background: none; /* Asegúrate de que no haya fondo al pasar el mouse */
+}

@@ -6,7 +6,7 @@ import { Outlet } from 'react-router-dom';
 function PrivateLayout() {
     return (
         <div id="wrapper" className="d-flex">
-            <SideBar />
+            {/* <SideBar /> */}
             <div id="content-wrapper" className="d-flex flex-column container-fluid">
             <TopBar />
                 <div id="content">

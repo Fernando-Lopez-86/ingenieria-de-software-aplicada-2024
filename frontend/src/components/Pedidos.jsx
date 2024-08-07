@@ -13,6 +13,8 @@ function Pedidos() {
     const numero_vendedor = user.numero_vendedor;
     const navigate = useNavigate();
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const formatDate = (dateString) => {
         // Convertir la cadena de fecha a un objeto Date
         const date = new Date(dateString);
@@ -32,7 +34,7 @@ function Pedidos() {
         try {
             let token = localStorage.getItem('token');
             // const refreshToken = localStorage.getItem('refreshToken');
-            const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
+            const response = await fetch(`${API_URL}/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -59,7 +61,7 @@ function Pedidos() {
     const fetchPedidosItems = async (nroPed, retry = true) => {
         try {
             let token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3000/api/pedidos/items/${nroPed}`, {
+            const response = await fetch(`${API_URL}/api/pedidos/items/${nroPed}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -211,7 +213,7 @@ function Pedidos() {
                     label: 'Sí',
                     onClick: () => {
                         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-                        fetch(`http://localhost:3000/api/pedidos/${nroPed}?numero_vendedor=${user.numero_vendedor}`, {
+                        fetch(`${API_URL}/api/pedidos/${nroPed}?numero_vendedor=${user.numero_vendedor}`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
@@ -281,25 +283,25 @@ function Pedidos() {
     return (
         <div className="pedidos-container">
             <div className="pedidos">
-                <div className="bg-primary text-white h5" align="center" colSpan="11"><b>PEDIDOS</b></div>
+                <div className="bg-primary text-white h4" align="center" colSpan="11"><b>PEDIDOS</b></div>
                 <table className="table table-hover table-pedidos">
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Nro Cliente</th>
-                            <th>Cliente</th>
-                            <th>Estado</th>
-                            <th className="text-center">Acciones</th>
+                            <th className="p-1">Fecha</th>
+                            <th className="p-1">Nro Cliente</th>
+                            <th className="p-1">Cliente</th>
+                            <th className="p-1">Estado</th>
+                            <th className="p-1 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pedidos.map(pedido => (
                             <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
-                                <td>{formatDate(pedido.FECEMISION)}</td>
-                                <td>{pedido.CLIENTE}</td>
-                                <td>{pedido.RAZONSOC}</td>
-                                <td>{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
-                                <td className="" align="center">
+                                <td className="p-1">{formatDate(pedido.FECEMISION)}</td>
+                                <td className="p-1">{pedido.CLIENTE}</td>
+                                <td className="p-1">{pedido.RAZONSOC}</td>
+                                <td className="p-1">{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
+                                <td className="p-1" align="center">
                                     <button
                                         className="btn btn-sm btn-outline-danger mr-1"
                                         onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}
@@ -322,36 +324,36 @@ function Pedidos() {
             </div>
             <div className="pedidos-items">
                 <table className="table table-hover table-pedidos-items">
-                    <div className="bg-primary text-white h5" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
+                    <div className="bg-primary text-white h4" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
                     <thead>
                         <tr>
                             {/* <th>Nro Pedido</th> */}
-                            <th>Cliente</th>
-                            <th>Item</th>
-                            <th>Articulo</th>
-                            <th>Bultos</th>
-                            <th>Precio</th>
-                            <th>Descuento</th>
-                            <th>Total</th>
+                            <th className="p-1">Cliente</th>
+                            <th className="p-1">Item</th>
+                            <th className="p-1">Articulo</th>
+                            <th className="p-1">Bultos</th>
+                            <th className="p-1">Precio</th>
+                            <th className="p-1">Descuento</th>
+                            <th className="p-1">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         {pedidosItems.map(item => (
                             <tr key={`${item.NROPED}-${item.ITEM}`}>
                                 {/* <td>{item.NROPED}</td> */}
-                                <td>{item.CLIENTE}</td>
-                                <td>{item.ITEM}</td>
-                                <td>{item.DESCART}</td>
-                                <td>{formatearNumeroSinDecimales(item.CANTPED)}</td>
+                                <td className="p-1">{item.CLIENTE}</td>
+                                <td className="p-1">{item.ITEM}</td>
+                                <td className="p-1">{item.DESCART}</td>
+                                <td className="p-1">{formatearNumeroSinDecimales(item.CANTPED)}</td>
                                 {/* <td>{item.PRECIO}</td> */}
-                                <td>{formatearNumero(item.PRECIO)}</td>
-                                <td>{formatearNumero(item.DESCUENTO)}</td>
-                                <td>{formatearNumero(calcularTotal(item))}</td>
+                                <td className="p-1">{formatearNumero(item.PRECIO)}</td>
+                                <td className="p-1">{formatearNumero(item.DESCUENTO)}</td>
+                                <td className="p-1">{formatearNumero(calcularTotal(item))}</td>
                             </tr>
                         ))}
                         <tr>
-                            <td></td><td></td><td></td><td><td></td></td><td></td><td><b></b></td>
-                            <td><b>{formatearNumero(totalGeneral)}</b></td>
+                            <td></td><td></td><td></td><td></td><td></td><td></td>
+                            <td className="p-1"><b>{formatearNumero(totalGeneral)}</b></td>
                         </tr>
                     </tbody>
                 </table>

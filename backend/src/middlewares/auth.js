@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { User, Vendedores } = require('../database/models'); // Asegúrate de que la ruta es correcta
 
 // Registrar Usuario
-// curl -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"username": "fer", "password": "123", "numero_vendedor": "016"}'
+// curl -k -X POST https://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"username": "fer", "password": "123", "numero_vendedor": "016", "rol": "vendedor"}'
 exports.register = async (req, res) => {
     const { username, password, numero_vendedor, rol} = req.body; // Incluye numero_vendedor
     try {

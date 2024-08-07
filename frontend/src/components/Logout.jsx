@@ -18,7 +18,7 @@ const LogoutButton = () => {
         <div className="header">
             {user && (
                 <div className="user-info">
-                    <span>Hola, {user.username}</span>
+                    <span className="logout-user">Hola, {user.username}</span>
                 </div>
             )}
             <button onClick={handleLogout} className="logout-button">Cerrar Sesión</button>

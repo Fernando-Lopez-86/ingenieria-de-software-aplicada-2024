@@ -2,7 +2,7 @@
 
 .pedidos table tbody {
     display: block;
-    max-height: calc(4 * 60px); /* Muestra 6 filas con una altura de 60px cada una */
+    max-height: calc(4 * 60px); 
     overflow-y: auto;
     width: 100%;
 }
@@ -310,7 +310,7 @@ button:focus {
 
 .table td.column input, .table td.column select, .table td.column button {
     width: 100%; /* Asegura que los inputs y selects ocupen el ancho completo de la celda */
-    box-sizing: border-box; /* Incluye el padding y border en el ancho total */
+    box-sizing: border-box; 
 }
 
 .table-responsive {
@@ -353,12 +353,12 @@ button:focus {
 
 .table-pedidos th:nth-child(1),
 .table-pedidos td:nth-child(1) {
-    width: 13%;
+    width: 10%;
 }
 
 .table-pedidos th:nth-child(2),
 .table-pedidos td:nth-child(2) {
-    width: 13%;
+    width: 10%;
 }
 
 .table-pedidos th:nth-child(3),
@@ -368,17 +368,13 @@ button:focus {
 
 .table-pedidos th:nth-child(4),
 .table-pedidos td:nth-child(4) {
-    width: 13%;
+    width: 10%;
 }
+
 
 .table-pedidos th:nth-child(5),
 .table-pedidos td:nth-child(5) {
-    width: 10%;
-}
-
-.table-pedidos th:nth-child(6),
-.table-pedidos td:nth-child(6) {
-    width: 10%;
+    width: 20%;
 }
 
 .table-pedidos-items th:nth-child(1),
@@ -416,6 +412,36 @@ button:focus {
     width: 10%;
 }
 
+.table-pedidos-check th:nth-child(1),
+.table-pedidos-check td:nth-child(1) {
+    width: 10%;
+}
+
+.table-pedidos-check th:nth-child(2),
+.table-pedidos-check td:nth-child(2) {
+    width: 10%;
+}
+
+.table-pedidos-check th:nth-child(3),
+.table-pedidos-check td:nth-child(3) {
+    width: 40%;
+}
+
+.table-pedidos-check th:nth-child(4),
+.table-pedidos-check td:nth-child(4) {
+    width: 20%;
+}
+
+.table-pedidos-check th:nth-child(5),
+.table-pedidos-check td:nth-child(5) {
+    width: 10%;
+}
+
+.table-pedidos-check th:nth-child(6),
+.table-pedidos-check td:nth-child(6) {
+    width: 10%;
+}
+
 
 
 .logout-button {
@@ -430,6 +456,10 @@ button:focus {
     cursor: pointer;
     transition: background 0.3s;
     margin-right: 15px;
+}
+
+.logout-user {
+    color: #fff;
 }
 
 .logout-button:hover {
@@ -470,5 +500,37 @@ button:focus {
     flex: 1;
     width: 100%;
 } */
+
+.navbar-nav .nav-link {
+    color: inherit; /* Mantener el color actual de Bootstrap */
+    transition: color 0.3s ease; /* Transición suave */
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: rgb(199, 194, 194)!important; /* Cambiar a gris al pasar el mouse */
+  }
+
+
+  /* .custom-navbar {
+    padding: 0.5rem 1rem;
+}
+
+.custom-navbar .navbar-nav .nav-item {
+    margin: 0 0.5rem; 
+} */
+
+.header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Asegúrate de que el encabezado esté por encima del contenido */
+    background-color: #007bff; /* Asegúrate de que el color de fondo coincida con el que estás usando */
+}
+
+.is-invalid {
+    border: 2px solid red !important;
+    background-color: #ffe6e6;
+}
+
+
 
 

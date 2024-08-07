@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
             CONGELACOT: DataTypes.STRING,	
             COTIZACION: DataTypes.FLOAT,	
             FILLER: DataTypes.STRING,
-            FECALTA: DataTypes.DATEONLY,		
+            FECALTA: DataTypes.NOW,		
             USUARIO: DataTypes.STRING,	
             FECMOD: DataTypes.DATEONLY,		
             USRMOD: DataTypes.STRING,
