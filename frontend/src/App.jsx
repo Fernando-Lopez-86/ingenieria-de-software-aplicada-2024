@@ -31,28 +31,45 @@ function App() {
     useIdleTimer(handleIdle, 900000);
 
     return (
-        <UserProvider> {/* Envolvemos toda la aplicación con UserProvider */}
-            <div id="wrapper">
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/unauthorized" element={<div>No autorizado</div>} />
-                    <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor']} />}>
-                        <Route path="/" element={<PrivateLayout />}>
-                            <Route index element={<ContentWrapper />} />
-                            <Route path="/new" element={<PedidosNew />} />
-                            <Route path="/edit" element={<PedidosEdit />} />
-                        </Route>
+
+        <UserProvider>
+        <div id="wrapper">
+            <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/unauthorized" element={<div>No autorizado</div>} />
+
+                {/* Rutas accesibles para admin, vendedor, y control */}
+                <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor', 'control']} />}>
+                    <Route path="/" element={<PrivateLayout />}>
+                        <Route index element={<ContentWrapper />} />
                     </Route>
-                    <Route element={<PrivateRoute allowedRoles={['admin', 'user', 'control']} />}>
-                        <Route path="/check" element={<PrivateLayout />}>
-                            <Route index element={<PedidosCheck />} />
-                            <Route path="/check/approve" element={<PedidosEditApprove />} />
-                        </Route>
-                    </Route> 
-                    <Route path="*" element={<Navigate to="/login" />} />
-                </Routes>
-            </div>
-        </UserProvider>
+                </Route>
+
+                {/* Rutas accesibles para vendedor y admin */}
+                <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor']} />}>
+                    <Route path="new" element={<PrivateLayout />}>
+                        <Route index element={<PedidosNew />} />
+                    </Route>
+                    <Route path="edit" element={<PrivateLayout />}>
+                        <Route index element={<PedidosEdit />} />
+                    </Route>
+                </Route>
+
+                {/* Rutas accesibles para control y admin */}
+                <Route element={<PrivateRoute allowedRoles={['admin', 'control']} />}>
+                    <Route path="check" element={<PrivateLayout />}>
+                        <Route index element={<PedidosCheck />} />
+                    </Route>
+                    <Route path="/check/approve" element={<PrivateLayout />}>
+                        <Route index element={<PedidosEditApprove />} />
+                    </Route>
+                </Route>
+
+                {/* Redirección por defecto a login si la ruta no es encontrada */}
+                <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+        </div>
+    </UserProvider>
     );
 }
 

@@ -15,11 +15,8 @@ import { Modal, Button } from 'react-bootstrap';
 import { UserContext } from './UserContext'; 
 import { NumericFormat } from 'react-number-format';
 
-
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 
-// Establecer la ruta del trabajador a la versión local del paquete
-// pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.mjs`;
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.mjs`;
 
 
@@ -35,7 +32,6 @@ function PedidosNew(){
     const { user } = useContext(UserContext); // Obtener el usuario desde el contexto
 
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
-    // const [TIPO, setTIPO] = useState('');
     const [CLIENTE, setCLIENTE] = useState('');
     const [DIREENT, setDIREENT] = useState('');
     const [LOCENT, setLOCENT] = useState('');
@@ -108,18 +104,15 @@ function PedidosNew(){
         label: articulo.DESCRIP
     }));
 
-
     const optionsClientes = clientes.map(cliente => ({
         value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
 
-
     const optionsFormasDePago = formasDePago.map(forma => ({
         value: forma.value,
         label: forma.label
     }));
-
 
     const optionsProvincias = provincias.map(provincia => ({
         value: provincia.value,
@@ -137,15 +130,6 @@ function PedidosNew(){
     }, []);
 
 
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/api/clientes")
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             console.log("Clientes:", data.data);
-    //             setClientes(data.data);
-    //         })
-    //         .catch(error => console.error('Error fetching clientes:', error));
-    // }, []);
     useEffect(() => {
         if (user && user.numero_vendedor) {
             fetch(`${API_URL}/api/clientes?numero_vendedor=${user.numero_vendedor}`)
@@ -188,21 +172,17 @@ function PedidosNew(){
         }
     };
 
-
     const handleClientChange = (selectedOption) => {
         setCLIENTE(selectedOption ? selectedOption.value : null);
     };
-
 
     const handleFormaDePagoChange = (selectedOption) => {
         setCONDVENTA(selectedOption ? selectedOption.value : null);
     };
 
-
     const handleProvinciasChange = (selectedOption) => {
         setPROENT(selectedOption ? selectedOption.value : null);
     };
-
 
     const handleArticuloChange = (index, selectedOption) => {
         const newItems = [...items];
@@ -213,11 +193,9 @@ function PedidosNew(){
         setItems(newItems);
     };
 
-
     const handleDateChange = (date) => {
         setFECTRANS(date);
     };
-
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
@@ -258,12 +236,6 @@ function PedidosNew(){
     };
 
 
-
-
-
-
-
-
     const handleImportPdf = () => {
         document.getElementById('pdfInput').click();
     };
@@ -281,7 +253,7 @@ function PedidosNew(){
         } else {
             setError('Solo se permiten archivos PDF.');
             setShowModal(true);
-            setModalMessage('Solo se permiten archivos PDF.'); // Asegurar que el mensaje se establece para el modal
+            setModalMessage('Solo se permiten archivos PDF.'); 
         }
     };
 
@@ -369,16 +341,6 @@ function PedidosNew(){
     
                             // Divide la línea en componentes separados por espacio
                             const detailsArray = line.split(/\s+/);
-
-                            // Obtener y multiplicar el precio según options.AUXILIAR4
-                            // let precio = parseFloat(detailsArray[detailsArray.length - 2]);
-                            // const factor = 1.21; // Factor de multiplicación fijo
-
-                            // if (options.AUXILIAR4 === 12) {
-                            //     precio *= factor * 12;
-                            // } else if (options.AUXILIAR4 === 4.5) {
-                            //     precio *= factor * 6;
-                            // }
     
                             // Crea un objeto JSON con la línea completa
                             const jsonObject = {
@@ -411,141 +373,6 @@ function PedidosNew(){
     
 
 
-    // const parsePdf = async (typedArray) => {
-    //     try {
-    //         removeItem(0);
-    //         console.log('Comenzando a parsear el PDF...');
-    //         const loadingTask = pdfjsLib.getDocument({ data: typedArray });
-    
-    //         const pdf = await loadingTask.promise;
-    //         console.log('PDF cargado:', pdf);
-    
-    //         const numPages = pdf.numPages;
-    //         console.log(`El PDF tiene ${numPages} páginas.`);
-    
-    //         let orderItems = [];
-    
-    //         for (let i = 1; i <= numPages; i++) {
-    //             const page = await pdf.getPage(i);
-    //             console.log(`Página ${i} cargada.`);
-    
-    //             const textContent = await page.getTextContent();
-    //             console.log(`Contenido de texto de la página ${i}:`, textContent.items);
-    
-    //             // Agrupar el texto en líneas completas
-    //             const lines = [];
-    //             let currentLine = '';
-    
-    //             textContent.items.forEach((item, index) => {
-    //                 const { str, transform } = item;
-    
-    //                 // Verificar que str es una cadena válida
-    //                 if (typeof str !== 'string') {
-    //                     console.warn(`Elemento ${index} no es un string:`, item);
-    //                     return; // Saltar si no es un string válido
-    //                 }
-    
-    //                 // Detectar nueva línea basada en el cambio vertical en 'transform'
-    //                 if (currentLine && transform[5] !== lines[lines.length - 1]?.transform[5]) {
-    //                     lines.push(currentLine);
-    //                     currentLine = '';
-    //                 }
-    
-    //                 currentLine += str + ' ';
-    //                 lines.push({ text: currentLine.trim(), transform });
-    //             });
-    
-    //             let tableStarted = false;
-    
-    //             lines.forEach(({ text }) => {
-    //                 // Verificar que text es un string antes de usar includes
-    //                 if (typeof text !== 'string') {
-    //                     console.warn('Texto no es un string:', text);
-    //                     return; // Saltar si no es un string válido
-    //                 }
-    
-    //                 if (!tableStarted && text.includes('EAN')) {
-    //                     tableStarted = true;
-    //                     console.log('Encontrado el inicio de la tabla de EANs.');
-    //                     return; // Continuar a la siguiente línea, ya que esta es la cabecera
-    //                 }
-    
-    //                 if (tableStarted) {
-    //                     const ean = extractEanFromLine(text);
-                        
-    //                     if (ean) {
-    //                         console.log('Línea completa:', text); // Imprime toda la línea de la tabla
-    //                         const otherDetails = extractDetailsFromLine(text);
-    //                         console.log('EAN encontrado:', ean);
-    //                         orderItems.push({ ean, ...otherDetails });
-    //                     }
-    //                 }
-    //             });
-    //         }
-    
-    //         console.log('Ítems extraídos:', orderItems);
-    //         addItemsToOrder(orderItems);
-    //     } catch (error) {
-    //         console.error('Error al parsear el PDF:', error);
-    //     }
-    // };
-
-
-    // const parsePdf = async (typedArray) => {
-    //     try {
-    //         removeItem(0)
-    //         console.log('Comenzando a parsear el PDF...');
-    //         const loadingTask = pdfjsLib.getDocument({ data: typedArray });
-    
-    //         const pdf = await loadingTask.promise;
-    //         console.log('PDF cargado:', pdf);
-    
-    //         const numPages = pdf.numPages;
-    //         console.log(`El PDF tiene ${numPages} páginas.`);
-    
-    //         let orderItems = [];
-           
-    
-    //         for (let i = 1; i <= numPages; i++) {
-    //             const page = await pdf.getPage(i);
-    //             console.log(`Página ${i} cargada.`);
-    
-    //             const textContent = await page.getTextContent();
-    //             console.log(`Contenido de texto de la página ${i}:`, textContent.items);
-    
-    //             const lines = textContent.items.map((item) => item.str);
-
-    //             let tableStarted = false;
-
-    //             lines.forEach((line) => {
-    //                 if (!tableStarted && line.includes('EAN')) {
-    //                     tableStarted = true;
-    //                     console.log('Encontrado el inicio de la tabla de EANs.');
-    //                     return; // Continuar a la siguiente línea, ya que esta es la cabecera
-    //                 }
-    
-    //                 if (tableStarted) {
-    //                     const ean = extractEanFromLine(line);
-                        
-    //                     if (ean) {
-    //                         console.log('Línea completa:', line);
-    //                         const otherDetails = extractDetailsFromLine(line);
-    //                         console.log('EAN encontrado:', ean);
-    //                         orderItems.push({ ean, ...otherDetails });
-    //                     }
-    //                 }
-    //             });
-    //         }
-    
-    //         console.log('Ítems extraídos:', orderItems);
-    //         addItemsToOrder(orderItems);
-    //     } catch (error) {
-    //         console.error('Error al parsear el PDF:', error);
-    //     }
-    // };
-
-
-
     const addItemsToOrder = (orderItems) => {
         setItems((prevItems) => {
             const maxItem = prevItems.length > 0 ? Math.max(...prevItems.map(item => parseInt(item.ITEM, 10))) : 0;
@@ -553,18 +380,6 @@ function PedidosNew(){
             const newItems = orderItems.map((item, index) => {
                 const articulo = articulos.find((art) => art.CODBARRAS === item.ean);
 
-                // let precio = item.precio ;
-                // const factor = 1.21; // Factor de multiplicación fijo
-
-                // console.log("articulosssss:", articulo)
-
-                // if (articulo.AUXILIAR4 === 12) {
-                //     precio *= factor * 12;
-                // } else if (articulo.AUXILIAR4 === 4.5) {
-                //     precio *= factor * 6;
-                // }
-
-    
                 if (articulo) {
                     console.log('Artículo encontrado:', articulo);
     
@@ -590,7 +405,6 @@ function PedidosNew(){
     };
 
 
-
     const extractEanFromLine = (line) => {
         const eanRegex = /(\d{13})/; 
         const match = line.match(eanRegex);
@@ -603,8 +417,6 @@ function PedidosNew(){
         const match = line.match(detailsRegex);
     
         if (match) {
-            // const cantidad = parseInt(match[2].replace(',', ''), 10);
-            // const precio = parseFloat(match[3].replace(',', '.'));
             const cantidad = match[2];
             const precio = match[3];
     
@@ -620,11 +432,6 @@ function PedidosNew(){
         return {};
     };
     
-
-
-
-
-
 
     const generatePDF = (data, formaPagoLabel, provinciaLabel, nropedido) => {
         const doc = new jsPDF();
@@ -644,8 +451,7 @@ function PedidosNew(){
         const today = new Date();
         const formattedToday = formatDate(today);
         
-        
-    
+
         doc.addImage(logo, 'PNG', 80, 7, 50, 15);
 
         // Añadir la fecha actual en la parte superior derecha
@@ -662,7 +468,6 @@ function PedidosNew(){
         const valueWidth = 130;
         const totalWidth = labelWidth + valueWidth;
 
-        
 
         // Dibujar celdas y añadir texto en formato de tabla
         const drawRow = (y, label, value, rowHeightMultiplier = 1) => {
@@ -825,9 +630,6 @@ function PedidosNew(){
                 navigate('/');  
             }, 3000);
 
-            // console.log("responseData", responseData); // Inspecciona el objeto completo
-            // console.log("responseData.newFuncion", responseData.newFuncion); // Imprime newFuncion
-            // console.log("responseData.newFuncion", responseData.data.newFuncion); // Imprime newFuncion
     
             if (items && items.length > 0) {
                 generatePDF(pedidoData, formaPagoLabel, provinciaLabel, responseData.data.newFuncion);
@@ -870,7 +672,6 @@ function PedidosNew(){
     return (
         <div className="form-container w-100">
             <form className="w-100" onSubmit={handleSubmit} noValidate autoComplete="off">
-            {/* <h3 className="text-center">Nuevo Pedido</h3> */}
             <div className="bg-primary text-white h4" align="center" colSpan="11"><b>NUEVO PEDIDO</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
@@ -919,7 +720,6 @@ function PedidosNew(){
                             type="text"
                             name="DIREENT"
                             value={DIREENT} 
-                            // onChange={(e) => setDIREENT(e.target.value)}
                             onChange={(e) => handleChange(e, setDIREENT)} 
                             required
                             data-error="Por favor, ingrese la dirección de entrega."
@@ -932,7 +732,6 @@ function PedidosNew(){
                             type="text"
                             name="LOCENT"
                             value={LOCENT} 
-                            // onChange={(e) => setLOCENT(e.target.value)} 
                             onChange={(e) => handleChange(e, setLOCENT)} 
                             required
                             data-error="Por favor, ingrese la localidad de entrega." 
@@ -978,7 +777,6 @@ function PedidosNew(){
                             type="number"
                             name="TELEFONOS"
                             value={TELEFONOS} 
-                            // onChange={(e) => setTELEFONOS(e.target.value)} 
                             onChange={(e) => handleChange(e, setTELEFONOS)} 
                             required
                             data-error="Por favor, ingrese un teléfono de entrega."
@@ -992,10 +790,6 @@ function PedidosNew(){
                             value={COMENTARIO}
                             onChange={(e) => setCOMENTARIO(e.target.value)} 
                             rows="3" 
-                            // defaultValue="_Horario de entrega:\n_Pedir Turno:\n_Enviar Publicidad:"
-                            // placeholder=" _Horario de entrega:
-                            // _Pedir Turno:
-                            // _Enviar Publicidad:"
                         ></textarea>
                     </div>
                 </div>
@@ -1036,25 +830,15 @@ function PedidosNew(){
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value.NUMERO === item.ARTICULO) || null}
                                                 onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
-                                                // onValueChange={(selectedOption) => handleArticuloChange(index, selectedOption.value, 'DESCRIPT')}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
                                                 menuPortalTarget={document.body}
-                                                // classNamePrefix="react-select"
-                                                // className={`react-select-container ${isSubmitted && !ARTICULO ? 'is-invalid' : ''}`}
                                                 styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                                 menuPosition="fixed"
                                                 required
                                                 data-error="Por favor, seleccione un artículo."
                                             />
-
-                                            {/* <Select
-                                                value={options.find(option => option.value.NUMERO === item.ARTICULO)}
-                                                onChange={selectedOption => handleArticuloChange(index, selectedOption)}
-                                                options={options}
-                                            /> */}
-
                                         </td>
                                         <td className="form-group column column-medium">
                                             <NumericFormat
@@ -1107,8 +891,7 @@ function PedidosNew(){
                                                 onValueChange={(values) => handleItemChange(index, values.value, 'DESCUENTO')}
                                                 required 
                                                 data-error="Por favor, ingrese el descuento."
-                                                // maxLength={5}
-                                                onKeyDown={handleKeyDown} // Añadir el evento onKeyDown aquí
+                                                onKeyDown={handleKeyDown} 
                                                 id={`item-DESCUENTO-${index}`}
                                             />
                                         </td>

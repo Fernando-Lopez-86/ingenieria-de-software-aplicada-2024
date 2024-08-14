@@ -121,6 +121,10 @@ connectDatabase()
             console.log(`Servidor corriendo en https://0.0.0.0:${PORT}`);
         });
 
+        // app.listen(PORT, HOST, '0.0.0.0', () => {
+        //          console.log(`Servidor corriendo en https://0.0.0.0:${PORT}`);
+        // });
+
     })
     .catch(err => {
         console.error('Error connecting to database:', err);

@@ -7,13 +7,11 @@ const { Pedidos, PedidosItem, Pedidos_temp, PedidosItem_temp, Numeracion, Numera
 module.exports = {
   
     createPedido: async (pedidoData) => {
-        //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
-        //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
         const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, items } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
-        // try {
+        try {
             // Consulta al modelo Numeraciones para obtener el valor de FUNCION
             const numeracion = await Numeracion_temp.findOne({
                 where: { CLAVE: 'SI091PD0001X' },
@@ -109,10 +107,10 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem, newFuncion };
-        // } catch (error) {
-        //          await transaction.rollback();
-        //          throw new Error('Error al crear el pedido');
-        // }
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error('Error al crear el pedido');
+        }
     }, 
 
 
@@ -273,8 +271,6 @@ module.exports = {
                      }, 
                     transaction });
 
-                    // console.log("item.PRECIO ",pedidoItems)
-
                 const newItems = pedidoItems.map(item => ({
                     NROPED,
                     CLIENTE,
@@ -300,8 +296,6 @@ module.exports = {
 
 
     editPedido: async(NROPED, numeroVendedor) => {
-        // console.log("numeroVendedorrrrrr: "+numeroVendedor)
-        // return Pedidos.findByPk(NROPED);
         try {
             const pedido = await Pedidos_temp.findOne({ 
                 where: {
@@ -318,8 +312,6 @@ module.exports = {
     },
 
     editPedidoApprove: async(NROPED) => {
-        // console.log("numeroVendedorrrrrr: "+numeroVendedor)
-        // return Pedidos.findByPk(NROPED);
         try {
             const pedido = await Pedidos_temp.findOne({ 
                 where: {
@@ -441,7 +433,6 @@ module.exports = {
 
     getAllPedidosCheck: async () => {
         try {
-            // sequelize.options.logging = true;
             const pedidos = await Pedidos_temp.findAll({
                 where: {
                     TIPO: 'P',

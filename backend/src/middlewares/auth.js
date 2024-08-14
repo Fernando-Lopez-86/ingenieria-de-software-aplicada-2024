@@ -1,9 +1,9 @@
-// middleware/auth.js
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { User, Vendedores } = require('../database/models'); // Asegúrate de que la ruta es correcta
 
-// Registrar Usuario
+
 // curl -k -X POST https://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"username": "fer", "password": "123", "numero_vendedor": "016", "rol": "vendedor"}'
 exports.register = async (req, res) => {
     const { username, password, numero_vendedor, rol} = req.body; // Incluye numero_vendedor
@@ -19,7 +19,6 @@ exports.register = async (req, res) => {
 };
 
 
-// Iniciar Sesión
 exports.login = async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -30,13 +29,10 @@ exports.login = async (req, res) => {
         if (!isPasswordValid) return res.status(401).json({ message: 'Invalid credentials: incorrect password' });
 
         const token = jwt.sign({ id: user.id, rol: user.rol, numero_vendedor: user.numero_vendedor }, process.env.JWT_SECRET, { expiresIn: '3h' });
-        //const refreshToken = jwt.sign({ id: user.id, rol: user.rol, numero_vendedor: user.numero_vendedor }, process.env.JWT_REFRESH_SECRET, { expiresIn: '4m' });
 
         const vendedor = await Vendedores.findOne({ where: { NUMERO: user.numero_vendedor } });
         if (!vendedor) return res.status(401).json({ message: 'Vendedor no encontrado' });
-        // console.log("vendedor: ", vendedor)
 
-        // res.status(200).json({ message: 'Login successful', token, numero_vendedor: user.numero_vendedor, nombre_vendedor: vendedor.APEYNOM, rol: user.rol });
         res.status(200).json({ 
             message: 'Login successful', 
             token,
@@ -81,9 +77,13 @@ exports.protect = async (req, res, next) => {
     }
 };
 
-// Middleware para verificar roles
+
 exports.verifyRole = (roles) => {
     return (req, res, next) => {
+        
+        console.log("Rol del usuario:", req.user.rol);
+        console.log("Roles permitidos por la ruta:", roles); 
+
         if (!roles.includes(req.user.rol)) {
             return res.status(403).json({ message: 'Access forbidden: insufficient permissions' });
         }
@@ -105,9 +105,8 @@ exports.getMe = async (req, res) => {
         const vendedor = await Vendedores.findOne({ where: { NUMERO: user.numero_vendedor } });
         if (!vendedor) return res.status(401).json({ message: 'Vendedor no encontrado' });
 
-        // Añadir la información del vendedor al objeto usuario
         const userWithVendedor = {
-            ...user.toJSON(), // Convierte la instancia de Sequelize a JSON
+            ...user.toJSON(), 
             nombre_vendedor: vendedor.APEYNOM
         };
 
@@ -118,64 +117,9 @@ exports.getMe = async (req, res) => {
 };
 
 
-// Middleware para proteger rutas
-// exports.protect = async (req, res, next) => {
-//     const token = req.header('Authorization').replace('Bearer ', '');
-//     if (!token) {
-//         return res.status(401).json({ message: 'Access denied, no token provided' });
-//     }
-//     try {
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//         req.user = decoded;
-//         next();
-//     } catch (error) {
-//         if (error.name === 'TokenExpiredError') {
-//             const refreshToken = req.header('x-refresh-token');
-//             if (!refreshToken) {
-//                 return res.status(401).json({ message: 'Access denied, no refresh token provided' });
-//             }
-//             try {
-//                 const decodedRefreshToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-//                 const user = await User.findByPk(decodedRefreshToken.id); // Encuentra el usuario por el ID en el refresh token
-//                 if (!user) {
-//                     return res.status(401).json({ message: 'User not found' });
-//                 }
-//                 // Genera un nuevo token y continúa con la solicitud original
-//                 const newToken = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
-//                 res.setHeader('Authorization', `Bearer ${newToken}`);
-//                 req.user = decodedRefreshToken;
-//                 next();
-//             } catch (refreshError) {
-//                 return res.status(401).json({ message: 'Invalid refresh token' });
-//             }
-//         } else {
-//             return res.status(400).json({ message: 'Invalid token' });
-//         }
-//     }
-// };
 
 
-// Renovar Access Token
-// exports.refreshToken = (req, res) => {
-//     const { refreshToken } = req.body;
-//     if (!refreshToken) {
-//         return res.status(401).json({ message: 'Refresh token is required' });
-//     }
 
-//     try {
-//         jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-//             if (err) {
-//                 return res.status(403).json({ message: 'Invalid refresh token' });
-//             }
-
-//             const newAccessToken = jwt.sign({ id: user.id, rol: user.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
-//             res.json({ accessToken: newAccessToken });
-//         });
-//     } catch (error) {
-//         console.error('Error verifying refresh token:', error);
-//         res.sendStatus(403);
-//     }
-// };
 
 
 

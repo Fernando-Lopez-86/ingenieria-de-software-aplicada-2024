@@ -2,7 +2,7 @@ module.exports = {
     apps: [
       {
         name: 'pedidosAppFrontend',
-        script: 'src/App.jsx', // Asegúrate de que el camino al script sea correcto
+        script: 'src/App.jsx', 
       }
     ]
   };

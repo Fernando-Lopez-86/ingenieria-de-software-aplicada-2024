@@ -88,19 +88,7 @@ const pedidoControllerAPI = {
     },
 
     edit: async(req, res) => {
-        // const marcas = await brandService.getAllBrands();
-        // const categorias = await categoryService.getAllCategories();
-        // console.log("NROPEDDDDD: "+req.params.NROPED)
-        //pedidoService.editPedido(req.params.NROPED)
-        //console.log("TIPODDD: "+req.body.tipo)
-        // .then((pedidos) => {
-        //     res.render("/api/pedidos/edit", {pedidos});
-        // });
-        //const { NROPED } = req.params;
         const { numero_vendedor } = req.user
-        // console.log("req.user: ", req.user)
-        // console.log("body: ", req.body.NROPED)
-        // console.log("numero_vendedor", numero_vendedor)
         try {
             const pedido = await pedidoService.editPedido(req.body.NROPED, numero_vendedor);
             if (pedido) {
@@ -116,19 +104,6 @@ const pedidoControllerAPI = {
     },
 
     editApprove: async(req, res) => {
-        // const marcas = await brandService.getAllBrands();
-        // const categorias = await categoryService.getAllCategories();
-        // console.log("NROPEDDDDD: "+req.params.NROPED)
-        //pedidoService.editPedido(req.params.NROPED)
-        //console.log("TIPODDD: "+req.body.tipo)
-        // .then((pedidos) => {
-        //     res.render("/api/pedidos/edit", {pedidos});
-        // });
-        //const { NROPED } = req.params;
-        // const { numero_vendedor } = req.user
-        // console.log("req.user: ", req.user)
-        // console.log("body: ", req.body.NROPED)
-        // console.log("numero_vendedor", numero_vendedor)
         try {
             const pedido = await pedidoService.editPedidoApprove(req.body.NROPED);
             if (pedido) {

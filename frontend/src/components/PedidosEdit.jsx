@@ -22,11 +22,6 @@ function PedidoEditForm() {
 
     const location = useLocation();
     const { NROPED } = location.state;
-    // const [CLIENTE, setCLIENTE] = useState('');
-    // const [ENTREGA, setENTREGA] = useState('');
-    // const [LOCENT, setLOCENT] = useState('');
-    // const [PROENT, setPROENT] = useState('');
-    // const [CONDVENTA, setCONDVENTA] = useState('');
     const [formData, setFormData] = useState({
         CLIENTE: { NUMERO: '', RAZONSOC: '' },
         DIREENT: '',
@@ -64,7 +59,6 @@ function PedidoEditForm() {
 
 
     const optionsClientes = clientes.map(cliente => ({
-        // value: cliente.NUMERO,
         value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
@@ -87,15 +81,14 @@ function PedidoEditForm() {
         const fetchPedido = async () => {
             
             try {
-                const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+                const token = localStorage.getItem('token'); 
                 
                 const response = await fetch(`${API_URL}/api/pedidos/edit`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                        'Authorization': `Bearer ${token}`, 
                         'Content-Type': 'application/json'
                     },
-                    // body: JSON.stringify({ NROPED, numero_vendedor: user.numero_vendedor }),
                     
                     body: JSON.stringify({ NROPED }),
                 });
@@ -105,7 +98,7 @@ function PedidoEditForm() {
                 }
 
                 const data = await response.json();
-                // console.log("data", data)
+
                 setFormData({
                     ...data.data,
                     CLIENTE: {
@@ -127,11 +120,10 @@ function PedidoEditForm() {
 
 
     useEffect(() => {
-        // Fetch para obtener los ítems del pedido
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+        const token = localStorage.getItem('token'); 
         fetch(`${API_URL}/api/pedidos/items/${NROPED}`, {
             headers: {
-                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Authorization': `Bearer ${token}`, 
                 'Content-Type': 'application/json'
             }
         })
@@ -184,7 +176,7 @@ function PedidoEditForm() {
 
     const handleItemChangeFloat = (index, value, name) => {
         const newItems = [...pedidoItems];
-        newItems[index][name] = parseFloat(value); // Convertir a número
+        newItems[index][name] = parseFloat(value); 
         setPedidoItems(newItems);
     };
 
@@ -200,14 +192,12 @@ function PedidoEditForm() {
     };
     
     const addItem = () => {
-        // Encontrar el máximo valor actual de ITEM en pedidoItems
         const maxItem = Math.max(...pedidoItems.map(item => parseInt(item.ITEM, 10)));
 
         // Incrementar en 1 el máximo encontrado para obtener el nuevo ITEM
         const newItem = (maxItem + 1).toString().padStart(3, '0');
 
         setPedidoItems([...pedidoItems, { 
-            //ITEM: (pedidoItems.length + 1).toString().padStart(3, '0'), ///////ERROR NO ES LENGTH ES EL SUPERIOR + 1
             ITEM: newItem,
             ARTICULO: '',
             CANTPED: '',
@@ -244,7 +234,6 @@ function PedidoEditForm() {
         setFormData({ ...formData, PROENT: selectedOption ? selectedOption.value : '' });
     };
 
-    //generatePDF(formData, pedidoItems, formaPagoLabel, provinciaLabel);
 
     const generatePDF = (data, pedidoItems, formaPagoLabel, provinciaLabel) => {
         const doc = new jsPDF();
@@ -327,27 +316,6 @@ function PedidoEditForm() {
         drawRow(currentY, "Comentarios:",  data.COMENTARIO.toUpperCase(), 3);
         currentY += cellHeight * 3;
 
-        // let currentY = startY;
-        // drawRow(currentY, "Cliente:",  data.RAZONSOC.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Vendedor:",  user.nombre_vendedor.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Forma de Pago:", formaPagoLabel.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Dirección Entrega:",  data.DIREENT.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Localidad Entrega:",  data.LOCENT.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Fecha Entrega:",  data.FECTRANS);
-        // currentY += cellHeight;
-        // drawRow(currentY, "Provincia Entrega:", provinciaLabel.toUpperCase());
-        // currentY += cellHeight;
-        // drawRow(currentY, "Teléfono Entrega:",  data.TELEFONOS);
-        // currentY += cellHeight;
-        // drawRow(currentY, "Número Control:", NROPED);
-        // currentY += cellHeight;
-        // drawRow(currentY, "Comentarios:",  data.COMENTARIO.toUpperCase(), 3);
-        // currentY += cellHeight * 3;
 
         // Calcular la suma total de la columna Total
         let totalSum = pedidoItems.reduce((sum, item) => {
@@ -403,20 +371,16 @@ function PedidoEditForm() {
             return;
         }
 
-
         const formattedDate = formData.FECTRANS ? format(formData.FECTRANS, 'yyyy-MM-dd HH:mm:ss') : null;
 
-
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-        // fetch(`http://localhost:3000/api/pedidos/update/${NROPED}`, {
+        const token = localStorage.getItem('token'); 
         fetch(`${API_URL}/api/pedidos/update`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Authorization': `Bearer ${token}`, 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                // ESTADOSEG: formData.ESTADOSEG,
                 NROPED: NROPED,
                 CLIENTE: formData.CLIENTE.NUMERO,
                 RAZONSOC: formData.CLIENTE.RAZONSOC,
@@ -427,7 +391,6 @@ function PedidoEditForm() {
                 CONDVENTA: formData.CONDVENTA,
                 FECTRANS: formattedDate,
                 COMENTARIO: formData.COMENTARIO,
-                // pedidoItems: pedidoItems
                 pedidoItems: pedidoItems.map(item => ({
                     ...item,
                     ARTICULO: item.ARTICULO,
@@ -473,11 +436,9 @@ function PedidoEditForm() {
         setShowModal(false);
     };
 
-
     if (isLoading) {
         return <div>Cargando...</div>;
     }
-
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -487,7 +448,6 @@ function PedidoEditForm() {
     return (
         <div className="form-container w-100 ">
             <form className="w-100" onSubmit={handleSubmit} noValidate autoComplete="off">
-            {/* <h3 className="text-center">Modificar Pedido</h3> */}
             <div className="bg-primary text-white h5" align="center" colSpan="11"><b>MODIFICAR PEDIDO</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
@@ -496,7 +456,6 @@ function PedidoEditForm() {
                         <label>Cliente</label>
                         <Select
                             name="CLIENTE"
-                            // value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
                             value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE.NUMERO) || null}
                             onChange={handleClientChange}
                             options={optionsClientes}
@@ -630,13 +589,12 @@ function PedidoEditForm() {
                                             <Select
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value.NUMERO === item.ARTICULO)}
-                                                // onChange={(selectedOption) => handleItemChange(index, { target: { name: 'ARTICULO', value: selectedOption.value } })}
                                                 onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
-                                                menuPortalTarget={document.body}  // Renderiza el menú en el body
-                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  // Ajusta el z-index
+                                                menuPortalTarget={document.body}  
+                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  
                                                 menuPosition="fixed"
                                                 required
                                                 data-error="Por favor, seleccione un artículo."
@@ -659,13 +617,6 @@ function PedidoEditForm() {
                                             />
                                         </td>
                                         <td className="form-group column column-medium">
-                                            {/* <input type="number" 
-                                            name="PRECIO" 
-                                            value={item.PRECIO} 
-                                            onChange={(e) => handleItemChange(index, e)} 
-                                            required 
-                                            data-error="Por favor, ingrese el precio." 
-                                            step="0.01"/> */}
                                             <NumericFormat
                                                 value={item.PRECIO}
                                                 thousandSeparator="."
@@ -684,12 +635,6 @@ function PedidoEditForm() {
                                             />
                                         </td>
                                         <td className="form-group column column-medium">
-                                        {/* <input type="number" 
-                                        name="DESCUENTO" 
-                                        value={item.DESCUENTO}
-                                         onChange={(e) => handleItemChange(index, e)} 
-                                         required data-error="Por favor, ingrese el descuento." 
-                                         step="0.01"/> */}
                                             <NumericFormat
                                                 value={item.DESCUENTO}
                                                 thousandSeparator="."
@@ -704,8 +649,7 @@ function PedidoEditForm() {
                                                 onValueChange={(values) => handleItemChangeFloat(index, values.value, 'DESCUENTO')}
                                                 required 
                                                 data-error="Por favor, ingrese el descuento."
-                                                // maxLength={5}
-                                                onKeyDown={handleKeyDown} // Añadir el evento onKeyDown aquí
+                                                onKeyDown={handleKeyDown} 
                                             />
                                          </td>
                                         <td className="form-group column column-small text-center">

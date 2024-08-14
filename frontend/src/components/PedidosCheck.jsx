@@ -28,12 +28,6 @@ function PedidosCheck() {
     };
 
 
-    // useEffect(() => {
-    //     fetch("http://localhost:3000/api/pedidos")
-    //         .then(response => response.json())
-    //         .then(data => setPedidos(data.data));
-    // }, []);
-
     useEffect(() => {
         const fetchPedidos = async () => {
             try {
@@ -69,53 +63,8 @@ function PedidosCheck() {
     }, [selectedNROPED]);
 
 
-    const handleRowClick = (nroPed) => {
-        setSelectedNROPED(nroPed);
-    };
-
-
-    const handleDelete = (nroPed) => {
-        confirmAlert({
-            title: 'Confirmar eliminación',
-            message: `¿Está seguro de que desea eliminar el pedido ${nroPed}?`,
-            buttons: [
-                {
-                    label: 'Sí',
-                    onClick: () => {
-                        fetch(`${API_URL}/api/pedidos/${nroPed}`, {
-                            method: 'DELETE',
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                // Actualizar la lista de pedidos después de eliminar REVISAR!!!!!!!
-                                const updatedPedidos = pedidos.filter(pedido => pedido.NROPED !== nroPed);
-                                setPedidos(updatedPedidos);
-                                
-                                // Actualizar pedidosItems si el pedido eliminado 
-                                if (selectedNROPED === nroPed) {
-                                    setPedidosItems([]);
-                                    setSelectedNROPED(null);
-                                }
-                            } else {
-                                console.error(`Error al eliminar el pedido ${nroPed}`);
-                            }
-                        })
-                        .catch(error => console.error(`Error de red: ${error}`));
-                    }
-                },
-                {
-                    label: 'No',
-                    onClick: () => console.log('Cancelado')
-                }
-            ]
-        });
-    };
-
-
     const handleModify = (NROPED) => {
-        // navigate(`/check/${nroPed}`);   // Redirigir a la ruta de edición
         navigate('/check/approve', { state: { NROPED } });
-        // navigate('/approve', { state: { NROPED } });
     };
 
 
@@ -136,7 +85,6 @@ function PedidosCheck() {
                     </thead>
                     <tbody>
                         {pedidos.map(pedido => (
-                            // <tr key={pedido.NROPED} onClick={() => handleRowClick(pedido.NROPED)}>
                             <tr key={pedido.NROPED} >
                                 <td className="p-1">{formatDate(pedido.FECEMISION)}</td>
                                 <td className="p-1">{pedido.CLIENTE}</td>
@@ -144,16 +92,10 @@ function PedidosCheck() {
                                 <td className="p-1">{pedido.VENDEDOR}</td>
                                 <td className="p-1">{pedido.ESTADOSEG === 'P' ? 'Pendiente' : pedido.ESTADOSEG === 'A' ? 'Aprobado' : ''}</td>
                                 <td className="p-1" align="center">
-                                    {/* <button
-                                        className="btn btn-sm btn-outline-danger mr-1"
-                                        onClick={(e) => { e.stopPropagation(); handleDelete(pedido.NROPED); }}
-                                    >
-                                        Eliminar
-                                    </button> */}
                                     <button
                                         className="btn btn-sm btn-outline-primary"
                                         onClick={(e) => { e.stopPropagation(); handleModify(pedido.NROPED); }}
-                                        disabled={pedido.ESTADOSEG === 'A'} // Deshabilitar si el estado es 'A'
+                                        disabled={pedido.ESTADOSEG === 'A'} 
                                     >
                                         Ver Pedido
                                     </button>
@@ -163,35 +105,7 @@ function PedidosCheck() {
                     </tbody>
                 </table>
             </div>
-            {/* <div className="pedidos-items">
-                <table className="table table-hover table-pedidos-items">
-                    <div className="bg-primary text-white" align="center" colSpan="11"><b>PEDIDOS ITEMS</b></div>
-                    <thead>
-                        <tr>
-                            <th>Nro Pedido</th>
-                            <th>Cliente</th>
-                            <th>Item</th>
-                            <th>Articulo</th>
-                            <th>Bultos</th>
-                            <th>Precio</th>
-                            <th>Descuento</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {pedidosItems.map(item => (
-                            <tr key={`${item.NROPED}-${item.ITEM}`}>
-                                <td>{item.NROPED}</td>
-                                <td>{item.CLIENTE}</td>
-                                <td>{item.ITEM}</td>
-                                <td>{item.DESCART}</td>
-                                <td>{item.CANTPED}</td>
-                                <td>{item.PRECIO}</td>
-                                <td>{parseInt(Math.round(item.DESCUENTO))}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div> */}
+
         </div>
     );
 }

@@ -20,4 +20,18 @@ module.exports = {
         }
     },
 
+    getAllClientesApprove: async () => {
+        try {
+            const clientes = await Clientes.findAll({
+                where: {
+                    FECINHAB: null,
+                },
+                order: [["RAZONSOC", "ASC"]],
+            });
+            return clientes;
+        } catch (error) {
+            throw new Error('Error al obtener los artículos: ' + error.message);
+        }
+    },
+
 };

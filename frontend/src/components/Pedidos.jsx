@@ -45,9 +45,6 @@ function Pedidos() {
                 const data = await response.json();
                 setPedidos(data.data);
             } else if (response.status === 401 ) {
-                // if (token) {
-                //     fetchPedidos(false);
-                // }
                 localStorage.removeItem('token');
                 navigate('/login');
             } else {
@@ -72,9 +69,6 @@ function Pedidos() {
                 const data = await response.json();
                 setPedidosItems(data.data);
             } else if (response.status === 401) {
-                // if (token) {
-                //     fetchPedidosItems(nroPed, false);
-                // }
                 localStorage.removeItem('token');
                 navigate('/login');
             } else {
@@ -101,104 +95,6 @@ function Pedidos() {
 
 
 
-    // const fetchPedidos = async () => {
-    //     try {
-    //         const token = localStorage.getItem('token');
-    //         const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             setPedidos(data.data);
-    //         } else {
-    //             throw new Error(`Error fetching pedidos: ${response.status}`);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error al obtener los pedidos:", error);
-    //     }
-    // };
-
-    // const fetchPedidosItems = async (nroPed) => {
-    //     try {
-    //         const token = localStorage.getItem('token');
-    //         const response = await fetch(`http://localhost:3000/api/pedidos/items/${nroPed}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             setPedidosItems(data.data);
-    //         } else {
-    //             throw new Error(`Error fetching pedidos items: ${response.status}`);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error al obtener los items de pedidos:", error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     if (user && user.numero_vendedor) {
-    //         fetchPedidos();
-    //     } else {
-    //         console.error("El usuario no tiene un numero_vendedor definido.");
-    //     }
-    // }, [user]);
-
-    // useEffect(() => {
-    //     if (selectedNROPED !== null) {
-    //         fetchPedidosItems(selectedNROPED);
-    //     }
-    // }, [selectedNROPED]);
-
-
-
-    // useEffect(() => {
-    //     const fetchPedidos = async () => {
-    //         try {
-    //             const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-    //             const response = await fetch(`http://localhost:3000/api/pedidos?numero_vendedor=${user.numero_vendedor}`, {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             });
-    //             const data = await response.json();
-    //             setPedidos(data.data);
-    //         } catch (error) {
-    //             console.error("Error al obtener los pedidos:", error);
-    //         }
-    //     };
-
-    //     if (user && user.numero_vendedor) {
-    //         fetchPedidos();
-    //     } else {
-    //         console.error("El usuario no tiene un numero_vendedor definido.");
-    //     }
-    // }, [user]);
-
-
-    // useEffect(() => {
-    //     if (selectedNROPED !== null) {
-    //         const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-    //         fetch(`http://localhost:3000/api/pedidos/items/${selectedNROPED}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         })
-    //             .then(response => response.json())
-    //             .then(data => setPedidosItems(data.data));
-    //     }
-    // }, [selectedNROPED]);
-
-
     const handleRowClick = (nroPed) => {
         setSelectedNROPED(nroPed);
     };
@@ -212,17 +108,17 @@ function Pedidos() {
                 {
                     label: 'Sí',
                     onClick: () => {
-                        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+                        const token = localStorage.getItem('token'); 
                         fetch(`${API_URL}/api/pedidos/${nroPed}?numero_vendedor=${user.numero_vendedor}`, {
                             method: 'DELETE',
                             headers: {
-                                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                                'Authorization': `Bearer ${token}`, 
                                 'Content-Type': 'application/json'
                             }
                         })
                         .then(response => {
                             if (response.ok) {
-                                // Actualizar la lista de pedidos después de eliminar REVISAR!!!!!!!
+
                                 const updatedPedidos = pedidos.filter(pedido => pedido.NROPED !== nroPed);
                                 setPedidos(updatedPedidos);
                                 
@@ -248,8 +144,6 @@ function Pedidos() {
 
 
     const handleModify = (NROPED) => {
-        // navigate(`/edit/${nroPed}`);   // Redirigir a la ruta de edición
-        // navigate('/edit');   // Redirigir a la ruta de edición
         navigate('/edit', { state: { NROPED } });
     };
 
@@ -340,12 +234,10 @@ function Pedidos() {
                     <tbody>
                         {pedidosItems.map(item => (
                             <tr key={`${item.NROPED}-${item.ITEM}`}>
-                                {/* <td>{item.NROPED}</td> */}
                                 <td className="p-1">{item.CLIENTE}</td>
                                 <td className="p-1">{item.ITEM}</td>
                                 <td className="p-1">{item.DESCART}</td>
                                 <td className="p-1">{formatearNumeroSinDecimales(item.CANTPED)}</td>
-                                {/* <td>{item.PRECIO}</td> */}
                                 <td className="p-1">{formatearNumero(item.PRECIO)}</td>
                                 <td className="p-1">{formatearNumero(item.DESCUENTO)}</td>
                                 <td className="p-1">{formatearNumero(calcularTotal(item))}</td>

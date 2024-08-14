@@ -17,13 +17,7 @@ function PedidoEditApprove() {
     const location = useLocation();
     const { NROPED } = location.state;
     const API_URL = process.env.REACT_APP_API_URL;
-    // const { NROPED } = useParams();
     const { user } = useContext(UserContext);
-    // const [CLIENTE, setCLIENTE] = useState('');
-    // const [ENTREGA, setENTREGA] = useState('');
-    // const [LOCENT, setLOCENT] = useState('');
-    // const [PROENT, setPROENT] = useState('');
-    // const [CONDVENTA, setCONDVENTA] = useState('');
     const [formData, setFormData] = useState({
         CLIENTE: { NUMERO: '', RAZONSOC: '' },
         DIREENT: '',
@@ -61,7 +55,6 @@ function PedidoEditApprove() {
 
 
     const optionsClientes = clientes.map(cliente => ({
-        // value: cliente.NUMERO,
         value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
         label: cliente.RAZONSOC
     }));
@@ -77,8 +70,6 @@ function PedidoEditApprove() {
         value: provincia.value,
         label: provincia.label
     }));
-
-
 
 
     useEffect(() => {
@@ -104,7 +95,7 @@ function PedidoEditApprove() {
                 }
 
                 const data = await response.json();
-                // setPedidoData(data.data);
+
                 setFormData({
                     ...data.data,
                     CLIENTE: {
@@ -112,6 +103,7 @@ function PedidoEditApprove() {
                         RAZONSOC: data.data.RAZONSOC
                     }
                 });
+
                 setIsLoading(false);
             } catch (error) {
                 setError(error.message);
@@ -125,38 +117,12 @@ function PedidoEditApprove() {
 
 
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-        // fetch(`http://localhost:3000/api/pedidos/edit/${NROPED}?numero_vendedor=${user.numero_vendedor}`,{
-        //     headers: {
-        //         'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
-        //         'Content-Type': 'application/json'
-        //     }
-        // })
-        //     .then(response => {
-        //         if (!response.ok) {
-        //             throw new Error('Error al obtener los datos del pedido');
-        //         }
-        //         return response.json();
-        //     })
-        //     .then(data => {
-        //         setFormData({
-        //             ...data.data,
-        //             CLIENTE: {
-        //                 NUMERO: data.data.CLIENTE,
-        //                 RAZONSOC: data.data.RAZONSOC
-        //             }
-        //         });
-        //         setIsLoading(false);
-        //     })
-        //     .catch(error => {
-        //         setError(error.message);
-        //         setIsLoading(false);
-        //     });
+        const token = localStorage.getItem('token'); 
 
         // Fetch para obtener los ítems del pedido
         fetch(`${API_URL}/api/pedidos/items/${NROPED}`, {
             headers: {
-                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Authorization': `Bearer ${token}`, 
                 'Content-Type': 'application/json'
             }
         })
@@ -177,19 +143,14 @@ function PedidoEditApprove() {
             .then(response => response.json())
             .then(data => setProvincias(data.data))
             .catch(error => console.error('Error fetching provincias:', error));
-
-        // fetch("http://localhost:3000/api/clientes")
-        //     .then(response => response.json())
-        //     .then(data => setClientes(data.data))
-        //     .catch(error => console.error('Error fetching clientes:', error));
     }, [NROPED]);
 
+
     useEffect(() => {
-        if (user && user.numero_vendedor) {
-            fetch(`${API_URL}/api/clientes?numero_vendedor=${user.numero_vendedor}`)
+        if (user) {
+            fetch(`${API_URL}/api/clientes/clientes-approve`)
                 .then(response => response.json())
                 .then(data => {
-                    // console.log("Clientes:", data.data);
                     setClientes(data.data);
                 })
                 .catch(error => console.error('Error fetching clientes:', error));
@@ -199,7 +160,6 @@ function PedidoEditApprove() {
     }, [user]);
 
 
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -207,17 +167,16 @@ function PedidoEditApprove() {
         const today = new Date();
         const formattedToday = today ? format(today, 'yyyy-MM-dd HH:mm:ss') : null;
         
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+        const token = localStorage.getItem('token'); 
         const response = await fetch(`${API_URL}/api/pedidos/check`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`, // Enviar el token en el encabezado de autorización
+                'Authorization': `Bearer ${token}`, 
                 'Content-Type': 'application/json'
         },
 
         
             body: JSON.stringify({
-                // ESTADOSEG: formData.ESTADOSEG,
                 NROPED: NROPED,
                 CLIENTE: formData.CLIENTE.NUMERO,
                 RAZONSOC: formData.CLIENTE.RAZONSOC,
@@ -230,7 +189,6 @@ function PedidoEditApprove() {
                 FECTRANS: formattedDate,
                 FECEMISION: formattedToday,
                 COMENTARIO: formData.COMENTARIO,
-                // pedidoItems: pedidoItems
                 pedidoItems: pedidoItems.map(item => ({
                     ...item,
                     ARTICULO: item.ARTICULO,
@@ -265,21 +223,17 @@ function PedidoEditApprove() {
         setShowModal(false);
     };
 
-
     if (isLoading) {
         return <div>Cargando...</div>;
     }
-
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-
     return (
         <div className="form-container w-100 ">
             <form className="w-100" onSubmit={handleSubmit}>
-            {/* <h3 className="text-center">Controlar Pedido</h3> */}
             <div className="bg-primary text-white h5" align="center" colSpan="11"><b>AUTORIZAR PEDIDOS</b></div>
             <div className="form-container w-100">
                 <div className="form-card w-25 mr-4 mt-2 mb-4 border border-primary">
@@ -288,9 +242,7 @@ function PedidoEditApprove() {
                         <label>Cliente</label>
                         <Select
                             name="CLIENTE"
-                            // value={optionsClientes.find(option => option.value === formData.CLIENTE) || null}
                             value={optionsClientes.find(option => option.value.NUMERO === formData.CLIENTE.NUMERO) || null}
-                            // onChange={handleClientChange}
                             options={optionsClientes}
                             isSearchable
                             placeholder="Seleccionar Cliente"
@@ -307,7 +259,6 @@ function PedidoEditApprove() {
                         <Select
                             name="CONDVENTA"
                             value={optionsFormasDePago.find(option => option.value === formData.CONDVENTA) || null}
-                            // onChange={handleFormaDePagoChange}
                             options={optionsFormasDePago}
                             isSearchable
                             placeholder="Seleccionar Forma de Pago"
@@ -325,7 +276,6 @@ function PedidoEditApprove() {
                             name="DIREENT"
                             value={formData.DIREENT}
                             disabled
-                            // onChange={handleChange}
                         />
                     </div>
 
@@ -336,7 +286,6 @@ function PedidoEditApprove() {
                             name="LOCENT"
                             value={formData.LOCENT}
                             disabled
-                            // onChange={handleChange}
                         />
                     </div>
 
@@ -345,7 +294,6 @@ function PedidoEditApprove() {
                         <Select
                             name="PROENT"
                             value={optionsProvincias.find(option => option.value === formData.PROENT) || null}
-                            // onChange={handleProvinciasChange}
                             options={optionsProvincias}
                             isSearchable
                             placeholder="Seleccionar Provincia"
@@ -361,7 +309,6 @@ function PedidoEditApprove() {
                         <DatePicker
                             name="FECTRANS"
                             value={formData.FECTRANS} 
-                            // onChange={handleDateChange}
                             selected={formData.FECTRANS ? new Date(formData.FECTRANS) : null}
                             dateFormat="dd/MM/yyyy"
                             placeholderText="dd/mm/yyyy"
@@ -376,7 +323,6 @@ function PedidoEditApprove() {
                             name="TELEFONOS"
                             value={formData.TELEFONOS}
                             disabled
-                            // onChange={handleChange}
                         />
                     </div>
 
@@ -393,8 +339,6 @@ function PedidoEditApprove() {
                 
                 <div className="form-card w-75 mt-2 mb-4 border border-primary">
                     <div className="form-container d-flex justify-content-between">
-                        {/* <h3>Items del Pedido</h3> */}
-                        {/* <button type="button" className="btn btn-outline-success mr-3 mb-2 mt-1" onClick={addItem}><FontAwesomeIcon icon={faPlus} /></button> */}
                     </div>
                     <div className="table-responsive">
                         <table className="table table-hover">
@@ -405,7 +349,6 @@ function PedidoEditApprove() {
                                     <th className="column column-medium">Cantidad</th>
                                     <th className="column column-medium">Precio</th>
                                     <th className="column column-medium">Descuento</th>
-                                    {/* <th className="column column-small">Eliminar</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -416,21 +359,18 @@ function PedidoEditApprove() {
                                             <Select
                                                 name="ARTICULO"
                                                 value={options.find(option => option.value.NUMERO === item.ARTICULO)}
-                                                // onChange={(selectedOption) => handleItemChange(index, { target: { name: 'ARTICULO', value: selectedOption.value } })}
-                                                // onChange={(selectedOption) => handleArticuloChange(index, selectedOption.value)}
                                                 options={options}
                                                 isSearchable
                                                 placeholder="Seleccionar Artículo"
                                                 required
-                                                menuPortalTarget={document.body}  // Renderiza el menú en el body
-                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  // Ajusta el z-index
+                                                menuPortalTarget={document.body}  
+                                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}  
                                                 menuPosition="fixed"
                                                 isDisabled
                                             />
                                         </td>
                                         <td className="form-group column column-medium"><input type="text" name="CANTPED" value={item.CANTPED}  required disabled/></td>
                                         <td className="form-group column column-medium">
-                                            {/* <input type="text" name="PRECIO" value={item.PRECIO}  required disabled/> */}
                                             <NumericFormat
                                                 value={item.PRECIO} // Valor numérico a mostrar
                                                 displayType="input" // Tipo de componente a mostrar ("input" o "text")
@@ -443,7 +383,6 @@ function PedidoEditApprove() {
                                             />
                                         </td>
                                         <td className="form-group column column-medium">
-                                            {/* <input type="text" name="DESCUENTO" value={item.DESCUENTO ? parseInt(Math.round(item.DESCUENTO)) : 0}  required disabled/> */}
                                             <NumericFormat
                                                 value={item.DESCUENTO} // Valor numérico a mostrar
                                                 displayType="input" // Tipo de componente a mostrar ("input" o "text")
@@ -455,11 +394,6 @@ function PedidoEditApprove() {
                                                 disabled // Campo de entrada deshabilitado
                                             />
                                         </td>
-                                        {/* <td className="form-group column column-small text-center">
-                                            <button type="button" className="btn btn-sm btn-outline-danger remove-button" onClick={() => removeItem(index)}>
-                                                <FontAwesomeIcon icon={faTrash} />
-                                            </button>
-                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>

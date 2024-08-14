@@ -23,9 +23,6 @@ const LogoutButton = () => {
             )}
             <button onClick={handleLogout} className="logout-button">Cerrar Sesión</button>
         </div>
-        // <button onClick={handleLogout} className="logout-button">
-        //     Cerrar sesión
-        // </button>
     );
 };
 

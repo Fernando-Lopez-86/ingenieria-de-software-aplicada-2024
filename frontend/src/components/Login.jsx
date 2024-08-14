@@ -17,38 +17,10 @@ const Login = () => {
 
     const API_URL = process.env.REACT_APP_API_URL;
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const response = await fetch('http://localhost:3000/auth/login', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ username, password }),
-    //         });
-
-    //         const data = await response.json();
-    //         if (response.ok) {
-    //             localStorage.setItem('token', data.token);
-    //             localStorage.setItem('refreshToken', data.refreshToken);
-    //             setUser(data.user);
-    //             setMessage('Login successful');
-    //             navigate('/');
-    //         } else {
-    //             alert(data.message);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error logging in:', error);
-    //     }
-    // };
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Limpiar el mensaje de error previo
+        setError(''); 
         try {
-            // const response = await fetch('http://localhost:3000/auth/login', {
             const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -59,10 +31,17 @@ const Login = () => {
                 localStorage.setItem('token', data.token);
                 setUser(data.user);
                 setMessage('Login successful');
-                navigate('/');
+
+                // Redirigir según el rol del usuario
+                if (data.user.rol === 'admin' || data.user.rol === 'vendedor') {
+                    navigate('/');
+                } else if (data.user.rol === 'control') {
+                    navigate('/check');
+                }
+
             } else {
                 console.error('Inicio de sesión fallido:', data.message);
-                setError('Usuario o contraseña incorrecta'); // Establecer el mensaje de error
+                setError('Usuario o contraseña incorrecta'); 
             }
         } catch (err) {
             console.error('Error en el inicio de sesión:', err);

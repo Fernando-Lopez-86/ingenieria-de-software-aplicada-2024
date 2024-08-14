@@ -8,9 +8,6 @@ const PrivateRoute = ({  allowedRoles }) => {
     const { user, loading } = useContext(UserContext);
     const token = localStorage.getItem('token');
 
-    // console.log("Current user:", user); // Agregar log
-    // console.log("Allowed roles:", allowedRoles); // Agregar log
-
     if (loading) {
         return <div>Loading...</div>; // O algún componente de carga
     }
@@ -25,7 +22,6 @@ const PrivateRoute = ({  allowedRoles }) => {
         return <Navigate to="/unauthorized" />;
     }
 
-    // return children;
     return <Outlet />;
 };
 

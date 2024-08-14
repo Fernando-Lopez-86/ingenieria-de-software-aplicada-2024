@@ -11,55 +11,24 @@ import PrivateRoute from './PrivateRoute';
 function Content(){
     return(
         <div className="content">
-            {/* <Routes>
-                <Route path="/" exact={true} element={ <Pedidos /> } />
-                <Route path="/check" exact={true} element={ <PedidosCheck /> } />
-                <Route path="/new" exact={true} element={ <PedidosNew /> } />
-                <Route path="/edit/:NROPED" element={<PedidosEdit />} />
-                <Route path="/check/:NROPED" element={<PedidosEditApprove />} />
-            </Routes> */}
-
-
-            {/* <Routes> */}
-                {/* <Route path="/login" element={<Login />} /> */}
-                {/* <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor']} />}>
-                    <Route path="/" element={<Pedidos />} />
-                    <Route path="/new" element={<PedidosNew />} />
-                    <Route path="/edit/:NROPED" element={<PedidosEdit />} />
-                </Route>
-                <Route element={<PrivateRoute allowedRoles={['admin', 'control']} />}>
-                    <Route path="/check" element={<PedidosCheck />} />
-                    <Route path="/check/:NROPED" element={<PedidosEditApprove />} />
-                </Route> */}
-                {/* <Route path="*" element={<Navigate to="/login" />} /> */}
-            {/* </Routes> */}
-            {/* <Routes>
+            <Routes>
+                {/* Rutas accesibles para admin, vendedor y control */}
                 <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor']} />}>
                     <Route path="/" element={<Pedidos />} />
-                    <Route path="/new" element={<PedidosNew />} />
-                    <Route path="/edit/:NROPED" element={<PedidosEdit />} />
                 </Route>
-                <Route element={<PrivateRoute allowedRoles={['admin', 'control']} />}>
-                    <Route path="/check" element={<PedidosCheck />} />
-                    <Route path="/check/:NROPED" element={<PedidosEditApprove />} />
-                </Route>
-            </Routes> */}
 
-            <Routes>
                 <Route element={<PrivateRoute allowedRoles={['admin', 'vendedor']} />}>
                     <Route path="/" element={<Pedidos />} />
                     <Route path="/new" element={<PedidosNew />} />
                     <Route path="/edit" element={<PedidosEdit />} />
                 </Route>
-                {/* <Route element={<PrivateRoute allowedRoles={['admin', 'control']} />}>
+
+                <Route element={<PrivateRoute allowedRoles={['admin', 'control']} />}>
                     <Route path="/check" element={<PedidosCheck />} />
-                    <Route path="/check/:NROPED" element={<PedidosEditApprove />} />
-                </Route> */}
+                    <Route path="/check/approve" element={<PedidosEditApprove />} />
+                </Route>
                 <Route path="*" element={<Navigate to="/login" />} />
             </Routes>
-            
-
-
         </div>
     );
 }

@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.user) {
-                        //console.log("User data fetched:", data.user);
                         setUser(data.user);
                     }
                     setLoading(false);
