@@ -13,7 +13,7 @@ module.exports = {
 
         const transaction = await sequelize.transaction();
 
-        try {
+        // try {
             // Consulta al modelo Numeraciones para obtener el valor de FUNCION
             const numeracion = await Numeracion_temp.findOne({
                 where: { CLAVE: 'SI091PD0001X' },
@@ -80,7 +80,7 @@ module.exports = {
                 CONGELA: 'S',
                 OPERACION: '01',
                 MOTIVO: '01',
-                USUARIO,
+                //USUARIO,  VER TIENE QUE TENER 8 CARACTERES
             }, { transaction });    
 
             if (!items || !Array.isArray(items)) {
@@ -109,10 +109,10 @@ module.exports = {
             await transaction.commit();
 
             return { pedidos, pedidositem, newFuncion };
-        } catch (error) {
-                 await transaction.rollback();
-                 throw new Error('Error al crear el pedido');
-        }
+        // } catch (error) {
+        //          await transaction.rollback();
+        //          throw new Error('Error al crear el pedido');
+        // }
     }, 
 
 
@@ -200,7 +200,7 @@ module.exports = {
                 CONGELA: 'S',
                 OPERACION: '01',
                 MOTIVO: '01',
-                USUARIO,
+                // USUARIO,   VER TIENE QUE TENER 8 CARACTERES
             }, { transaction });    
 
             if (!pedidoItems || !Array.isArray(pedidoItems)) {
