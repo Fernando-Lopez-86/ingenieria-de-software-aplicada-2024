@@ -7,7 +7,7 @@ const { Pedidos, PedidosItem, Pedidos_temp, PedidosItem_temp, Numeracion, Numera
 module.exports = {
   
     createPedido: async (pedidoData) => {
-        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, items } = pedidoData;
+        const { CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, CUIT, items } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
@@ -59,6 +59,7 @@ module.exports = {
                 CLIENTE: CLIENTE,
                 RAZONSOC: RAZONSOC,
                 CONDVENTA,
+                CUIT,
                 DIREENT,
                 PROENT,
                 LOCENT,
@@ -78,6 +79,7 @@ module.exports = {
                 CONGELA: 'S',
                 OPERACION: '01',
                 MOTIVO: '01',
+                ENTREGARNG: '001',
                 //USUARIO,  VER TIENE QUE TENER 8 CARACTERES
             }, { transaction });    
 
@@ -117,7 +119,7 @@ module.exports = {
     createPedidoCheck: async (pedidoData) => {
         //const { TIPO, CLIENTE, NROPED, CODIGO, NROREAL, ESTADOSEG, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, FECTRANS, COMENTARIO, items } = pedidoData;
         //console.log('pedidoData:', JSON.stringify(pedidoData, null, 2)); // Log completo del objeto pedidoData
-        const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, pedidoItems } = pedidoData;
+        const { NROPED, CLIENTE, RAZONSOC, CONDVENTA, DIREENT, PROENT, LOCENT, TELEFONOS, VENDEDOR, FECTRANS, FECEMISION, COMENTARIO, USUARIO, CUIT, pedidoItems } = pedidoData;
 
         const transaction = await sequelize.transaction();
 
@@ -178,6 +180,7 @@ module.exports = {
                 TIPO: 'P',
                 CLIENTE: CLIENTE,
                 RAZONSOC: RAZONSOC,
+                CUIT,
                 CONDVENTA,
                 DIREENT,
                 PROENT,
@@ -198,6 +201,7 @@ module.exports = {
                 CONGELA: 'S',
                 OPERACION: '01',
                 MOTIVO: '01',
+                ENTREGARNG: '001',
                 // USUARIO,   VER TIENE QUE TENER 8 CARACTERES
             }, { transaction });    
 

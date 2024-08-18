@@ -51,43 +51,6 @@ const Login = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const res = await fetch('http://localhost:3000/auth/login', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ username, password }),
-    //         });
-
-    //         if (!res.ok) {
-    //             throw new Error('Login failed');
-    //         }
-
-    //         const data = await res.json();
-    //         localStorage.setItem('token', data.token);
-    //         setUser(data.user);
-    //         setMessage('Login successful');
-    //         navigate('/');
-    //     } catch (error) {
-    //         setMessage('Error logging in');
-    //     }
-    // };
-
     return (
         <div className="login-container">
             <div className="login-box">
@@ -133,65 +96,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
-// // src/components/Login.jsx
-// import React, { useState } from 'react';
-
-// const Login = () => {
-//     const [username, setUsername] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [message, setMessage] = useState('');
-
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         try {
-//             const res = await fetch("http://localhost:3000/auth/login", {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ username, password }),
-//             });
-
-//             if (!res.ok) {
-//                 throw new Error('Login failed');
-//             }
-
-//             const data = await res.json();
-//             localStorage.setItem('token', data.token);
-//             setMessage('Login successful');
-//             window.location.href = '/'; // Redirige a la página principal después del login
-//         } catch (error) {
-//             setMessage('Error logging in');
-//         }
-//     };
-
-//     return (
-//         <div>
-//             <form onSubmit={handleSubmit}>
-//                 <div>
-//                     <label>Username:</label>
-//                     <input
-//                         type="text"
-//                         value={username}
-//                         onChange={(e) => setUsername(e.target.value)}
-//                     />
-//                 </div>
-//                 <div>
-//                     <label>Password:</label>
-//                     <input
-//                         type="password"
-//                         value={password}
-//                         onChange={(e) => setPassword(e.target.value)}
-//                     />
-//                 </div>
-//                 <button type="submit">Login</button>
-//             </form>
-//             {message && <p>{message}</p>}
-//         </div>
-//     );
-// };
-
-// export default Login;

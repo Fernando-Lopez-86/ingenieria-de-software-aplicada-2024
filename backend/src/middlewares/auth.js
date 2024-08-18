@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { User, Vendedores } = require('../database/models'); // Asegúrate de que la ruta es correcta
 
-
+// curl -X POST http://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"username": "fer", "password": "123", "numero_vendedor": "016", "rol": "vendedor"}'
 // curl -k -X POST https://localhost:3000/auth/register -H "Content-Type: application/json" -d '{"username": "fer", "password": "123", "numero_vendedor": "016", "rol": "vendedor"}'
 exports.register = async (req, res) => {
     const { username, password, numero_vendedor, rol} = req.body; // Incluye numero_vendedor
@@ -20,6 +20,7 @@ exports.register = async (req, res) => {
 
 
 exports.login = async (req, res) => {
+    console.log('Request body:', req.body);
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ where: { username } });
@@ -44,6 +45,7 @@ exports.login = async (req, res) => {
                 nombre_vendedor: vendedor.APEYNOM,
             } 
         });
+        console.log('Login successful');
     } catch (error) {
         console.error('Error logging in:', error);
         res.status(500).json({ message: 'Error logging in', error: error.message });

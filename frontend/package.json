@@ -60,5 +60,5 @@
   "devDependencies": {
     "worker-loader": "^3.0.8"
   },
-  "proxy": "https://192.168.11.80:3000"
+  "proxy": "https://pedidos.grandestate.com.ar:8443"
 }

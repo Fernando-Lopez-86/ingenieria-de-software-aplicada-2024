@@ -23,7 +23,7 @@ function PedidoEditForm() {
     const location = useLocation();
     const { NROPED } = location.state;
     const [formData, setFormData] = useState({
-        CLIENTE: { NUMERO: '', RAZONSOC: '' },
+        CLIENTE: { NUMERO: '', RAZONSOC: '', CUIT: '' },
         DIREENT: '',
         LOCENT: '',
         PROENT: '',
@@ -59,7 +59,7 @@ function PedidoEditForm() {
 
 
     const optionsClientes = clientes.map(cliente => ({
-        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
+        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC, CUIT: cliente.CUIT },
         label: cliente.RAZONSOC
     }));
 
@@ -103,7 +103,8 @@ function PedidoEditForm() {
                     ...data.data,
                     CLIENTE: {
                         NUMERO: data.data.CLIENTE,
-                        RAZONSOC: data.data.RAZONSOC
+                        RAZONSOC: data.data.RAZONSOC,
+                        CUIT: data.data.CUIT
                     }
                 });
                 setIsLoading(false);
@@ -213,7 +214,7 @@ function PedidoEditForm() {
 
 
     const handleClientChange = (selectedOption) => {
-        setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : { NUMERO: '', RAZONSOC: '' } });
+        setFormData({ ...formData, CLIENTE: selectedOption ? selectedOption.value : { NUMERO: '', RAZONSOC: '', CUIT: '' } });
     };
 
 
@@ -290,28 +291,29 @@ function PedidoEditForm() {
         doc.setFont("helvetica", "bold");
         doc.text("PEDIDO", 15, 30);
 
-        console.log("user: ", user)
-        console.log("data: ", data)
+        console.log("data", data)
 
         // Agregar cada fila de datos
         let currentY = startY;
-        drawRow(currentY, "Cliente:",  data.RAZONSOC.toUpperCase());
+        drawRow(currentY, "Cliente:",  data.RAZONSOC.toUpperCase() + " " + "(" + data.CLIENTE.NUMERO + ")");
+        currentY += cellHeight;
+        drawRow(currentY, "Cuit:",  data.CUIT);
         currentY += cellHeight;
         drawRow(currentY, "Vendedor:",  user.nombre_vendedor.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Forma de Pago:", formaPagoLabel.toUpperCase());
+        drawRow(currentY, "Forma de pago:", formaPagoLabel.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Dirección Entrega:",  data.DIREENT.toUpperCase());
+        drawRow(currentY, "Dirección entrega:",  data.DIREENT.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Localidad Entrega:",  data.LOCENT.toUpperCase());
+        drawRow(currentY, "Localidad entrega:",  data.LOCENT.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Provincia Entrega:", provinciaLabel.toUpperCase());
+        drawRow(currentY, "Provincia entrega:", provinciaLabel.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Fecha Entrega:",  data.FECTRANS);
+        drawRow(currentY, "Fecha entrega:",  data.FECTRANS);
         currentY += cellHeight;
-        drawRow(currentY, "Teléfono Entrega:",  data.TELEFONOS);
+        drawRow(currentY, "Telefono entrega:",  data.TELEFONOS);
         currentY += cellHeight;
-        drawRow(currentY, "Número Control:", NROPED);
+        drawRow(currentY, "Número control:", NROPED);
         currentY += cellHeight;
         drawRow(currentY, "Comentarios:",  data.COMENTARIO.toUpperCase(), 3);
         currentY += cellHeight * 3;
@@ -384,6 +386,7 @@ function PedidoEditForm() {
                 NROPED: NROPED,
                 CLIENTE: formData.CLIENTE.NUMERO,
                 RAZONSOC: formData.CLIENTE.RAZONSOC,
+                CUIT: formData.CLIENTE.CUIT,
                 DIREENT: formData.DIREENT,
                 LOCENT: formData.LOCENT,
                 PROENT: formData.PROENT,

@@ -33,6 +33,7 @@ function PedidosNew(){
 
     // Utiliza useState para manejar el estado de cada campo del formulario (TIPO, CLIENTE, NROPED, NROREAL, ESTADOSEG, CODIGO) y la lista de artículos (items).
     const [CLIENTE, setCLIENTE] = useState('');
+    const [CUIT, setCUIT] = useState('');
     const [DIREENT, setDIREENT] = useState('');
     const [LOCENT, setLOCENT] = useState('');
     const [PROENT, setPROENT] = useState('');
@@ -105,7 +106,7 @@ function PedidosNew(){
     }));
 
     const optionsClientes = clientes.map(cliente => ({
-        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC },
+        value: { NUMERO: cliente.NUMERO, RAZONSOC: cliente.RAZONSOC, CUIT: cliente.CUIT },
         label: cliente.RAZONSOC
     }));
 
@@ -411,26 +412,26 @@ function PedidosNew(){
         return match ? match[0] : null;
     };
 
-    const extractDetailsFromLine = (line) => {
-        // Expresión regular para capturar cantidad y precio basado en el formato
-        const detailsRegex = /\b(\d{13})\s+\d+\s+.*?\s+\d+\s+\d+\s+\S+\s+\S+\s+(\d+)\s+([\d,.]+)/;
-        const match = line.match(detailsRegex);
+    // const extractDetailsFromLine = (line) => {
+    //     // Expresión regular para capturar cantidad y precio basado en el formato
+    //     const detailsRegex = /\b(\d{13})\s+\d+\s+.*?\s+\d+\s+\d+\s+\S+\s+\S+\s+(\d+)\s+([\d,.]+)/;
+    //     const match = line.match(detailsRegex);
     
-        if (match) {
-            const cantidad = match[2];
-            const precio = match[3];
+    //     if (match) {
+    //         const cantidad = match[2];
+    //         const precio = match[3];
     
-            console.log('Detalles extraídos:', { cantidad, precio });
+    //         console.log('Detalles extraídos:', { cantidad, precio });
     
-            return {
-                cantidad,
-                precio
-            };
-        }
+    //         return {
+    //             cantidad,
+    //             precio
+    //         };
+    //     }
     
-        console.log('No se encontraron detalles en la línea:', line);
-        return {};
-    };
+
+    //     return {};
+    // };
     
 
     const generatePDF = (data, formaPagoLabel, provinciaLabel, nropedido) => {
@@ -490,23 +491,26 @@ function PedidosNew(){
 
         // Agregar cada fila de datos
         let currentY = startY;
-        drawRow(currentY, "Cliente:",  data.RAZONSOC.toUpperCase());
+        // drawRow(currentY, "Cliente:",  data.RAZONSOC.toUpperCase() + " " + "(" + data.RAZONSOC.toUpperCase() + ")");
+        drawRow(currentY, "Cliente:", `${data.RAZONSOC.toUpperCase()} (${data.CLIENTE.toUpperCase()})`);
+        currentY += cellHeight;
+        drawRow(currentY, "Cuit:", data.CUIT.toUpperCase());
         currentY += cellHeight;
         drawRow(currentY, "Vendedor:",  user.nombre_vendedor.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Forma de Pago:", formaPagoLabel.toUpperCase());
+        drawRow(currentY, "Forma de pago:", formaPagoLabel.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Dirección Entrega:",  data.DIREENT.toUpperCase());
+        drawRow(currentY, "Dirección entrega:",  data.DIREENT.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Localidad Entrega:",  data.LOCENT.toUpperCase());
+        drawRow(currentY, "Localidad entrega:",  data.LOCENT.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Provincia Entrega:", provinciaLabel.toUpperCase());
+        drawRow(currentY, "Provincia entrega:", provinciaLabel.toUpperCase());
         currentY += cellHeight;
-        drawRow(currentY, "Fecha Entrega:",  data.FECTRANS);
+        drawRow(currentY, "Fecha entrega:",  data.FECTRANS);
         currentY += cellHeight;
-        drawRow(currentY, "Teléfono Entrega:",  data.TELEFONOS);
+        drawRow(currentY, "Telefono entrega:",  data.TELEFONOS);
         currentY += cellHeight;
-        drawRow(currentY, "Número Control:", nropedido);
+        drawRow(currentY, "Número control:", nropedido);
         currentY += cellHeight;
         drawRow(currentY, "Comentarios:",  data.COMENTARIO.toUpperCase(), 3);
         currentY += cellHeight * 3;
@@ -586,6 +590,7 @@ function PedidosNew(){
         const pedidoData = {
             CLIENTE: CLIENTE ? CLIENTE.NUMERO : '',
             RAZONSOC: CLIENTE ? CLIENTE.RAZONSOC : '',
+            CUIT: CLIENTE ? CLIENTE.CUIT : '',
             DIREENT,
             LOCENT,
             PROENT,
@@ -639,6 +644,7 @@ function PedidosNew(){
             }
     
             setCLIENTE('');
+            setCUIT('');
             setDIREENT('');
             setLOCENT('');
             setPROENT('');

@@ -20,9 +20,11 @@ app.use(express.json());
 app.use(
     cors(
         (corsOptions = {
-            origin: "*",
-            methods: ['GET', 'POST', 'DELETE'],
+            // origin: "*",
+            origin: 'https://pedidos.grandestate.com.ar:8443',
+            methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST'],
             allowedHeaders: ['Content-Type', 'Authorization'],
+            credentials: true,
         })
     )
 );
@@ -109,8 +111,8 @@ connectDatabase()
     .then(() => {
         // Carga los certificados SSL
         const sslOptions = {
-            key: fs.readFileSync('C:/nginx/ssl/nginx-selfsigned.key'),
-            cert: fs.readFileSync('C:/nginx/ssl/nginx-selfsigned.crt')
+            key: fs.readFileSync('C:/nginx/ssl/pedidos.grandestate.com.ar/privkey.pem'),
+            cert: fs.readFileSync('C:/nginx/ssl/pedidos.grandestate.com.ar/fullchain.pem')
         };
         const PORT = process.env.PORT || 3000;
         const HOST = '0.0.0.0'
